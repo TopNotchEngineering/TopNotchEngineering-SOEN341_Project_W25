@@ -5,8 +5,8 @@
 - Andy Gabriel Ordy Honla (Frontend)
 - Kalin Milanov (Backend)
 - Shadi Marzouk (Frontend)
-- Wetao Zhang (Frontend)
-- Scott Svendsen (Backend)
+- Wetao Zhang (Backend)
+- Scott Svendsen (Frontend)
 
 ## Project Description
 ChatHaven is a comprehensive communication platform engineered to enable fluid conversations via text channels and direct messaging. It provides an intuitive platform for teams, communities, or private discussions, incorporating features like topic-specific channels, media sharing, and adjustable settings. ChatHaven aspires to serve as a center for significant and effective conversations, with an easy, intiutive UI and comprehensive privacy choices.
