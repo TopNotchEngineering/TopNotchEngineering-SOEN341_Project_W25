@@ -2,10 +2,10 @@
 
 ## Team Members
 - Vanessa Cherbaka (Backend)
-- Andy Gabriel Ordy Honla (Frontend)
 - Kalin Milanov (Backend)
-- Shadi Marzouk (Frontend)
 - Wetao Zhang (Backend)
+- Andy Gabriel Ordy Honla (Frontend)
+- Shadi Marzouk (Frontend)
 - Scott Svendsen (Frontend)
 
 ## Project Description
