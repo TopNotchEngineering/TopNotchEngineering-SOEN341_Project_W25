@@ -1,12 +1,12 @@
 # ChatHaven by TopNotchEngineering Team
 
 ## Team Members
-- Vanessa Cherbaka
-- Andy Gabriel Ordy Honla
-- Kalin Milanov
-- Shadi Marzouk
-- Wetao Zhang
-- Scott Svendsen
+- Vanessa Cherbaka (Backend)
+- Andy Gabriel Ordy Honla (Frontend)
+- Kalin Milanov (Backend)
+- Shadi Marzouk (Frontend)
+- Wetao Zhang (Frontend)
+- Scott Svendsen (Backend)
 
 ## Project Description
 ChatHaven is a comprehensive communication platform engineered to enable fluid conversations via text channels and direct messaging. It provides an intuitive platform for teams, communities, or private discussions, incorporating features like topic-specific channels, media sharing, and adjustable settings. ChatHaven aspires to serve as a center for significant and effective conversations, with an easy, intiutive UI and comprehensive privacy choices.
@@ -38,4 +38,4 @@ This project involves developing a prototype of ChatHaven using Agile Scrum meth
 - **Sprint 4**: April 11, 2025
 
 ---
-*Last Updated: January 27, 2025*
+*Last Updated: January 28, 2025*
