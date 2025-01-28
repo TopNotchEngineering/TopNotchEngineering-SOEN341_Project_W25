@@ -38,4 +38,4 @@ This project involves developing a prototype of ChatHaven using Agile Scrum meth
 - **Sprint 4**: April 11, 2025
 
 ---
-*Last Updated: January 24, 2025*
+*Last Updated: January 27, 2025*
