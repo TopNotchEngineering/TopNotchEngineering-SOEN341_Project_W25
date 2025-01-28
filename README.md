@@ -24,6 +24,13 @@ This project involves developing a prototype of ChatHaven using Agile Scrum meth
 - **Course**: SOEN 341
 - **Semester**: Winter 2025
 
+## Languages Used
+- HTML
+- CSS
+- JavaScript
+- Node.js
+- MySQL
+
 ## Important Dates
 - **Sprint 1**: February 7, 2025
 - **Sprint 2**: March 7, 2025
