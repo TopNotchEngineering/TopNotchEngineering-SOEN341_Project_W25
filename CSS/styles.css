@@ -1,182 +1,192 @@
 /* RESET / BASE STYLES */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: Arial, sans-serif;
-    background: #f6f8fa;
-    color: #333;
-  }
-  
-  /* NAVBAR STYLES */
-  .navbar {
-    background-color: #007bff;
-    padding: 1rem;
-  }
-  .nav-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #fff;
-  }
-  .nav-links {
-    list-style: none;
-    display: flex;
-    gap: 1rem;
-  }
-  .nav-links li {
-    display: inline;
-  }
-  .nav-links a {
-    color: #fff;
-    text-decoration: none;
-  }
-  .nav-links a:hover {
-    text-decoration: underline;
-  }
-  
-  /* HEADER */
-  .main-header {
-    background-color: #e9ecef;
-    padding: 2rem 1rem;
-    text-align: center;
-  }
-  .header-content h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
-  .header-content p {
-    font-size: 1.1rem;
-    color: #555;
-  }
-  
-  /* MAIN CONTENT */
-  main {
-    max-width: 700px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-  }
-  
-  /* ROLE SELECTION */
-  .role-selection {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  .role-selection h2 {
-    margin-bottom: 1rem;
-  }
-  .role-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-  }
-  .role-btn {
-    padding: 0.7rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    background-color: #28a745;
-    color: #fff;
-    cursor: pointer;
-  }
-  .role-btn:hover {
-    background-color: #218838;
-  }
-  
-  /* LOGIN SECTION */
-  .login-section {
-    background-color: #fff;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  .login-section h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  .form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-  }
-  .form-group input {
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  }
-  .form-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-  }
-  .forgot-password {
-    background: none;
-    border: none;
-    color: #007bff;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-  .forgot-password:hover {
-    color: #0056b3;
-  }
-  .login-btn {
-    background-color: #007bff;
-    color: #fff;
-    padding: 0.6rem 1.2rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .login-btn:hover {
-    background-color: #0056b3;
-  }
-  
-  /* FOOTER */
-  .main-footer {
-    background-color: #e9ecef;
-    text-align: center;
-    padding: 1rem;
-    margin-top: 2rem;
-  }
-  .footer-links {
-    margin-bottom: 0.5rem;
-  }
-  .footer-links a {
-    color: #007bff;
-    margin: 0 0.5rem;
-    text-decoration: none;
-  }
-  .footer-links a:hover {
-    text-decoration: underline;
-  }
-  .main-footer p {
-    color: #555;
-    font-size: 0.9rem;
-  }
-  
-  /* UTILITY CLASSES */
-  .hidden {
-    display: none;
-  }
-  
-  /* POLICY CONTENT STYLING */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Make the HTML and BODY stretch the full viewport height */
+html, body {
+  height: 100%;
+}
+
+/* Use Flexbox on BODY to pin footer at the bottom */
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  background: #f6f8fa;
+  color: #333;
+}
+
+/* NAVBAR STYLES */
+.navbar {
+  background-color: #007bff;
+  padding: 1rem;
+}
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+.nav-links li {
+  display: inline;
+}
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+}
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+/* HEADER */
+.main-header {
+  background-color: #e9ecef;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.header-content h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.header-content p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+/* MAIN CONTENT
+   flex: 1 -> lets main expand, so footer is pushed to bottom if content is short */
+main {
+  flex: 1;
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* ROLE SELECTION */
+.role-selection {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.role-selection h2 {
+  margin-bottom: 1rem;
+}
+.role-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.role-btn {
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #28a745;
+  color: #fff;
+  cursor: pointer;
+}
+.role-btn:hover {
+  background-color: #218838;
+}
+
+/* LOGIN SECTION */
+.login-section {
+  background-color: #fff;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.login-section h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.form-group {
+  margin-bottom: 1rem;
+}
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+.forgot-password {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.forgot-password:hover {
+  color: #0056b3;
+}
+.login-btn {
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.login-btn:hover {
+  background-color: #0056b3;
+}
+
+/* FOOTER 
+   No margin-top so it stays pinned at bottom using flex. */
+.main-footer {
+  background-color: #e9ecef;
+  text-align: center;
+  padding: 1rem;
+}
+.footer-links {
+  margin-bottom: 0.5rem;
+}
+.footer-links a {
+  color: #007bff;
+  margin: 0 0.5rem;
+  text-decoration: none;
+}
+.footer-links a:hover {
+  text-decoration: underline;
+}
+.main-footer p {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* UTILITY CLASSES */
+.hidden {
+  display: none;
+}
+
+/* POLICY CONTENT STYLING */
 .policy-content {
   max-width: 800px;       /* Wider content area */
-  margin: 2rem auto;      /* Vertical spacing from the top/bottom */
+  margin: 2rem auto;      /* Vertical spacing from top/bottom */
   padding: 0 1.5rem;      /* Horizontal padding for easier reading */
   line-height: 1.6;       /* Increase line spacing for readability */
 }
@@ -204,4 +214,52 @@
 
 .policy-content li {
   margin-bottom: 0.5rem;
+}
+
+/* CONTACT SECTION */
+.contact-section {
+  background-color: #fff;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.contact-section h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.contact-section p {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-form .form-group {
+  margin-bottom: 1.2rem;
+}
+
+.contact-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.contact-form textarea {
+  resize: vertical;
 }
