@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ChatHaven - Contact Us</title>
+  <!-- Update the path to your CSS file as needed -->
+  <link rel="stylesheet" href="../CSS/styles.css" />
+</head>
+<body>
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">ChatHaven</div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#">Features</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+        <li><a href="login.html">Login</a></li>
+        <li><a href="#">Sign Up</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <section class="contact-section">
+      <h1>Contact Us</h1>
+      <p>Have questions, suggestions, or need support? Fill out the form below, and we’ll get back to you as soon as possible!</p>
+      
+      <form class="contact-form">
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input 
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Enter your name"
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email address"
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <input 
+            type="text"
+            id="subject"
+            name="subject"
+            placeholder="Subject"
+            required
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            placeholder="Write your message here..."
+            required
+          ></textarea>
+        </div>
+        
+        <button type="submit" class="login-btn">Send Message</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div class="footer-links">
+      <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+      <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
+    </div>
+    <p>&copy; 2025 ChatHaven. All rights reserved.</p>
+  </footer>
+
+  <!-- Update path to your JS file if needed -->
+  <script src="../JS/script.js"></script>
+</body>
+</html>
