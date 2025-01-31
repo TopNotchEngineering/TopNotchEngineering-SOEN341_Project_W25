@@ -1,0 +1,191 @@
+#left-column{
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.289);
+    color: black;
+    height: 1000px;
+    width: 200px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+#left-right-column{
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.289);
+    left: 1130px;
+    color: black;
+    height: 1000px;
+    width: 200px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+#left-columnName {
+    /* background-color: rgb(3, 180, 249); */
+    color: white;
+    margin-bottom: 15px;
+    padding-top: 15px;
+    padding-left: 15px;
+    background-color: rgb(0, 117, 212);
+    /* background-image: url(realisticbook.jpg); */
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+.left-sel, .about{
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    width: 160px;
+    text-align: left;
+    background-color: rgb(204, 209, 212);
+    
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 15px ;
+}
+.left-sel:hover, .about:hover{
+    background-color: rgb(44, 121, 202);
+    color: rgb(137, 187, 226);
+    cursor: pointer;
+}
+body {
+    background-color: white;
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+}
+#bottom-left {
+    position: fixed;
+    top: 530px;
+    left: 30px;
+    padding-top: 10px;
+    padding-left: 10px;
+    width: 860px;
+    height: 30px;
+    background-color: rgb(166, 177, 192);
+    color: white;
+    border-radius: 50px;
+    margin-left: 200px;
+    border-width: 2px;
+    border-color: white;
+}
+#bottom-left::placeholder{
+    color: rgb(126, 128, 130);
+    font-size: 17px;
+}
+#headframe {
+    position: fixed;
+    left: 215px;
+    /* background-image: url(realbook2.jpg); */
+    background-color: rgb(44, 121, 202);
+    color: white;
+    background-size: cover;
+    width: 887px;
+    height: 50px;
+    padding-top: 20px;
+    padding-left: 20px;
+    font-size: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+.about {
+    position: fixed;
+    top: 530px;
+}
+#textdiv {
+    position : fixed;
+    top: 80px;
+    left: 215px;
+    width: 847px;
+    height: 500px;
+    background-color: rgb(197, 203, 206);
+    padding-left: 30px;
+    padding-right: 30px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding-top: 15px;
+    line-height: 1.5;
+    padding-bottom: 20px;
+}
+#list-of-channels {
+    display: none;
+    height: 50px;
+    width: 100px;
+    background-color: white;
+}
+#search {
+    position: fixed;
+    top: 537px;
+    left: 1050px;
+    width: 30px;
+}
+.channellist{
+    display: none;
+}
+.text1{
+    width:  847px;
+    height: 420px;
+    overflow: auto;
+    border: none;
+    background-color: rgb(197, 203, 206);
+    border-top-left-radius: 10px;
+}
+.text1channels{
+    width:  847px;
+    height: 420px;
+    overflow: auto;
+    border: none;
+    background-color: rgb(197, 203, 206);
+    border-top-left-radius: 10px;
+}
+.text1::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+}
+
+.text1::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Background of the scrollbar track*/
+    border-radius: 50px;
+}
+
+.text1::-webkit-scrollbar-thumb {
+    background: #236fc6; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Rounded corners for the scrollbar thumb */
+}
+
+.text1::-webkit-scrollbar-thumb:hover {
+    background: #255f92; /* Darker color on hover */
+}
+
+#arrow {
+    width: 20px;
+    left: 100px;
+    top: 2px;
+    position: relative;
+}
+#arrow1 {
+    width: 20px;
+    left: 70px;
+    top: 2px;
+    position: relative;
+}
+#arrow2 {
+    width: 20px;
+    left: 102px;
+    top: 2px;
+    position: relative;
+}
+#arrow3 {
+    width: 20px;
+    left: 80px;
+    top: 2px;
+    position: relative;
+}
+#add {
+    width: 30px;
+    left: 750px;
+    top: -23px;
+    position: relative;
+    color: white;
+    display: none;
+}
+#add:hover{
+    background-color: rgba(255, 255, 255, 0.336);
+    
+}
