@@ -76,12 +76,17 @@ body {
   margin-right: 0rem;
 }
 
+  background-color: #e9ecef;
+  padding: 2rem 1rem;
+  text-align: center;
+}
 .header-content h1 {
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
 .header-content p {
   font-size: 1.1rem;
+
   padding: 4px;
   color: #555;
 }
@@ -107,6 +112,10 @@ body {
   font-size: 1.1rem;
   text-decoration: none;
 
+}
+
+
+  color: #555;
 }
 
 /* MAIN CONTENT
@@ -163,6 +172,7 @@ main {
   color: #555;
   text-align: center;
 }
+
 
 /* ROLE SELECTION */
 .role-selection {
