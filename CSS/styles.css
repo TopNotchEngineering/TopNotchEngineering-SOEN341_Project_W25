@@ -54,6 +54,28 @@ body {
 
 /* HEADER */
 .main-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e9ecef;
+  max-width: 100%;
+  text-align: left;
+  padding: 30px 20px;
+
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.header-content {
+  max-width: 600px;
+  margin-right: 0rem;
+}
+
   background-color: #e9ecef;
   padding: 2rem 1rem;
   text-align: center;
@@ -64,6 +86,35 @@ body {
 }
 .header-content p {
   font-size: 1.1rem;
+
+  padding: 4px;
+  color: #555;
+}
+
+.header-btns {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 100px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  font-style: bold;
+}
+.header-btns:hover {
+  background-color: #0056b3;
+}
+
+.header-btns a {
+  color: white;
+  font-size: 1.1rem;
+  text-decoration: none;
+
+}
+
+
   color: #555;
 }
 
@@ -75,6 +126,53 @@ main {
   margin: 2rem auto;
   padding: 0 1rem;
 }
+
+/* FEATURES SECTION */
+.features-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: #e9ecef;
+  max-width: 100%;
+  text-align: left;
+  padding: 30px 20px;
+}
+
+.features-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 75%;
+  margin: 2rem;
+}
+
+.features-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem;
+}
+
+.features-block h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  text-align: center;
+}
+.features-block img {
+  width: 75px;
+  height: 75px;
+  align-self: center
+  
+}
+
+.features-block p {
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+}
+
 
 /* ROLE SELECTION */
 .role-selection {
