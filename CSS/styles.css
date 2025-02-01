@@ -5,7 +5,7 @@
   box-sizing: border-box;
 }
 
-/* Make the HTML and BODY stretch the full viewport height */
+/* Make HTML & BODY stretch the full viewport height */
 html, body {
   height: 100%;
 }
@@ -19,7 +19,7 @@ body {
   color: #333;
 }
 
-/* NAVBAR STYLES */
+/* NAVBAR */
 .navbar {
   background-color: #007bff;
   padding: 1rem;
@@ -51,75 +51,13 @@ body {
 .nav-links a:hover {
   text-decoration: underline;
 }
-
-/* HEADER */
-.main-header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #e9ecef;
-  max-width: 100%;
-  text-align: left;
-  padding: 30px 20px;
-
+.nav-links a.active {
+  text-decoration: underline;
+  font-weight: bold;
 }
 
-.flex-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.header-content {
-  max-width: 600px;
-  margin-right: 0rem;
-}
-
-  background-color: #e9ecef;
-  padding: 2rem 1rem;
-  text-align: center;
-}
-.header-content h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-.header-content p {
-  font-size: 1.1rem;
-
-  padding: 4px;
-  color: #555;
-}
-
-.header-btns {
-  display: flex;
-  justify-content: flex-end;
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 100px;
-  background-color: #007bff;
-  color: #fff;
-  text-decoration: none;
-  cursor: pointer;
-  font-style: bold;
-}
-.header-btns:hover {
-  background-color: #0056b3;
-}
-
-.header-btns a {
-  color: white;
-  font-size: 1.1rem;
-  text-decoration: none;
-
-}
-
-
-  color: #555;
-}
-
-/* MAIN CONTENT
-   flex: 1 -> lets main expand, so footer is pushed to bottom if content is short */
+/* MAIN CONTENT 
+   flex: 1 => let main expand so footer sits at bottom if content is short */
 main {
   flex: 1;
   max-width: 700px;
@@ -127,54 +65,116 @@ main {
   padding: 0 1rem;
 }
 
-/* FEATURES SECTION */
-.features-section {
+/* FOOTER (anchored at bottom via flexbox) */
+.main-footer {
+  background-color: #e9ecef;
+  text-align: center;
+  padding: 1rem;
+}
+.footer-links {
+  margin-bottom: 0.5rem;
+}
+.footer-links a {
+  color: #007bff;
+  margin: 0 0.5rem;
+  text-decoration: none;
+}
+.footer-links a:hover {
+  text-decoration: underline;
+}
+.main-footer p {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* HERO/HEADER (INDEX PAGE) */
+.main-header {
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
   background-color: #e9ecef;
-  max-width: 100%;
   text-align: left;
   padding: 30px 20px;
+  margin-bottom: 2rem; /* space before next section */
+}
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.header-text {
+  max-width: 600px;
+}
+.header-text p {
+  margin-bottom: 0.5rem;
+  color: #555;
+}
+.header-btns {
+  display: inline-block;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 100px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 1rem;
+}
+.header-btns:hover {
+  background-color: #0056b3;
+}
+.header-btns a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
 }
 
+/* FEATURES SECTION (INDEX PAGE) */
+.features-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e9ecef;
+  padding: 30px 20px;
+  margin-bottom: 2rem;
+}
+.features-section h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+}
 .features-content {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap; /* wrap if screen is narrow */
   justify-content: center;
   align-items: center;
-  width: 75%;
-  margin: 2rem;
+  gap: 2rem;
+  max-width: 900px;
+  margin-top: 1rem;
 }
-
 .features-block {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 2rem;
+  width: 150px; /* adjust as needed */
+  text-align: center;
 }
-
 .features-block h3 {
   margin-bottom: 0.5rem;
   font-size: 1.2rem;
-  text-align: center;
 }
 .features-block img {
   width: 75px;
   height: 75px;
-  align-self: center
-  
+  margin-bottom: 0.5rem;
 }
-
 .features-block p {
   font-size: 1rem;
   color: #555;
-  text-align: center;
 }
 
-
-/* ROLE SELECTION */
+/* ROLE SELECTION (LOGIN/SIGNUP) */
 .role-selection {
   text-align: center;
   margin-bottom: 2rem;
@@ -199,8 +199,9 @@ main {
   background-color: #218838;
 }
 
-/* LOGIN SECTION */
+/* LOGIN / SIGNUP SECTION */
 .login-section {
+  width: 600px;
   background-color: #fff;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -219,7 +220,8 @@ main {
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
-.form-group input {
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 0.5rem;
   border-radius: 4px;
@@ -253,63 +255,30 @@ main {
   background-color: #0056b3;
 }
 
-/* FOOTER 
-   No margin-top so it stays pinned at bottom using flex. */
-.main-footer {
-  background-color: #e9ecef;
-  text-align: center;
-  padding: 1rem;
-}
-.footer-links {
-  margin-bottom: 0.5rem;
-}
-.footer-links a {
-  color: #007bff;
-  margin: 0 0.5rem;
-  text-decoration: none;
-}
-.footer-links a:hover {
-  text-decoration: underline;
-}
-.main-footer p {
-  color: #555;
-  font-size: 0.9rem;
-}
-
-/* UTILITY CLASSES */
-.hidden {
-  display: none;
-}
-
-/* POLICY CONTENT STYLING */
+/* POLICY CONTENT STYLING (PRIVACY / TERMS) */
 .policy-content {
-  max-width: 800px;       /* Wider content area */
-  margin: 2rem auto;      /* Vertical spacing from top/bottom */
-  padding: 0 1.5rem;      /* Horizontal padding for easier reading */
-  line-height: 1.6;       /* Increase line spacing for readability */
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  line-height: 1.6;
 }
-
 .policy-content h1 {
   text-align: center;
   font-size: 2rem;
   margin-bottom: 1rem;
 }
-
 .policy-content h2 {
   font-size: 1.4rem;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
 }
-
 .policy-content p,
 .policy-content ul {
   margin-bottom: 1rem;
 }
-
 .policy-content ul {
-  padding-left: 1.5rem;   /* Indent bullet lists */
+  padding-left: 1.5rem;
 }
-
 .policy-content li {
   margin-bottom: 0.5rem;
 }
@@ -322,34 +291,28 @@ main {
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
-
 .contact-section h1 {
   text-align: center;
   margin-bottom: 1.5rem;
 }
-
 .contact-section p {
   text-align: center;
   margin-bottom: 2rem;
   font-size: 1.1rem;
   color: #555;
 }
-
 .contact-form {
   max-width: 600px;
   margin: 0 auto;
 }
-
 .contact-form .form-group {
   margin-bottom: 1.2rem;
 }
-
 .contact-form label {
   display: block;
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
-
 .contact-form input,
 .contact-form textarea {
   width: 100%;
@@ -357,7 +320,11 @@ main {
   border-radius: 4px;
   border: 1px solid #ccc;
 }
-
 .contact-form textarea {
   resize: vertical;
+}
+
+/* UTILITY CLASSES */
+.hidden {
+  display: none;
 }
