@@ -19,3 +19,25 @@ function showLoginForm(role) {
     loginTitle.textContent = 'User Login';
   }
 }
+
+/**
+ * Displays the signup form and sets the title to Admin or User Signup.
+ */
+function showSignupForm(role) {
+  const signupFormSection = document.getElementById('signupFormSection');
+  const signupTitle = document.getElementById('signupTitle');
+
+  // Hide role selection section (if you have a separate one)
+  const roleSelection = document.querySelector('.role-selection');
+  roleSelection.classList.add('hidden');
+
+  // Show the signup form
+  signupFormSection.classList.remove('hidden');
+
+  // Update the title based on role
+  if (role === 'admin') {
+    signupTitle.textContent = 'Admin Signup';
+  } else {
+    signupTitle.textContent = 'User Signup';
+  }
+}
