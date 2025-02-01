@@ -1,16 +1,19 @@
 #left-column{
     position: fixed;
-    background-color: rgba(0, 0, 0, 0.289);
+    background-color: rgba(0, 0, 0, 0.11);
     color: black;
     height: 1000px;
     width: 200px;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
+    top: 10px;
 }
 #left-right-column{
-    position: fixed;
-    background-color: rgba(0, 0, 0, 0.289);
-    left: 1130px;
+    position: relative;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.158);
+    top: -70px;
+    left: 1120px;
     color: black;
     height: 1000px;
     width: 200px;
@@ -57,9 +60,9 @@ body {
     left: 30px;
     padding-top: 10px;
     padding-left: 10px;
-    width: 860px;
+    width: 1060px;
     height: 30px;
-    background-color: rgb(166, 177, 192);
+    background-color: rgb(210, 216, 224);
     color: white;
     border-radius: 50px;
     margin-left: 200px;
@@ -71,13 +74,13 @@ body {
     font-size: 17px;
 }
 #headframe {
-    position: fixed;
-    left: 215px;
+    position: relative;
+    left: 207px;
     /* background-image: url(realbook2.jpg); */
     background-color: rgb(44, 121, 202);
     color: white;
     background-size: cover;
-    width: 887px;
+    width: 1087px;
     height: 50px;
     padding-top: 20px;
     padding-left: 20px;
@@ -93,9 +96,9 @@ body {
     position : fixed;
     top: 80px;
     left: 215px;
-    width: 847px;
+    width: 1047px;
     height: 500px;
-    background-color: rgb(197, 203, 206);
+    background-color: rgb(232, 237, 239);
     padding-left: 30px;
     padding-right: 30px;
     border-bottom-left-radius: 20px;
@@ -113,18 +116,19 @@ body {
 #search {
     position: fixed;
     top: 537px;
-    left: 1050px;
+    left: 1250px;
     width: 30px;
 }
 .channellist{
     display: none;
 }
 .text1{
-    width:  847px;
+    position: relative;
+    width:  947px;
     height: 420px;
     overflow: auto;
     border: none;
-    background-color: rgb(197, 203, 206);
+    background-color: rgb(232, 237, 239);
     border-top-left-radius: 10px;
 }
 .text1channels{
@@ -132,7 +136,7 @@ body {
     height: 420px;
     overflow: auto;
     border: none;
-    background-color: rgb(197, 203, 206);
+    background-color: rgb(232, 237, 239);
     border-top-left-radius: 10px;
 }
 .text1::-webkit-scrollbar {
@@ -179,13 +183,12 @@ body {
 }
 #add {
     width: 30px;
-    left: 750px;
-    top: -23px;
+    left: 100px;
+    top: -27px;
     position: relative;
     color: white;
     display: none;
 }
 #add:hover{
     background-color: rgba(255, 255, 255, 0.336);
-    
 }

@@ -30,7 +30,7 @@ function Homecoming() {
         // title.innerText = "Home";
         add.style.display = "none";
         channelon = true;
-        title.innerHTML = "Home"
+        title.innerHTML = "Dashboard<hr>"
 }
 
 // function discussionsclick(){
