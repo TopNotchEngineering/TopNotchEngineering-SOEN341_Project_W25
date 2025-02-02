@@ -56,7 +56,7 @@ body {
   font-weight: bold;
 }
 
-/* MAIN CONTENT 
+/* MAIN CONTENT
    flex: 1 => let main expand so footer sits at bottom if content is short */
 main {
   flex: 1;
