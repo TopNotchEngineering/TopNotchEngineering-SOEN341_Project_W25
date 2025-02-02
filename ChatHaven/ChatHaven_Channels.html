@@ -32,7 +32,26 @@
             body::-webkit-scrollbar-thumb:hover {
                 background: #255f92; /* Darker color on hover */
             }
+
+            #friend-addition-form {
+                display: none;
+                background: #255f92;
+            }
+
+            #avatar {
+                width: 30px;
+                border-radius: 50px;
+                /* left: 750px; */
+                top: 20px;
+                position: relative;
+                margin: 10px;
+            }
+
+            .user-list {
+                /* display: none; */
+            }
         </style>
+        
         <link rel="icon" href="chathavenadmin.png">
         
         <title>ChatHaven/Channels/Admin Page</title>
@@ -40,22 +59,28 @@
 
     <body>
         
-        <div class="text1">
+        <div class="user-list">
                 <div class="users">
                     <div id="">
-                        AndyFunmatsu
+                        <img src="avatar.jpg" id="avatar"> AndyFunmatsu
                     </div>
                 </div><br>
                 <div class="channels">
                     <div>
-                        MichaelDivine
+                        <img src="avatar.jpg" id="avatar"> MichaelDivine
                     </div>
                 </div>
         </div>
+        <div id="friend-addition-form">
+            <div id="NameForm" >
+                Username : <br>
+                <input id="NameInput" placeholder="Name">
+                Role : <br>
+                <input id="RoleInput" placeholder="Role">
+            </div>
+        </div>
 
-        <script>
-
-        </script>
+        <script src="ChatHaven_Channels.js"></script>
         
     </body>
 </html>
