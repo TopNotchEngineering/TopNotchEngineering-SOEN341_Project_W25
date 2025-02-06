@@ -9,12 +9,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
   origin: '*', // Specify origin
 }));
+
 app.use(bodyParser.json());
 
 const dotenv = require('dotenv')
 dotenv.config()
-
-
 
 // Create a connection
 const connection = mysql.createConnection({
@@ -34,6 +33,7 @@ connection.connect((err) => {
   console.log('Connected to MySQL database!');
 });
 
+
 // Route to handle signup data to database
 app.post('/register', (req, res) => {
   const { username, firstName, lastName, country, logInEmail, logInPassword, isAdmin } = req.body;
@@ -51,6 +51,7 @@ app.post('/register', (req, res) => {
       }
   });
 });
+
 
 // Route to handle login data by comparing incoming username and password to existing data in the database
 app.post('/login', (req, res) => {
@@ -74,6 +75,7 @@ app.post('/login', (req, res) => {
       }
   });
 });
+
 
 
 // Start server
