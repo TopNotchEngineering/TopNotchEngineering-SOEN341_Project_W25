@@ -28,15 +28,15 @@
     <section class="role-selection">
       <h2>Select Your Role</h2>
       <div class="role-buttons">
-        <button class="role-btn" onclick="showLoginForm('admin')">Admin Login</button>
-        <button class="role-btn" onclick="showLoginForm('user')">User Login</button>
+        <button class="role-btn" onclick="showLoginForm(1)">Admin Login</button>
+        <button class="role-btn" onclick="showLoginForm(0)">User Login</button>
       </div>
     </section>
 
     <!-- LOGIN FORM SECTION (initially hidden) -->
     <section id="loginSection" class="hidden login-section">
       <h2 id="loginTitle"></h2>
-      <form>
+      <form id="loginForm">
         <div class="form-group">
           <label for="username">Username</label>
           <input 
@@ -56,6 +56,9 @@
             required
           />
         </div>
+
+        <!-- Hidden field to store role as a boolean -->
+        <input type="hidden" id="role" name="role" value="0" />
         
         <div class="form-actions">
           <button type="button" class="forgot-password">Forgot Password?</button>
@@ -70,7 +73,7 @@
     <div class="footer-links">
       <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
       <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
-      <a href="contact.html">Help</a>
+      <a href="contact.html" target="_blank" rel="noopener noreferrer">Help</a>
     </div>
     <p>&copy; 2025 ChatHaven. All rights reserved.</p>
   </footer>

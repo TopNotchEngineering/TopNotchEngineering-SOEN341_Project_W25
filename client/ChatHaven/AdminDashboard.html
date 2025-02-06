@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="ChatHaven.css">
+        <link rel="icon" href="chathaven_logo.png">
+        
+        <title>ChatHaven/Admin Page</title>
+    </head>
+
+    <body>
+            <div id="headframe">
+                Dashboard
+                <img src="addusermale.png" id="add">
+                <hr>
+            </div>
+            <img src="returnicon.png" id="return-icon">
+            <div id="other-left-column">
+                <img src="friends.png" id="friends-icon">
+                <img src="friends.png" id="return-icon">
+                <div class="line-under-friends-icon"><hr></div>
+                <div class="channel-div"><img src="avatar.jpg" id="channelicon"></div>
+                <div class="channel-div"><img src="chathavenadmin.png" id="channelicon"></div>
+                <div class="channel-div"><img src="minecraft-dirt.jpg" id="channelicon"></div>
+                <div class="line-under-friends-icon"><hr></div>
+                <div class="channel-div" id="addchannel">+</div>
+            </div>
+            <div id="left-column">
+                <div id="left-column">
+                    <div id="left-columnName"><br>Chat Haven<br><hr><br></div>
+                    <div class="left-sel" id="home" title="leads you to home page">
+                        Dashboard<img src="arrow.png" id="arrow">
+                    </div><br>
+                    <!-- <div class="left-sel" id="dashboard" title="move to channels/users list">
+                        Dashboard<img src="arrow.png" id="arrow1">
+                    </div><br> -->
+                    <div class="left-sel" id="users" title="Manage user acounts in channels">
+                        Users<img src="arrow.png" id="arrow2">
+                    </div><br>
+                    <!-- <div class="left-sel" id="discussions">
+                        Discussions
+                    </div><br> -->
+                    <div class="left-sel" id="channels" title="manage channels as an admin">
+                        Teams<img src="arrow.png" id="arrow3">
+                    </div><br>
+                </div>
+            </div>
+            <!-- <div id="left-right-column">
+                <div id="left-columnName">Tilte bar<br><hr><br></div>
+                <div class="left-sel" >
+                     User's Story
+                </div><br>
+                
+            </div> -->
+            <div id="textdiv">
+                <div class="channellist">
+                    Teams
+                </div>
+                <iframe src="ChatHaven_Home.html" class="text1"></iframe>
+                <iframe src="ChatHaven_Channels.html" class="text1channels"></iframe>
+
+
+                <div class="user-list">
+                    <div class="users-channels">
+                        <div id="">
+                            <img src="avatar.jpg" id="avatar"> <p class="teamname" id="funmatsu-pool">Funmatsu's Pool</p>
+                        </div>
+                    </div><hr>
+                    <div class="users-channels">
+                        <div>
+                            <img src="chathavenadmin.png" id="avatar"> <p class="teamname">MichaelDivine</p>
+                        </div>
+                    </div><hr>
+                    <div class="users-channels">
+                        <div id="">
+                            <img src="minecraft-dirt.jpg" id="avatar"> <p class="teamname">Minecraft</p>
+                        </div>
+                    </div><hr>
+                </div>
+                
+                <div class="Funmatsu-team">
+                    <div class="channel-user-ui">
+                        <!-- <div id="channel-ui">
+                            <p id="channel">Funmatsu's Pool</p>
+                            <p id="channel">Funmatsu's Pool</p>
+                        </div> -->
+                        <div id="user-ui">
+                            
+                        </div>
+                    </div><hr>
+                </div>
+
+                <div id="friend-addition-form">
+                    <div id="NameForm" >
+                        <label for="username">Username: </label>
+                        <input id="NameInput" placeholder="Name" ><button id="search-users">Search</button><br><br>
+                        <label for="dropdown">Choose a role: </label>
+                            <select id="RoleInput">
+                                <option value="Admin">Admin</option>
+                                <option value="Regular">Regular</option>
+                            </select><br><br>
+                        <label for="channel-choice" id="channel-choice">Channel to assign:</label>
+                        <input id="dest-channelInput" placeholder="Channel to place user...">
+                        <!-- <input id="RoleInput" placeholder="Role" rel><br> -->
+                        <div class="left-sel" id="create-team-button">
+                            Add User
+                        </div>
+                    </div>
+                </div>
+                <div id="channel-addition-form">
+                    
+                    <div id="channelNameForm" >
+                        <label for="dropdown" id="NameInput-placeholder">Team Name:</label>
+                        <input id="NameInput" placeholder="Name"><button id="search-users">Search</button><br><br>
+                        <label for="dropdown" id="RoleInput-placeholder">Choose a role:</label>
+                            <select id="RoleInput">
+                                <option value="Admin">Admin</option>
+                                <option value="Regular">Regular</option>
+                            </select>
+                        <!-- <input id="RoleInput" placeholder="Role" rel><br> -->
+                        <div class="left-sel" id="create-team-button">
+                            Create Team
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- <input id="bottom-left" placeholder="Search User(As Admin)"><img src="search_icon.png" id="search">
+             -->
+            
+        </div>
+        
+        <div id="bottombar">
+
+        </div>
+        <script src="ChatHaven.js"></script>
+    </body>
+</html>
