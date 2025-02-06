@@ -305,7 +305,16 @@ body {
 
 #NameInput{
     position: relative;
-    left: 5px;
+    left: -25px;
+    border-radius: 50px;    
+    height: 30px;
+    width: 400px;
+    padding-left: 20px;
+}
+
+#NameInput-useradd{
+    position: relative;
+    left: 10px;
     border-radius: 50px;    
     height: 30px;
     width: 400px;
@@ -340,7 +349,7 @@ body {
 
 #RoleInput-placeholder {
     position: relative;
-    left: -33px;
+    left: -75px;
 } 
 
 #NameInput-placeholder {
@@ -405,4 +414,36 @@ body {
 .channel-user-ui {
     display: flex;
 
+}
+
+#channel-contribution{
+    position: relative;
+    left: -73px;
+    top: -70px;
+}
+
+#dest-channelContrib {
+    position: relative;
+    top: -5px;
+    left: -65px;
+    border-radius: 20px;    
+    height: 200px;
+    width: 400px;
+    padding-left: 20px;
+    text-justify:auto;
+}
+#dest-channelContrib::placeholder {
+    position: relative;
+    top: -65px;
+    left: -20px;
+    padding-left: 20px;
+    text-align: top;
+}
+
+#team-desc{
+    position: relative;
+    left: -45px;
+    width: 420px;
+    height: 50px;
+    border-radius: 20px;
 }

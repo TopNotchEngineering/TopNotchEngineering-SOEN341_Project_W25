@@ -92,15 +92,17 @@
                 <div id="friend-addition-form">
                     <div id="NameForm" >
                         <label for="username">Username: </label>
-                        <input id="NameInput" placeholder="Name" ><button id="search-users">Search</button><br><br>
+                        <input id="NameInput-useradd" placeholder="Name"><button id="search-users">Search</button><br><br>
                         <label for="dropdown">Choose a role: </label>
                             <select id="RoleInput">
                                 <option value="Admin">Admin</option>
                                 <option value="Regular">Regular</option>
                             </select><br><br>
                         <label for="channel-choice" id="channel-choice">Channel to assign:</label>
-                        <input id="dest-channelInput" placeholder="Channel to place user...">
-                        <!-- <input id="RoleInput" placeholder="Role" rel><br> -->
+                        <input id="dest-channelInput" placeholder="Channel to place user..."><br><br>
+
+                        <label for="channel-choice" id="channel-contribution">Estimated contribution:</label>
+                        <input id="dest-channelContrib" placeholder="How will you participate in this team...">
                         <div class="left-sel" id="create-team-button">
                             Add User
                         </div>
@@ -110,12 +112,9 @@
                     
                     <div id="channelNameForm" >
                         <label for="dropdown" id="NameInput-placeholder">Team Name:</label>
-                        <input id="NameInput" placeholder="Name"><button id="search-users">Search</button><br><br>
-                        <label for="dropdown" id="RoleInput-placeholder">Choose a role:</label>
-                            <select id="RoleInput">
-                                <option value="Admin">Admin</option>
-                                <option value="Regular">Regular</option>
-                            </select>
+                        <input id="NameInput" placeholder="Name"><br><br>
+                        <label for="dropdown" id="RoleInput-placeholder">Team Description:</label>
+                            <input id="team-desc" placeholder="Team description">
                         <!-- <input id="RoleInput" placeholder="Role" rel><br> -->
                         <div class="left-sel" id="create-team-button">
                             Create Team
