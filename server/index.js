@@ -76,7 +76,7 @@ app.post('/login', (req, res) => {
   });
 });
 
-// Route to handle when admins add users to specific channels
+// Route to handle when channels get created and posting the data to the channels table in the database
 app.post('/saveChannelData', (req, res) => {
   const { channelName, channelTeam, channelMember } = req.body;
 
