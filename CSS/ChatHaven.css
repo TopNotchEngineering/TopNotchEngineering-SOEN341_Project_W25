@@ -136,6 +136,7 @@ body {
 }
 .channellist{
     display: none;
+    position: relative;
 }
 .text1{
     /* display: none; */
@@ -446,4 +447,16 @@ body {
     width: 420px;
     height: 50px;
     border-radius: 20px;
+}
+
+.main-footer{
+    display: none;
+    position: fixed;
+    text-align: center;
+    top: 525px;
+    left: -25px;
+    background-color: rgb(194, 191, 191);
+    width: 1400px;
+    height: 100px;
+    padding: 20px;
 }
