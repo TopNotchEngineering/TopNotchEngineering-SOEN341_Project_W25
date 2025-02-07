@@ -76,10 +76,41 @@ app.post('/login', (req, res) => {
   });
 });
 
+// Route to handle when admins add users to specific channels
+app.post('/saveChannelData', (req, res) => {
+  const { channelName, channelTeam, channelMember } = req.body;
 
+  const sql = `INSERT INTO channels (channelName, channelTeam, channelMember) VALUES (?, ?, ?)`;
+  const values = [channelName, channelTeam, channelMember];
+
+  connection.query(sql, values, (err, result) => {
+      if (err) {
+          console.error('Error inserting user:', err);
+          res.status(500).json({ error: 'Database error' });
+      } else {
+          res.status(201).json({ message: 'The user has been ' });
+      }
+  });
+});
+
+// Route to handle creating teams and saving data into the database
+app.post('/saveTeamData', (req, res) => {
+  const { name, description } = req.body;
+
+  const sql = 'INSERT INTO teams (teamName, teamDescription) VALUES (?, ?)';
+  connection.query(sql, [name, description], (err, result) => {
+    if (err) {
+      console.error('Error inserting data:', err);
+      res.status(500).json({ success: false, error: 'Failed to sign up' });
+    } else {
+      console.log('Data inserted:', result);
+      res.redirect('/');
+    }
+  });
+});
 
 // Start server
-const PORT = 5004;
+const PORT = 5008;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
