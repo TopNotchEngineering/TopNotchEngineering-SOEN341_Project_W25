@@ -4,7 +4,12 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  methods: ['GET', 'POST', 'OPTIONS'], // Allow these methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+  origin: '*', // Specify origin
+}));
+
 app.use(bodyParser.json());
 
 const dotenv = require('dotenv')
@@ -28,7 +33,8 @@ connection.connect((err) => {
   console.log('Connected to MySQL database!');
 });
 
-// Route to handle signup data to databse
+
+// Route to handle signup data to database
 app.post('/register', (req, res) => {
   const { username, firstName, lastName, country, logInEmail, logInPassword, isAdmin } = req.body;
   const isAdminValue = parseInt(isAdmin, 10) || 0; // Ensure it's always 0 or 1
@@ -45,6 +51,32 @@ app.post('/register', (req, res) => {
       }
   });
 });
+
+
+// Route to handle login data by comparing incoming username and password to existing data in the database
+app.post('/login', (req, res) => {
+  const { username, logInPassword, isAdmin } = req.body;
+  console.log(req.body);
+
+  const sql = `SELECT * FROM members WHERE username = ? AND logInPassword = ? AND isAdmin = ?`;
+  const values = [username, logInPassword, isAdmin];
+
+  connection.query(sql, values, (err, results) => {
+      if (err) {
+          console.error('Error logging in:', err);
+          res.status(500).json({ error: 'Database error', details: err });
+      } else {
+        console.log("results: ", results);
+          if (results.length > 0) {
+              res.status(200).json({ message: 'Valid credentials and clearance' });
+          } else {
+              res.status(401).json({ message: 'Invalid credentials or clearance' });
+          }
+      }
+  });
+});
+
+
 
 // Start server
 const PORT = 5004;
