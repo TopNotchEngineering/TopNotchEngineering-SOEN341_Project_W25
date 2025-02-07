@@ -206,3 +206,43 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   });
 
+ // add user to database function
+async function addToTeam(username, teamId) {
+  try {
+      const teamData = { username };
+      const response = await fetch(`http://localhost:5004/teams/${teamId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(teamData)
+      });
+
+      if (response.ok) {
+          const data = await response.json();
+      } else {
+          const errorData = await response.json();
+      }
+  } catch (error) {
+  }
+}
+
+// registration form submission handling with added team
+document.getElementById("registerForm").addEventListener("submit", async function (event) {
+  event.preventDefault();
+  // call addToTeam after successful registration
+  if (response.ok) {
+      addToTeam(userData.username, 'teamId'); // replace 'teamId' with the actual team ID
+      window.location.href = "login.html";
+  }
+});
+
+// login form submission handling with added team 
+document.getElementById("loginForm").addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  // addToTeam after successful login
+  if (response.ok) {
+      addToTeam(loginData.username, 'teamId'); // replace teamId with the actual team ID
+      window.location.href = roleElement.value === "1" ? "AdminDashboard.html" : "UserDashboard.html";
+  }
+});
+
