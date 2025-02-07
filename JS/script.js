@@ -145,7 +145,7 @@ document.getElementById("registerForm").addEventListener("submit", async functio
   };
 
   try {
-      const response = await fetch("http://localhost:5004/register", {
+      const response = await fetch("http://localhost:5008/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(userData)
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const roleElement = document.getElementById("role");
   
     try {
-        const response = await fetch("http://localhost:5004/login", {
+        const response = await fetch("http://localhost:5008/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(loginData)
@@ -206,3 +206,4 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   });
 
+  
