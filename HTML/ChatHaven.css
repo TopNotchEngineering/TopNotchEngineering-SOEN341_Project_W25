@@ -1,0 +1,449 @@
+#left-column{
+    /* display: none; */
+    position: fixed;
+    background-color: rgb(0, 117, 212);
+    color: black;
+    height: 605px;
+    width: 200px;
+    border-radius: 25px;
+}
+
+#other-left-column{
+    position: fixed;
+    /* display: none; */
+    background-color: rgb(208, 215, 220);
+    color: black;
+    height: 600px;
+    width: 80px;
+    border-radius: 25px;
+    /* border-top-left-radius: 25px; */
+    /* border-top-right-radius: 25px; */
+}
+
+/* #left-column:hover{
+    background-color: rgb(0, 117, 212);
+} */
+
+#left-columnName {
+    
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    width: 160px;
+    text-align: left;
+    background-color: transparent;
+    color: white;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 15px ;
+
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+#left-columnName:hover {
+    background-color: rgb(107, 193, 239);
+}
+
+.left-sel{
+    padding: 15px;
+    border-radius: 10px;
+    width: 160px;
+    background-color: rgb(204, 209, 212);
+    
+    margin-left: 5px;
+    margin-right: 5px;
+    border-width: 100px;
+    border-bottom-color: rgb(0, 0, 0);
+    font-size: 15px ;
+    cursor: pointer;
+}
+.left-sel:hover, .about:hover{
+    background-color: rgb(44, 121, 202);
+    color: rgb(137, 187, 226);
+    cursor: pointer;
+}
+body {
+    background-color: rgb(237, 243, 246);
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+}
+/* #bottom-left {
+    position: fixed;
+    top: 530px;
+    left: 30px;
+    padding-top: 10px;
+    padding-left: 10px;
+    width: 860px;
+    height: 30px;
+    background-color: white;
+    color: white;
+    border-radius: 50px;
+    margin-left: 200px;
+    border-width: 2px;
+    border-color: white;
+} */
+/* #bottom-left::placeholder{
+    color: rgb(126, 128, 130);
+    font-size: 17px;
+} */
+#headframe {
+    position: fixed;
+    left: 215px;
+    /* background-image: url(realbook2.jpg); */
+    background-color: rgb(44, 121, 202);
+    color: white;
+    background-size: cover;
+    width: 887px;
+    height: 50px;
+    padding-top: 20px;
+    padding-left: 20px;
+    font-size: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+.about {
+    position: fixed;
+    top: 530px;
+}
+#textdiv {
+    position : fixed;
+    top: 80px;
+    left: 215px;
+    width: 847px;
+    height: 500px;
+    background-color: white;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    padding-top: 15px;
+    line-height: 1.5;
+    padding-bottom: 20px;
+}
+#list-of-channels {
+    display: none;
+    height: 50px;
+    width: 100px;
+    background-color: white;
+}
+#search {
+    position: fixed;
+    top: 537px;
+    left: 1050px;
+    width: 30px;
+}
+.channellist{
+    display: none;
+}
+.text1{
+    /* display: none; */
+    width:  847px;
+    height: 520px;
+    overflow: auto;
+    border: none;
+    background-color: white;
+    border-top-left-radius: 10px;
+}
+.text1channels{
+    display: none;
+    width:  847px;
+    height: 520px;
+    overflow: auto;
+    border: none;
+    background-color: white;
+    border-top-left-radius: 10px;
+}
+.text1::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+}
+
+.text1::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Background of the scrollbar track*/
+    border-radius: 50px;
+}
+
+.text1::-webkit-scrollbar-thumb {
+    background: #236fc6; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Rounded corners for the scrollbar thumb */
+}
+
+.text1::-webkit-scrollbar-thumb:hover {
+    background: #255f92; /* Darker color on hover */
+}
+
+#arrow {
+    width: 20px;
+    left: 65px;
+    top: 2px;
+    position: relative;
+}
+#arrow1 {
+    width: 20px;
+    left: 70px;
+    top: 2px;
+    position: relative;
+}
+#arrow2 {
+    width: 20px;
+    left: 102px;
+    top: 2px;
+    position: relative;
+}
+#arrow3 {
+    width: 20px;
+    left: 95px;
+    top: 2px;
+    position: relative;
+}
+#add {
+    width: 30px;
+    left: 750px;
+    top: -23px;
+    position: relative;
+    color: white;
+    display: none;
+    cursor: pointer;
+}
+#add:hover{
+    background-color: rgba(255, 255, 255, 0.336);
+    
+}
+
+#friends-icon{
+    position: relative;
+    top: 5px;
+    left: 8px;
+    width: 25px;
+    background-color: rgb(44, 121, 202);
+    padding: 20px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+#friends-icon:hover{
+    background-color: rgb(117, 165, 216);
+    padding: 25px;
+    left: 3px;
+}
+
+#return-icon{
+    display: none;
+    position: relative;
+    top: 5px;
+    left: 8px;
+    width: 25px;
+    background-color: rgb(44, 121, 202);
+    padding: 20px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+#return-icon:hover{
+    background-color: rgb(117, 165, 216);
+    padding: 25px;
+    left: 3px;
+}
+
+.channel-div{
+    position: relative;
+    text-align: center;
+    top: 5px;
+    left: 12px;
+    width: 25px;
+    height: 25px;
+    background-color: white;
+    padding: 15px;
+    
+    border-radius: 50px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    font-size: 30px;
+}
+
+.channel-div:hover{
+    background-color: rgb(44, 121, 202);
+    padding: 22px;
+    left: 6px;
+}
+
+.line-under-friends-icon{
+    width: 25px;
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    left: 27px;
+}
+#friend-addition-form {
+    display: none;
+    background: transparent;
+    text-align: center;
+}
+
+#channel-addition-form {
+    display: none;
+    background: transparent;
+    text-align: center;
+    margin-top: 100px;
+}
+
+#avatar {
+    width: 30px;
+    border-radius: 50px;
+    /* left: 750px; */
+    top: 20px;
+    position: relative;
+    margin: 10px;
+}
+
+/* .user-list {
+     /* display: none;  *//*
+} */
+
+#NameInput{
+    position: relative;
+    left: -25px;
+    border-radius: 50px;    
+    height: 30px;
+    width: 400px;
+    padding-left: 20px;
+}
+
+#NameInput-useradd{
+    position: relative;
+    left: 10px;
+    border-radius: 50px;    
+    height: 30px;
+    width: 400px;
+    padding-left: 20px;
+}
+
+#RoleInput{
+    position: relative;
+    left: 5px;
+    border-radius: 50px;
+    height: 30px;
+    width: 500px;
+    padding-left: 20px;
+}
+
+#search-users{
+    position: relative;
+    left: 15px;
+    border-radius: 50px;
+    border-width: 3px;
+    border-top: none;
+    border-left: none;
+    background-color: rgb(0, 115, 255);
+    color: white;
+}
+
+#create-team-button {
+    position: relative;
+    top: 20px;
+    left: 300px;
+}
+
+#RoleInput-placeholder {
+    position: relative;
+    left: -75px;
+} 
+
+#NameInput-placeholder {
+    position: relative;
+    left:   -53px;
+}
+
+#dest-channelInput {
+    position: relative;
+    top: -5px;
+    left: -50px;
+    border-radius: 50px;    
+    height: 30px;
+    width: 400px;
+    padding-left: 20px;
+}
+
+.vertical-line {
+    border-left: 2px solid black; 
+    height: 200px; 
+    margin-left: 20px; 
+}
+
+.users-channels {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    /* padding-bottom: 30px; */
+    border-radius: 20px;
+}
+
+.users-channels:hover {
+    background-color: rgb(44, 121, 202);
+}
+
+#channelicon {
+    position: relative;
+    left: -19px;
+    top: -19px;
+    /* background-size: fill; */
+    object-fit: cover;
+    width: 250%;
+    height: 250%;
+}
+
+.channelicon:hover{
+    /* background-color: rgb(44, 121, 202); */
+    width: 22px;
+    left: 6px;
+}
+
+#channel-choice{
+    position: relative;
+    left: -55px;
+}
+
+.teamname {
+    position: relative;
+    left: 50px;
+    top: -40px;
+}
+
+.channel-user-ui {
+    display: flex;
+
+}
+
+#channel-contribution{
+    position: relative;
+    left: -73px;
+    top: -70px;
+}
+
+#dest-channelContrib {
+    position: relative;
+    top: -5px;
+    left: -65px;
+    border-radius: 20px;    
+    height: 200px;
+    width: 400px;
+    padding-left: 20px;
+    text-justify:auto;
+}
+#dest-channelContrib::placeholder {
+    position: relative;
+    top: -65px;
+    left: -20px;
+    padding-left: 20px;
+    text-align: top;
+}
+
+#team-desc{
+    position: relative;
+    left: -45px;
+    width: 420px;
+    height: 50px;
+    border-radius: 20px;
+}
