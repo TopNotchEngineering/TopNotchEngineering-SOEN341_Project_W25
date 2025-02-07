@@ -190,7 +190,7 @@ function TeamCreation(event) {
   }
 
   // This function handlers saving the channel data to the database
-function TeamCreation(event) {
+function ChannelCreation(event) {
     event.preventDefault(); // Prevent the default form submission behavior
   
     // Get form values
