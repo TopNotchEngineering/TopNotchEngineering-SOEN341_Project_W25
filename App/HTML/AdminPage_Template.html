@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../CSS/AdminPage_Template_Style.css">
+        <link rel="icon" href="../images/chathaven_logo.png">
+        <title>ChatHaven/Admin Page</title>
+    </head>
+    <body>
+        <div id="admin-page-header">
+            {TT}
+            <hr>
+        </div>
+        
+        <div id="teams-column">
+            <img src="../images/friends.png" class="friends-icon" href="#menu" id="friends-icon">
+                <div class="menu" id="menu">
+                    <div id="menu-name"><br>Chat Haven<br><hr><br></div>
+                    <a href="AdminPage_Template_Dashboard.html" id="link">
+                        <div class="general-buttons" id="home" title="leads you to home page" >
+                            <p>Dashboard</p><img src="../images/arrow.png" id="arrow">
+                        </div><br>
+                    </a>
+                        <div class="general-buttons" id="users" title="Manage user acounts in channels">
+                            <p>Teams</p><img src="../images/arrow.png" id="arrow2">
+                        </div><br>
+                    
+                    <!-- <div class="general-buttons" id="" title="manage channels as an admin">
+                        Back<img src="../images/arrow.png" id="arrow3">
+                    </div><br> -->
+                </div>
+
+            <div class="line-under-friends-icon"><hr></div>
+            <a href="AdminPage_Template_Teams.html" id="link-to-dash">
+                <div class="team-profile"><img src="../images/minecraft-dirt.jpg" id="team-bar-icon"></div>
+            </a>
+            
+            <div class="line-under-friends-icon"><hr></div>
+            <a href="AdminPage_AddTeams.html" id="link">
+                <div class="team-profile"> + </div>
+            </a>
+        </div>
+        
+        <div class="custom-body">            
+            <!-- <iframe src="../HTML/ChatHaven_Home.html" id="team-listin-body"></iframe> -->
+        </div>
+        
+        <script src="../JS/AdminPage_Template_script.js"></script>
+    </body>
+</html>

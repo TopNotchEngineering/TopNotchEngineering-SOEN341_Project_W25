@@ -1,0 +1,370 @@
+#teams-column{
+    position: fixed;
+    /* display: none; */
+    background-color: rgb(208, 215, 220);
+    color: black;
+    height: 98%;
+    margin-bottom: 20px;
+    width: 80px;
+    border-radius: 25px;
+    z-index: 100;
+    overflow: hidden;
+    /* border-top-left-radius: 25px; */
+    /* border-top-right-radius: 25px; */
+}
+
+/* #left-column:hover{
+    background-color: rgb(0, 117, 212);
+} */
+.general-buttons{
+    display: flex;
+    padding: 15px;
+    border-radius: 10px;
+    width: 160px;
+    background-color: rgb(204, 209, 212);
+
+    margin-left: 5px;
+    margin-right: 5px;
+    border-width: 100px;
+    border-bottom-color: rgb(0, 0, 0);
+    font-size: 15px ;
+    cursor: pointer;
+}
+.general-buttons:hover{
+    background-color: rgb(44, 121, 202);
+    color: rgb(137, 187, 226);
+    cursor: pointer;
+}
+body {
+    background-color: rgb(237, 243, 246);
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+}
+
+    .custom-body {
+        position: fixed;
+        top: 80px;
+        left: 215px;
+        /* left: calc(13% + 2vw); */
+        right: calc(20% + 20px);
+        width: calc(100% - 320px);
+        max-width: 4000px;
+        min-height: 80vh;
+        
+        height: calc(100% - 2vw);
+        background-color: white;
+        padding-left: 30px;
+        padding-right: 30px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        padding-top: 15px;
+        line-height: 1.5;
+        padding-bottom: 20px;
+        overflow: hidden;
+    }
+    #admin-page-header {
+        position: fixed;
+        left: 215px;
+        /* left: calc(25% - 10vw); */
+        /* background-image: url(realbook2.jpg); */
+        background-color: rgb(44, 121, 202);
+        overflow: hidden;
+        color: white;
+        background-size: cover;
+        width: calc(100% - 280px);
+        /* width: calc(100% - 308px); */
+        max-width: 4050px;
+
+        height: 50px;
+        padding-top: 20px;
+        padding-left: 20px;
+        font-size: 20px;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
+#list-of-channels {
+    display: none;
+    height: 50px;
+    width: 100px;
+    background-color: white;
+}
+#search {
+    position: fixed;
+    top: 537px;
+    left: 1050px;
+    width: 30px;
+}
+.teamlist{
+    display: none;
+}
+.text1{
+    /* display: none; */
+    width:  847px;
+    height: 520px;
+    overflow: auto;
+    border: none;
+    background-color: white;
+    border-top-left-radius: 10px;
+}
+.text1channels{
+    display: none;
+    width:  847px;
+    height: 520px;
+    overflow: auto;
+    border: none;
+    background-color: white;
+    border-top-left-radius: 10px;
+}
+#team-listin-body::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+}
+
+#team-listin-body::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Background of the scrollbar track*/
+    border-radius: 50px;
+}
+
+#team-listin-body::-webkit-scrollbar-thumb {
+    background: #236fc6; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Rounded corners for the scrollbar thumb */
+}
+
+#team-listin-body::-webkit-scrollbar-thumb:hover {
+    background: #255f92; /* Darker color on hover */
+}
+
+.friends-icon{
+    position: relative;
+    top: 5px;
+    left: 8px;
+    width: 25px;
+    background-color: rgb(44, 121, 202);
+    padding: 20px;
+    border-radius: 25px;
+    cursor: pointer;
+}
+
+.friends-icon:hover{
+    background-color: rgb(117, 165, 216);
+    padding: 25px;
+    left: 3px;
+}
+
+.friends-icon:hover + .menu{
+    display: block;
+    z-index: 10;
+    left: 100px;
+    top: 20px;
+}
+
+.team-profile{
+    position: relative;
+    text-align: center;
+    top: 5px;
+    left: 12px;
+    width: 25px;
+    height: 25px;
+    background-color: white;
+    padding: 15px;
+    padding-top: 12px;
+    padding-bottom: 17px;
+    
+    border-radius: 50px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    font-size: 30px;
+}
+
+.team-profile:hover{
+    background-color: rgb(44, 121, 202);
+    padding: 22px;
+    padding-top: 18px;
+    padding-bottom: 24px;
+    left: 6px;
+}
+
+.line-under-friends-icon{
+    width: 25px;
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    left: 27px;
+}
+#friend-addition-form {
+    display: none;
+    background: transparent;
+    text-align: center;
+}
+
+#channel-addition-form {
+    display: none;
+    background: transparent;
+    text-align: center;
+    margin-top: 100px;
+}
+
+#avatar {
+    width: 30px;
+    border-radius: 50px;
+    /* left: 750px; */
+    top: 20px;
+    position: relative;
+    margin: 10px;
+}
+
+#NameInput{
+    position: relative;
+    left: -25px;
+    border-radius: 50px;    
+    height: 30px;
+    width: 400px;
+    padding-left: 20px;
+}
+
+#NameInput-useradd{
+    position: relative;
+    left: 10px;
+    border-radius: 50px;    
+    height: 30px;
+    width: 400px;
+    padding-left: 20px;
+}
+
+#RoleInput{
+    position: relative;
+    left: 5px;
+    border-radius: 50px;
+    height: 30px;
+    width: 500px;
+    padding-left: 20px;
+}
+
+#search-users{
+    position: relative;
+    left: 15px;
+    border-radius: 50px;
+    border-width: 3px;
+    border-top: none;
+    border-left: none;
+    background-color: rgb(0, 115, 255);
+    color: white;
+}
+
+#create-team-button {
+    position: relative;
+    top: 20px;
+    left: 300px;
+}
+
+#RoleInput-placeholder {
+    position: relative;
+    left: -75px;
+} 
+
+#NameInput-placeholder {
+    position: relative;
+    left:   -53px;
+}
+
+#dest-channelInput {
+    position: relative;
+    top: -5px;
+    left: -50px;
+    border-radius: 50px;    
+    height: 30px;
+    width: 400px;
+    padding-left: 20px;
+}
+
+.vertical-line {
+    border-left: 2px solid black; 
+    height: 200px; 
+    margin-left: 20px; 
+}
+
+#team-bar-icon {
+    position: relative;
+    left: -25px;
+    top: -20px;
+    /* background-size: fill; */
+    object-fit: cover;
+    width: 350%;
+    height: 350%;
+}
+
+.teamname {
+    position: relative;
+    left: 50px;
+    top: -40px;
+}
+
+#team-listin-body {
+    border: none;
+    height: 500px;
+    width: 830px;
+}
+
+.menu{
+    display: none;
+    position: fixed;
+    background-color: rgb(0, 117, 212);
+    color: black;
+    height: 300px;
+    width: 200px;
+    border-radius: 25px;
+    z-index: 10;
+    left: 100px;
+    top: 10px;
+}
+
+#menu-name{
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    width: 160px;
+    text-align: left;
+    background-color: transparent;
+    color: white;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 15px ;
+
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+#arrow {
+    width: 20px;
+    height: 25px;
+    left: 72px;
+    top: 10px;
+    position: relative;
+}
+#arrow1 {
+    width: 20px;
+    left: 80px;
+    top: 2px;
+    position: relative;
+}
+#arrow2 {
+    width: 20px;
+    height: 25px;
+    left: 102px;
+    top: 10px;
+    position: relative;
+}
+
+#arrow3 {
+    width: 20px;
+    left: 95px;
+    top: 2px;
+    position: relative;
+}
+
+#link{
+    text-decoration-line: none;
+    color: black;
+}
