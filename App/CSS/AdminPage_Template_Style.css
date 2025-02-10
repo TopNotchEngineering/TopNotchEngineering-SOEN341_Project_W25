@@ -368,3 +368,36 @@ body {
     text-decoration-line: none;
     color: black;
 }
+
+.profile-icon{
+    position: relative;
+    left: -30px;
+    top: -30px;
+    /* background-size: fill; */
+    object-fit: cover;
+    width: 350%;
+    height: 350%;
+}
+
+.profile-icon:hover + .profile-name{
+    display: block;
+    z-index: 10;
+    left: 100px;
+}
+
+.profile-name{
+    display: none;
+    position: fixed;
+    top: 20vh;
+    padding: 15px;
+    border-radius: 10px;
+    width: 160px;
+    background-color: rgb(204, 209, 212);
+
+    margin-left: 5px;
+    margin-right: 5px;
+    border-width: 100px;
+    border-bottom-color: rgb(0, 0, 0);
+    font-size: 15px ;
+    cursor: pointer;
+}

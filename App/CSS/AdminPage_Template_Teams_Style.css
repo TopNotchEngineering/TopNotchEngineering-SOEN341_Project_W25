@@ -193,7 +193,8 @@ body {
     background: #255f92; /* Darker color on hover */
 }
 
-#arrow {
+#adduser {
+    display: none;
     width: 20px;
     left: 35px;
     top: 2px;
@@ -202,14 +203,18 @@ body {
     padding: 2px;
     border-radius: 5px;
 }
-#arrow:hover{
+#adduser:hover, #arrow1:hover{
     background-color: rgb(210, 222, 233);
 }
 #arrow1 {
+    display: none;
     width: 20px;
-    left: 70px;
+    left: 35px;
     top: 2px;
     position: relative;
+    margin-left: 5px;
+    padding: 2px;
+    border-radius: 5px;
 }
 #arrow2 {
     width: 20px;
@@ -303,7 +308,6 @@ body {
     left: 27px;
 }
 #friend-addition-form {
-    display: none;
     background: transparent;
     text-align: center;
 }
@@ -513,4 +517,43 @@ body {
 
 #team-listin-body::-webkit-scrollbar-thumb:hover {
     background: #255f92; /* Darker color on hover */
+}
+
+/* #profile-icon{
+    position: relative;
+    left: -25px;
+    top: -100px;
+    
+    object-fit: cover;
+    width: 350%;
+    height: 350%;
+} */
+
+#home:hover #adduser{
+    display: block;
+    left: 135px;
+    top: -22px;
+}
+
+#home:hover #arrow1{
+    display: block;
+    left: 105px;
+    top: -45px;
+}
+
+#home:hover{
+    height: 20px;
+}
+
+#title-users{
+    width: 20px;
+    left: 102px;
+    top: 2px;
+    position: relative;
+    border-radius: 5px;
+    padding: 2px;
+}
+
+#title-users:hover{
+    background-color: rgb(210, 222, 233)
 }
