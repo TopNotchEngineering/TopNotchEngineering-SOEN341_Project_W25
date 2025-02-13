@@ -18,13 +18,24 @@
             
                 <div id="menu">
                     <div id="team-info"><br>(Team Name)<br><hr><br></div>
-                    <div class="general-button" id="home">
-                        {Channel}
+                    <a href="../HTML/AdminPage_Template_Teams.html" id="link">
+                        <div class="general-button" id="channel">
+                            {Channel1}
+                            <a href="../HTML/AdminPage_AddUsers.html" id="link">
+                                <img src="../images/addusermale.png" id="adduser" title="Add a user in current channel">
+                            </a>
+                            <img src="../images/settingsicon.png" id="arrow1" title="settings">
+                        </div><br>
+                    </a>
+
+                    <div class="general-button" id="channel">
+                        {Channel2}
                         <a href="../HTML/AdminPage_AddUsers.html" id="link">
                             <img src="../images/addusermale.png" id="adduser" title="Add a user in current channel">
                         </a>
                         <img src="../images/settingsicon.png" id="arrow1" title="settings">
                     </div><br>
+                    
                     <a href="AdminPage_Template.html" id="link"><div class="general-button" id="" title="manage channels as an admin">
                         Back<img src="../images/arrow.png" id="arrow3">
                     </div><br></a>
@@ -35,6 +46,27 @@
                 <input id="text-bar" placeholder="message">
                 
             </div>
+            <div id="pop-up">
+                <div id="friend-addition-form">
+                    <div id="NameForm" >
+                        <label for="username">Username: </label>
+                        <input id="NameInput-useradd" placeholder="Name"><button id="search-users">Search</button><br><br>
+                        <label for="dropdown">Choose a role: </label>
+                            <select id="RoleInput">
+                                <option value="Admin">Admin</option>
+                                <option value="Regular">Regular</option>
+                            </select><br><br>
+                        <label for="channel-choice" id="channel-choice">Channel to assign:</label>
+                        <input id="dest-channelInput" placeholder="Channel to place user..."><br><br>
+
+                        <label for="channel-choice" id="channel-contribution">Estimated contribution:</label>
+                        <input id="dest-channelContrib" placeholder="How will you participate in this team...">
+                        <div class="general-button" id="add-user-button">
+                            Add User
+                        </div>
+                    </div>
+                </div>
+            </div>
             
         </div>
         
@@ -42,6 +74,7 @@
             document.getElementById("text-bar").addEventListener("keypress", function(event) {
                 if (event.key === "Enter" && document.getElementById("text-bar").value !== "") {
                     generateDiv();
+                    scrollToBottom();
                 }
                 // document.getElementByClassName("custom-body").innnerText += "<br>";
             });
@@ -66,6 +99,29 @@
                 // Append the new div to the container
                 // var container = document.getElementById("container");
                 document.querySelector("#div-custom-body").appendChild(newDiv);
+            }
+            function scrollToBottom() {
+                var scrollableDiv = document.getElementById("div-custom-body");
+                scrollableDiv.scrollTop = scrollableDiv.scrollHeight;
+            }
+
+            const popup = document.querySelector("#pop-up");
+            profile_icon_popup.onclick = function(){
+                popup.style.display = "block";
+                document.querySelector("#inside-pop-up").style.display = "block";
+                document.querySelector("#team-addition-form").style.display = "none";
+            }
+            const back = document.querySelector("#back");
+            back.onclick = function() {
+                popup.style.display = "none";
+            }
+            document.querySelector("#back2").onclick = function() {
+                popup.style.display = "none";
+            }
+            document.querySelector("#add-teams").onclick = function() {
+                popup.style.display = "block";
+                document.querySelector("#inside-pop-up").style.display = "none";
+                document.querySelector("#team-addition-form").style.display = "block";
             }
         </script>
     </body>

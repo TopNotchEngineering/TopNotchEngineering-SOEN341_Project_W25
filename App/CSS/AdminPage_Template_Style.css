@@ -8,9 +8,13 @@
     width: 80px;
     border-radius: 25px;
     z-index: 100;
-    overflow: hidden;
+    overflow: auto;
     /* border-top-left-radius: 25px; */
     /* border-top-right-radius: 25px; */
+}
+
+#teams-column::-webkit-scrollbar {
+    display: none;
 }
 
 /* #left-column:hover{
@@ -63,6 +67,25 @@ body {
         padding-bottom: 20px;
         overflow: auto;
     }
+
+    .custom-body::-webkit-scrollbar {
+        width: 12px; /* Width of the scrollbar */
+    }
+    
+    .custom-body::-webkit-scrollbar-track {
+        background: #f0f0f0; /* Background of the scrollbar track*/
+        border-radius: 50px;
+    }
+    
+    .custom-body::-webkit-scrollbar-thumb {
+        background: #236fc6; /* Color of the scrollbar thumb */
+        border-radius: 6px; /* Rounded corners for the scrollbar thumb */
+    }
+    
+    .custom-body::-webkit-scrollbar-thumb:hover {
+        background: #255f92; /* Darker color on hover */
+    }
+
     #admin-page-header {
         position: fixed;
         left: 215px;
@@ -438,6 +461,10 @@ body {
     overflow: auto;
 }
 
+#profile-pop-up::-webkit-scrollbar{
+    display: none;
+}
+
 #team-desc{
     position: relative;
     left: -45px;
@@ -451,3 +478,52 @@ body {
     top: 12.5vh;
     left: 49vw;
 } */
+
+#team-addition-form{
+    display: none;
+}
+
+#teams-container{
+    height: fit-content;
+    max-height: 58%;
+    overflow: auto;
+}
+
+#teams-container::-webkit-scrollbar {
+    display: none;
+}
+
+.users-channels {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    /* padding-bottom: 30px; */
+    border-radius: 20px;
+}
+
+.users-channels:hover {
+    background-color: rgb(44, 121, 202);
+}
+
+#custom-team-container{
+    height: fit-content;
+    max-height: 75%;
+    overflow: auto;
+    overflow-x: hidden;
+}
+#custom-team-container::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+}
+
+#custom-team-container::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Background of the scrollbar track*/
+    border-radius: 50px;
+}
+
+#custom-team-container::-webkit-scrollbar-thumb {
+    background: #236fc6; /* Color of the scrollbar thumb */
+    border-radius: 6px; /* Rounded corners for the scrollbar thumb */
+}
+
+#custom-team-container::-webkit-scrollbar-thumb:hover {
+    background: #255f92; /* Darker color on hover */
+}

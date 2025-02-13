@@ -561,13 +561,25 @@ body {
 #div-custom-body {
     width: 75vw;
     height: 60vh;
-    position: relative;
+    /* position: relative; */
+    text-align: center;
     /* height: fit-content; */
     overflow: auto;
     /* background-color: rgba(128, 128, 128, 0.688); */
-    background-color: transparent; 
+    /* background-color: transparent;  */
 }
 
 #div-custom-body::-webkit-scrollbar {
     display: none;
+}
+
+#pop-up{
+    display: none;
+    position: fixed;    
+    z-index: 500;
+    background-color: rgba(0, 0, 0, 0.598);
+    width: 200vw;
+    height: 200vh;
+    top: -20vh; 
+    left: -20vw;
 }
