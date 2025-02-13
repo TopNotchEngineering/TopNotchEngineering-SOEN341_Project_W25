@@ -87,10 +87,8 @@ function loadDiv() {
     document.getElementByClassName("custom-body").appendChild(newDiv);
 }
 
-document.getElementById("NameInput").addEventListener("keypress", function(event) {
-    if (event.key === "Enter" && document.getElementById("NameInput").value !== "") {
+document.getElementById("create-team-button").addEventListener("click", function() {
         generateDiv();
-    }
     // document.getElementByClassName("custom-body").innnerText += "<br>";
 });
 function generateDiv() {
@@ -100,6 +98,7 @@ function generateDiv() {
     // Add content to the new div
     newDiv.innerHTML = document.getElementById("NameInput").value;
     document.getElementById("NameInput").value = "";
+    alert("Working or not??");
     newDiv.style.backgroundColor = "rgb(44, 121, 202)";
     newDiv.style.width = "fit-content";
     newDiv.style.textAlign = "right";
