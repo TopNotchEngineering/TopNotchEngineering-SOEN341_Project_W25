@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../CSS/AdminPage_Template_Teams_Style.css">
+        <link rel="icon" href="../images/chathaven_logo.png">
+        <style>
+            .custom-body{
+                z-index: -1;
+            }
+        </style>
+        <title>ChatHaven/Admin Page</title>
+    </head>
+
+    <body>
+            <div id="admin-page-header">
+                Create Team
+                <hr>
+            </div>
+            <a href="AdminPage_Template.html" id="link">
+                <img src="../images/returnicon.png" id="return-icon">
+            </a>
+            
+            <div class="custom-body">
+                Hey
+            </div>
+
+            <div id="team-addition-form">
+                
+                <div id="TeamNameForm" >
+                    <label for="dropdown" id="NameInput-placeholder">Team Name:</label>
+                    <input id="NameInput" placeholder="Name"><br><br>
+                    <label for="dropdown" id="RoleInput-placeholder">Team Description:</label>
+                        <input id="team-desc" placeholder="Team description">
+                    <!-- <input id="RoleInput" placeholder="Role" rel><br> -->
+                    <div class="general-button" id="create-team-button">
+                        Create Team
+                    </div>
+                    <!-- <a href="../HTML/AdminPage_Template.html">
+                        <div class="general-button" id="create-team-button">
+                            Create Team
+                        </div>
+                    </a> -->
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- <script src="../JS/AdminPage_Template_script.js"> -->
+        <script>
+            
+            function generateDiv() {
+                // Create a new div element
+                var newDiv = document.createElement("div");
+                // newDiv.style = document.getElementById("team-profile").style;
+                // Add content to the new div
+                newDiv.innerHTML = "Test";
+                newDiv.style.backgroundColor = "rgb(44, 121, 202)";
+                newDiv.style.width = "fit-content";
+                newDiv.style.textAlign = "right";
+                newDiv.style.position = "relative";
+                newDiv.style.borderRadius = "50px";
+                newDiv.style.padding = "15px";
+                newDiv.style.margin = "10px";
+                
+                // Add a class to the new div for styling
+                newDiv.className = "generated";
+                localStorage.setItem("message", newDiv.innerHTML);
+                alert("Div content stored in local storage!");
+                // var encodedContent = encodeURIComponent(newDiv);
+                // window.location.href = "AdminPage_Template.html?content=" + encodedContent;
+                // Append the new div to the container
+                // var container = document.getElementById("container");
+                document.querySelector("#teams-column").appendChild(newDiv);
+                // document.getElementByClassName("custom-body").appendChild(newDiv);
+            }
+                document.getElementById("create-team-button").addEventListener("click", function() {
+                    generateDiv();
+                    // document.getElementByClassName("custom-body").innnerText += "<br>";
+                });
+        </script>
+    </body>
+</html>
