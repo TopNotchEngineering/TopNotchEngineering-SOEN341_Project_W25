@@ -61,7 +61,7 @@ body {
         padding-top: 15px;
         line-height: 1.5;
         padding-bottom: 20px;
-        overflow: hidden;
+        overflow: auto;
     }
     #admin-page-header {
         position: fixed;
@@ -266,7 +266,7 @@ body {
 
 #NameInput-placeholder {
     position: relative;
-    left:   -53px;
+    left: -53px;
 }
 
 #dest-channelInput {
@@ -383,6 +383,7 @@ body {
     display: block;
     z-index: 10;
     left: 100px;
+    top: 300px;
 }
 
 .profile-name{
@@ -401,3 +402,52 @@ body {
     font-size: 15px ;
     cursor: pointer;
 }
+
+#pop-up{
+    display: none;
+    position: fixed;    
+    z-index: 500;
+    background-color: rgba(0, 0, 0, 0.598);
+    width: 200vw;
+    height: 200vh;
+    top: -20vh; 
+    left: -20vw;
+}
+
+#inside-pop-up{
+    background-color: white;
+    color: black;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#profile-pop-up{
+    /* display: none; */
+    position: fixed;
+    background-color: rgb(0, 117, 212);
+    color: white;
+    height: 250px;
+    width: 500px;   
+    overflow: auto;
+    border-radius: 15px;
+    z-index: 100;
+    /* float:calc(50% + 2vw); */
+    left: calc(100% - 75vw);
+    top: calc(100% - 75vh);
+    padding: 10px;
+    overflow: auto;
+}
+
+#team-desc{
+    position: relative;
+    left: -45px;
+    width: 420px;
+    height: 50px;
+    border-radius: 20px;
+}
+
+/* #create-team-button {
+    position: relative;
+    top: 12.5vh;
+    left: 49vw;
+} */

@@ -557,3 +557,17 @@ body {
 #title-users:hover{
     background-color: rgb(210, 222, 233)
 }
+
+#div-custom-body {
+    width: 75vw;
+    height: 60vh;
+    position: relative;
+    /* height: fit-content; */
+    overflow: auto;
+    /* background-color: rgba(128, 128, 128, 0.688); */
+    background-color: transparent; 
+}
+
+#div-custom-body::-webkit-scrollbar {
+    display: none;
+}

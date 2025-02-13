@@ -4,10 +4,11 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="../CSS/AdminPage_Template_Style.css">
+        <!-- <link rel="stylesheet" href="../CSS/AdminPage_Template_Teams_Style.css"> -->
         <link rel="icon" href="../images/chathaven_logo.png">
         <title>ChatHaven/Admin Page</title>
     </head>
-    <body>
+    <body onload="loadDiv()">
         <div id="admin-page-header">
             {TT}
             <hr>
@@ -28,7 +29,7 @@
                         </div><br>
                     </a>
                     
-            </div>
+                </div>
 
             <div class="line-under-friends-icon"><hr></div>
             <a href="AdminPage_Template_Teams.html" id="link-to-dash">
@@ -36,18 +37,31 @@
             </a>
             
             <div class="line-under-friends-icon"><hr></div>
-            <a href="AdminPage_AddTeams.html" id="link">
-                <div class="team-profile"> + </div>
-            </a>
+            <!-- <a href="AdminPage_AddTeams.html" id="link"> -->
+                <div class="team-profile" id="add-team"> + </div>
+            <!-- </a> -->
 
             <div class="team-profile"> <img src="../images/chathaven_logo.png" class="profile-icon"> 
                 <div class="profile-name">Profile</div>
             </div>
         
+        </div>  
+        
         <div class="custom-body">            
             <!-- <iframe src="../HTML/ChatHaven_Home.html" id="team-listin-body"></iframe> -->
         </div>
-        
+
+        <div id="pop-up">
+            <div id="profile-pop-up">
+                Admin Name<hr><br>
+                <div id="inside-pop-up">
+                    
+                    {user Name}<br><br>
+                    {email}<br><br><br><br>
+                    <div class="general-buttons" id="back">Back</div>
+                </div>
+            </div>
+        </div>
         <script src="../JS/AdminPage_Template_script.js"></script>
     </body>
 </html>
