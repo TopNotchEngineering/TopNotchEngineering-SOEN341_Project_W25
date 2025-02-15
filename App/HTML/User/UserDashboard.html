@@ -12,7 +12,6 @@
             justify-content: space-between;
             max-width: 1000px;
             margin: 0 auto;
-            padding: 1rem;
         }
         .logo a {
             font-size: 1.5rem;
@@ -159,11 +158,11 @@
 <nav class="navbar">
     <div class="nav-container">
         <div class="logo">
-            <a href="index.html" draggable="true">ChatHaven</a>
+            ChatHaven
         </div>
         <ul class="nav-links">
-            <li><a href="UserDashboard.html" class="active">Teams</a></li>
-            <li><a href="#">Chats</a></li>
+            <li><a href="Teams.html" class="active">Teams</a></li>
+            <li><a href="DirectMessaging.html">Direct Messaging</a></li>
         </ul>
         <div class="profile-container">
             <button id="profileBtn" class="profile-btn">
@@ -245,7 +244,8 @@
     // Update welcome message using a URL parameter (e.g., ?username=JohnDoe)
     const urlParams = new URLSearchParams(window.location.search);
     const username = urlParams.get('username') || 'User';
-    document.getElementById('welcomeMessage').textContent = 'Welcome to dashboard, ' + username;
+    document.getElementById('welcomeMessage').innerHTML = `Welcome to your dashboard, ${username}.
+    <br>Please choose a tab above to get started.`;
     // Also prefill the username in the profile form
     document.getElementById('profileUsernameInput').value = username;
 
