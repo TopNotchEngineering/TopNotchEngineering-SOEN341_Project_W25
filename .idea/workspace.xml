@@ -5,11 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6940c01-55a1-45e8-ae00-75d4eadc18be" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/App/HTML/Admin/AdminDashboard.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/App/HTML/User/Channels.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/App/HTML/User/DirectMessaging.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/App/HTML/User/Teams.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/App/images/Bugs.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/App/images/Speedy.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App/HTML/User/Channels.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/Channels.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App/HTML/User/DirectMessaging.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/DirectMessaging.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/App/HTML/User/UserDashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/UserDashboard.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -88,7 +88,7 @@
       <workItem from="1738536809135" duration="341000" />
       <workItem from="1738537182173" duration="84000" />
       <workItem from="1739582889695" duration="270000" />
-      <workItem from="1739583256141" duration="8821000" />
+      <workItem from="1739583256141" duration="10671000" />
     </task>
     <servers />
   </component>
