@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ChatHaven - Admin Dashboard</title>
+  <title>ChatHaven - User Dashboard</title>
   <link rel="stylesheet" href="/App/CSS/styles.css" />
   <style>
     /* NAVIGATION BAR STYLES */
@@ -12,7 +12,6 @@
       justify-content: space-between;
       max-width: 1000px;
       margin: 0 auto;
-      padding: 1rem;
     }
     .logo a {
       font-size: 1.5rem;
@@ -152,6 +151,10 @@
     .hidden {
       display: none;
     }
+
+    #welcomeMessage {
+      padding: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -159,11 +162,11 @@
 <nav class="navbar">
   <div class="nav-container">
     <div class="logo">
-      <a href="index.html" draggable="true">ChatHaven</a>
+      ChatHaven
     </div>
     <ul class="nav-links">
-      <li><a href="UserDashboard.html" class="active">Teams</a></li>
-      <li><a href="#">Chats</a></li>
+      <li><a href="Teams.html">Teams</a></li>
+      <li><a href="DirectMessaging.html">Direct Messaging</a></li>
     </ul>
     <div class="profile-container">
       <button id="profileBtn" class="profile-btn">
@@ -176,6 +179,7 @@
 <!-- MAIN CONTENT -->
 <main>
   <h1 id="welcomeMessage">Welcome to your dashboard, {User}</h1>
+  <img src='/App/images/Bugs.png' alt='Bugs Bunny' style="width: 90%; height: auto;">
   <!-- Additional dashboard content can go here -->
 </main>
 
@@ -233,9 +237,9 @@
 <!-- FOOTER -->
 <footer class="main-footer">
   <div class="footer-links">
-    <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-    <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
-    <a href="contact.html" target="_blank" rel="noopener noreferrer">Help</a>
+    <a href="../privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+    <a href="../terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
+    <a href="../contact.html" target="_blank" rel="noopener noreferrer">Help</a>
   </div>
   <p>&copy; 2025 ChatHaven. All rights reserved.</p>
 </footer>
@@ -245,7 +249,8 @@
   // Update welcome message using a URL parameter (e.g., ?username=JohnDoe)
   const urlParams = new URLSearchParams(window.location.search);
   const username = urlParams.get('username') || 'User';
-  document.getElementById('welcomeMessage').textContent = 'Welcome to dashboard, ' + username;
+  document.getElementById('welcomeMessage').innerHTML = `Welcome to your dashboard, ${username}.
+    <br>Please choose a tab above to get started.`;
   // Also prefill the username in the profile form
   document.getElementById('profileUsernameInput').value = username;
 
