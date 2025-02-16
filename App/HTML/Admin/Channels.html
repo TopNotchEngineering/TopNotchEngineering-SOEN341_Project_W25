@@ -384,9 +384,9 @@
 <!-- FOOTER -->
 <footer class="main-footer">
   <div class="footer-links">
-    <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-    <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
-    <a href="contact.html" target="_blank" rel="noopener noreferrer">Help</a>
+    <a href="../privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+    <a href="../terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
+    <a href="../contact.html" target="_blank" rel="noopener noreferrer">Help</a>
   </div>
   <p>&copy; 2025 ChatHaven. All rights reserved.</p>
 </footer>
@@ -395,24 +395,18 @@
 <script>
   // ========== DOMContentLoaded to ensure elements exist ==========
   document.addEventListener('DOMContentLoaded', () => {
-    /****************************************
-     * TEAM NAME FROM URL
-     ****************************************/
+    /* TEAM NAME FROM URL */
     const urlParams = new URLSearchParams(window.location.search);
     const teamName = urlParams.get('team') || 'Team Name';
     document.getElementById('teamName').textContent = teamName;
 
-    /****************************************
-     * LOAD CHANNEL
-     ****************************************/
+    /* LOAD CHANNEL */
     window.loadChannel = function(channel) {
       const chatMessages = document.getElementById('chatMessages');
       chatMessages.innerHTML = `<p><strong>System:</strong> Loaded channel #${channel}</p>`;
     };
 
-    /****************************************
-     * SEND MESSAGE
-     ****************************************/
+    /* SEND MESSAGE */
     const sendMsgBtn = document.getElementById('sendMsgBtn');
     const messageInput = document.getElementById('messageInput');
     const chatMessages = document.getElementById('chatMessages');
@@ -428,9 +422,7 @@
       }
     });
 
-    /****************************************
-     * PROFILE MODAL
-     ****************************************/
+    /* PROFILE MODAL */
     const profileModal = document.getElementById('profileModal');
     const profileBtn = document.getElementById('profileBtn');
     const closeModal = document.getElementById('closeModal');
@@ -480,9 +472,7 @@
       passwordChangeSection.classList.add('hidden');
     });
 
-    /****************************************
-     * CREATE CHANNEL MODAL
-     ****************************************/
+    /* CREATE CHANNEL MODAL */
     const newChannelBtn = document.getElementById('newChannelBtn');
     const createChannelModal = document.getElementById('createChannelModal');
     const closeCreateChannelModal = document.getElementById('closeCreateChannelModal');

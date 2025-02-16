@@ -418,26 +418,22 @@
 <!-- FOOTER -->
 <footer class="main-footer">
   <div class="footer-links">
-    <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-    <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
-    <a href="contact.html" target="_blank" rel="noopener noreferrer">Help</a>
+    <a href="../privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+    <a href="../terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
+    <a href="../contact.html" target="_blank" rel="noopener noreferrer">Help</a>
   </div>
   <p>&copy; 2025 ChatHaven. All rights reserved.</p>
 </footer>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    /****************************************
-     * LOAD CHAT FUNCTION
-     ****************************************/
+    /* LOAD CHAT FUNCTION */
     window.loadChat = function(username) {
       const chatMessages = document.getElementById('chatMessages');
       chatMessages.innerHTML = `<p><strong>System:</strong> Direct chat with ${username} loaded!</p>`;
     };
 
-    /****************************************
-     * SEND MESSAGE FUNCTION
-     ****************************************/
+    /* SEND MESSAGE FUNCTION */
     const sendMsgBtn = document.getElementById('sendMsgBtn');
     const messageInput = document.getElementById('messageInput');
     const chatMessages = document.getElementById('chatMessages');
@@ -453,9 +449,7 @@
       }
     });
 
-    /****************************************
-     * PROFILE MODAL LOGIC
-     ****************************************/
+    /* PROFILE MODAL LOGIC */
     const profileModal = document.getElementById('profileModal');
     const profileBtn = document.getElementById('profileBtn');
     const closeModal = document.getElementById('closeModal');
@@ -505,9 +499,7 @@
       });
     }
 
-    /****************************************
-     * NEW CHAT MODAL LOGIC
-     ****************************************/
+    /* NEW CHAT MODAL LOGIC */
     const newChatModal = document.getElementById('newChatModal');
     const newChatBtn = document.getElementById('newChatBtn');
     const closeNewChatModal = document.getElementById('closeNewChatModal');
@@ -535,9 +527,7 @@
       }
     });
 
-    /****************************************
-     * DELETE CHAT FUNCTIONALITY
-     ****************************************/
+    /* DELETE CHAT FUNCTIONALITY */
     window.deleteChat = function(e, chatName) {
       e.stopPropagation();
       if (confirm(`Are you sure you want to delete the chat with ${chatName}?`)) {
@@ -545,9 +535,7 @@
       }
     };
 
-    /****************************************
-     * HELPER FUNCTION: Create Chat List Item
-     ****************************************/
+    /* HELPER FUNCTION: Create Chat List Item */
     function createChatListItem(chatName) {
       const li = document.createElement('li');
       li.style.position = 'relative';
