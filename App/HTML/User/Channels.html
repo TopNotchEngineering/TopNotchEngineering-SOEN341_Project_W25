@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ChatHaven - Channels</title>
+  <!-- Link to your global CSS -->
+  <link rel="stylesheet" href="/App/CSS/styles.css" />
+
+  <!-- Layout overrides specifically for Channels Page -->
+  <style>
+    /* NAVIGATION BAR STYLES */
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .logo a {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+    }
+    .nav-links {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+    .nav-links a.active {
+      font-weight: bold;
+      text-decoration: underline;
+    }
+    .profile-container {
+      margin-left: 20px;
+    }
+    /* PROFILE BUTTON AS A CIRCLE */
+    .profile-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background-color: #fff;
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .profile-btn img {
+      width: 90%;
+      height: 90%;
+      object-fit: cover;
+    }
+
+    /* PROFILE MODAL STYLES */
+    .modal {
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+      position: relative;
+    }
+    .close {
+      position: absolute;
+      right: 10px;
+      top: 5px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+    }
+    .modal form .form-group {
+      margin-bottom: 1rem;
+    }
+    .modal form label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    .modal form input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    /* Container for Save Profile and Logout buttons inside modal */
+    .modal-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .save-btn {
+      background-color: #28a745;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .save-btn:hover {
+      background-color: #218838;
+    }
+
+    #changePasswordBtn {
+      background-color: #28a745;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .logout-btn {
+      background-color: #dc3545;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .logout-btn:hover {
+      background-color: #c82333;
+    }
+    /* Utility: hidden class */
+    .hidden {
+      display: none;
+    }
+    /*OVERRIDE GLOBAL "main" STYLING FOR THIS PAGE*/
+    main#channelsPage {
+      /* Cancel out the default max-width, margin, and padding from styles.css */
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+
+      /* Make it fill remaining vertical space & use flex layout */
+      flex: 1;
+      display: flex;
+      flex-direction: row; /* sidebar on left, chat on right */
+    }
+
+    /*SIDEBAR (TEAM NAME + CHANNELS)*/
+
+    .sidebar {
+      width: 200px;
+      background-color: #f1f1f1;
+      border-right: 1px solid #ccc;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .sidebar h1 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    .sidebar h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    .channel-list {
+      list-style: none;
+      padding: 0;
+    }
+    .channel-list li {
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .channel-list li:hover {
+      background-color: #e9ecef;
+    }
+
+    /*CHAT AREA (MESSAGES + INPUT)*/
+    .chat-area {
+      flex: 1; /* take all remaining horizontal space */
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+    }
+    .chat-messages {
+      flex: 1; /* grow/shrink to fill vertical space */
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      overflow-y: auto;
+      background-color: #fff;
+    }
+    .chat-input {
+      display: flex;
+    }
+    .chat-input input[type="text"] {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px 0 0 4px;
+    }
+    .chat-input button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+    }
+    .chat-input button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="logo">
+      ChatHaven
+    </div>
+    <ul class="nav-links">
+      <li><a href="Teams.html">Teams</a></li>
+      <li><a href="DirectMessaging.html">Direct Messaging</a></li>
+    </ul>
+    <div class="profile-container">
+      <button id="profileBtn" class="profile-btn">
+        <img src="/App/images/profile-icon.png" alt="Profile Icon" />
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- PROFILE MODAL -->
+<div id="profileModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <h2>Edit Profile</h2>
+    <!-- Profile Details Form -->
+    <form id="profileForm">
+      <div class="form-group">
+        <label for="profileUsernameInput">Username</label>
+        <input type="text" id="profileUsernameInput" name="username" value="User" required>
+      </div>
+      <div class="form-group">
+        <label for="profileFirstNameInput">First Name</label>
+        <input type="text" id="profileFirstNameInput" name="firstName" value="FirstName" required>
+      </div>
+      <div class="form-group">
+        <label for="profileLastNameInput">Last Name</label>
+        <input type="text" id="profileLastNameInput" name="lastName" value="LastName" required>
+      </div>
+      <div class="form-group">
+        <label for="profileEmailInput">Email</label>
+        <input type="email" id="profileEmailInput" name="email" value="email@example.com" required>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="save-btn">Save Profile</button>
+        <button type="button" id="modalLogoutBtn" class="logout-btn">Logout</button>
+      </div>
+    </form>
+    <hr />
+    <button id="changePasswordBtn" class="nav-btn" style="margin-bottom: 1rem;">Change Password</button>
+    <!-- Change Password Section (initially hidden) -->
+    <div id="passwordChangeSection" class="hidden">
+      <form id="passwordChangeForm">
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input type="password" id="currentPassword" name="currentPassword" required>
+        </div>
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" name="newPassword" required>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+        <button type="submit" class="save-btn">Save Password</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT (override the global styling) -->
+<main id="channelsPage">
+  <!-- LEFT SIDEBAR: Team Name & Channels -->
+  <div class="sidebar">
+    <h1 id="teamName">Team Name</h1>
+    <h3>Channels</h3>
+    <ul class="channel-list">
+      <li onclick="loadChannel('general')"># general</li>
+      <li onclick="loadChannel('random')"># random</li>
+      <li onclick="loadChannel('project')"># project</li>
+      <li onclick="loadChannel('test')"># test</li>
+    </ul>
+  </div>
+
+  <!-- RIGHT CHAT AREA -->
+  <div class="chat-area">
+    <div class="chat-messages" id="chatMessages">
+      <p><strong>JohnDoe:</strong> Welcome to the channel!</p>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="messageInput" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="main-footer">
+  <div class="footer-links">
+    <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+    <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
+    <a href="contact.html" target="_blank" rel="noopener noreferrer">Help</a>
+  </div>
+  <p>&copy; 2025 ChatHaven. All rights reserved.</p>
+</footer>
+
+<script>
+  // Get team name from URL parameter (e.g., ?team=TeamAlpha)
+  const urlParams = new URLSearchParams(window.location.search);
+  const teamName = urlParams.get('team') || 'Team Name';
+  document.getElementById('teamName').textContent = teamName;
+
+  function loadChannel(channel) {
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML = `<p><strong>System:</strong> Loaded channel #${channel}</p>`;
+  }
+
+  function sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const message = messageInput.value.trim();
+    if (message) {
+      const messageElement = document.createElement('p');
+      messageElement.innerHTML = `<strong>You:</strong> ${message}`;
+      chatMessages.appendChild(messageElement);
+      messageInput.value = '';
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  }
+
+  // Profile Modal logic
+  const profileModal = document.getElementById('profileModal');
+  const profileBtn = document.getElementById('profileBtn');
+  const closeModal = document.getElementById('closeModal');
+
+  profileBtn.addEventListener('click', () => {
+    profileModal.classList.remove('hidden');
+  });
+
+  if (closeModal) {
+    closeModal.addEventListener('click', () => {
+      profileModal.classList.add('hidden');
+      document.getElementById('passwordChangeSection').classList.add('hidden');
+    });
+  }
+
+  window.addEventListener('click', (event) => {
+    if (event.target === profileModal) {
+      profileModal.classList.add('hidden');
+      document.getElementById('passwordChangeSection').classList.add('hidden');
+    }
+  });
+
+  const changePasswordBtn = document.getElementById('changePasswordBtn');
+  const passwordChangeSection = document.getElementById('passwordChangeSection');
+  if (changePasswordBtn) {
+    changePasswordBtn.addEventListener('click', () => {
+      passwordChangeSection.classList.toggle('hidden');
+    });
+  }
+
+  document.getElementById('profileForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Profile updated successfully!');
+    profileModal.classList.add('hidden');
+  });
+
+  document.getElementById('passwordChangeForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Password updated successfully!');
+    passwordChangeSection.classList.add('hidden');
+  });
+
+  // Logout button inside modal
+  const logoutBtn = document.getElementById('modalLogoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      window.location.href = 'login.html';
+    });
+  }
+</script>
+</body>
+</html>
