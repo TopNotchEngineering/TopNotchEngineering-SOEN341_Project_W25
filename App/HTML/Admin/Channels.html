@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ChatHaven - Direct Messages</title>
+  <title>ChatHaven - Channels</title>
+  <!-- Link to your global CSS -->
   <link rel="stylesheet" href="/App/CSS/styles.css" />
 
-  <!-- Layout overrides for this Direct Messaging page -->
+  <!-- Layout overrides specifically for Channels Page -->
   <style>
+    /* NAVIGATION BAR STYLES */
     .nav-container {
       display: flex;
       align-items: center;
@@ -14,11 +16,10 @@
       max-width: 1000px;
       margin: 0 auto;
     }
-    .logo a {
+    .logo {
       font-size: 1.5rem;
       font-weight: bold;
       color: #fff;
-      text-decoration: none;
     }
     .nav-links {
       flex: 1;
@@ -61,7 +62,7 @@
       object-fit: cover;
     }
 
-    /* PROFILE MODAL STYLES */
+    /* MODAL STYLES (both Profile and Create Channel) */
     .modal {
       position: fixed;
       z-index: 1000;
@@ -71,6 +72,9 @@
       height: 100%;
       overflow: auto;
       background-color: rgba(0,0,0,0.4);
+    }
+    .hidden {
+      display: none; /* toggled by JS */
     }
     .modal-content {
       background-color: #fefefe;
@@ -90,11 +94,10 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .close:hover,
-    .close:focus {
+    .close:hover {
       color: #000;
-      text-decoration: none;
     }
+    /* Shared form styles inside modals */
     .modal form .form-group {
       margin-bottom: 1rem;
     }
@@ -126,6 +129,17 @@
     .save-btn:hover {
       background-color: #218838;
     }
+    .logout-btn, .cancel-btn {
+      background-color: #dc3545;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .logout-btn:hover {
+      background-color: #c82333;
+    }
     #changePasswordBtn {
       background-color: #28a745;
       color: #fff;
@@ -134,31 +148,19 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    #modalLogoutBtn {
-      background-color: #dc3545;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #modalLogoutBtn:hover {
-      background-color: #c82333;
-    }
-    /* Utility: hidden class */
-    .hidden {
-      display: none;
-    }
-    /* OVERRIDE GLOBAL "main" STYLING */
-    main#chatsPage {
+
+    /* Channels Page Layout Overrides */
+    main#channelsPage {
+      /* Cancel out default max-width, margin, and padding from styles.css */
       max-width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
       flex: 1;
-      display: flex; /* sidebar on left, chat area on right */
-      flex-direction: row;
+      display: flex;
+      flex-direction: row; /* sidebar on left, chat on right */
     }
-    /* SIDEBAR (LEFT COLUMN) */
+
+    /* SIDEBAR (TEAM NAME + CHANNELS) */
     .sidebar {
       width: 200px;
       background-color: #f1f1f1;
@@ -170,18 +172,16 @@
     }
     .sidebar h1 {
       margin-bottom: 1rem;
-      font-size: 1.2rem;
+      font-size: 1.5rem;
     }
-    .chats-header {
+    /* Channels header container with a "New" button */
+    .channels-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       margin-bottom: 0.5rem;
     }
-    .chats-header h3 {
-      margin: 0;
-    }
-    .chats-header button {
+    .new-channel-btn {
       background-color: #28a745;
       color: #fff;
       border: none;
@@ -189,14 +189,14 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    .chats-header button:hover {
+    .new-channel-btn:hover {
       background-color: #218838;
     }
-    .chat-list {
+    .channel-list {
       list-style: none;
       padding: 0;
     }
-    .chat-list li {
+    .channel-list li {
       padding: 0.5rem;
       margin-bottom: 0.5rem;
       background-color: #fff;
@@ -204,25 +204,12 @@
       border-radius: 4px;
       cursor: pointer;
       transition: background-color 0.3s;
-      position: relative; /* to position trash icon */
     }
-    .chat-list li:hover {
+    .channel-list li:hover {
       background-color: #e9ecef;
     }
-    /* Trash icon for chat deletion */
-    .delete-chat {
-      position: absolute;
-      right: 5px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: #dc3545;
-      font-size: 1.2rem;
-    }
-    .delete-chat:hover {
-      color: #c82333;
-    }
-    /* CHAT AREA (RIGHT COLUMN) */
+
+    /* CHAT AREA (MESSAGES + INPUT) */
     .chat-area {
       flex: 1;
       display: flex;
@@ -258,49 +245,23 @@
     .chat-input button:hover {
       background-color: #0056b3;
     }
-    /* NEW CHAT MODAL */
-    .modal-content h2 {
-      margin-top: 0;
+
+    .delete-channel {
+      float: right;
+      cursor: cell;
+      color: #dc3545;
+      font-size: 1rem;
     }
-    .modal-content label {
-      font-weight: bold;
-      margin-bottom: 0.3rem;
-      display: block;
+
+    .delete-channel:hover {
+      color: #c82333;
     }
-    .modal-content input[type="text"] {
-      width: 100%;
-      padding: 0.5rem;
-      margin-bottom: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .modal-content button {
-      background-color: #28a745;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .modal-content button:hover {
-      background-color: #218838;
-    }
-    .close-modal {
-      position: absolute;
-      right: 10px;
-      top: 5px;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .close-modal:hover {
-      color: #000;
-    }
+
   </style>
 </head>
 <body>
 
-<!-- NAVIGATION BAR -->
+<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-container">
     <div class="logo">
@@ -308,7 +269,7 @@
     </div>
     <ul class="nav-links">
       <li><a href="Teams.html">Teams</a></li>
-      <li><a href="DirectMessaging.html" class="active">Direct Messaging</a></li>
+      <li><a href="DirectMessaging.html">Direct Messaging</a></li>
     </ul>
     <div class="profile-container">
       <button id="profileBtn" class="profile-btn">
@@ -323,6 +284,7 @@
   <div class="modal-content">
     <span id="closeModal" class="close">&times;</span>
     <h2>Edit Profile</h2>
+    <!-- Profile Details Form -->
     <form id="profileForm">
       <div class="form-group">
         <label for="profileUsernameInput">Username</label>
@@ -347,6 +309,7 @@
     </form>
     <hr />
     <button id="changePasswordBtn" class="nav-btn" style="margin-bottom: 1rem;">Change Password</button>
+    <!-- Change Password Section (initially hidden) -->
     <div id="passwordChangeSection" class="hidden">
       <form id="passwordChangeForm">
         <div class="form-group">
@@ -367,38 +330,41 @@
   </div>
 </div>
 
-<!-- NEW CHAT MODAL -->
-<div id="newChatModal" class="modal hidden">
+<!-- CREATE CHANNEL MODAL -->
+<div id="createChannelModal" class="modal hidden">
   <div class="modal-content">
-    <span id="closeNewChatModal" class="close-modal">&times;</span>
-    <label for="userSearchInput"><h2>Start a new chat</h2></label>
-    <input type="text" id="userSearchInput" placeholder="Enter a username..." />
-    <button id="userSearchBtn">Search</button>
+    <span id="closeCreateChannelModal" class="close">&times;</span>
+
+    <form id="createChannelForm">
+      <div class="form-group">
+        <label for="channelNameInput"><h2>New Channel</h2></label>
+        <input type="text" id="channelNameInput" name="channelName" placeholder="Enter new channel name..." required />
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="cancelCreateChannelBtn" class="cancel-btn">Cancel</button>
+        <button type="submit" class="save-btn">Save</button>
+      </div>
+    </form>
   </div>
 </div>
 
-<!-- MAIN CONTENT: DIRECT MESSAGES -->
-<main id="chatsPage">
-  <!-- LEFT SIDEBAR -->
+<!-- MAIN CONTENT -->
+<main id="channelsPage">
+  <!-- LEFT SIDEBAR: Team Name & Channels -->
   <div class="sidebar">
-    <h1>Direct Messaging</h1>
-    <div class="chats-header">
-      <h3>Chats</h3>
-      <button id="newChatBtn">New</button>
+    <h1 id="teamName">Team Name</h1>
+    <div class="channels-header">
+      <h3 style="margin: 0;">Channels</h3>
+      <button id="newChannelBtn" class="new-channel-btn">New</button>
     </div>
-    <ul class="chat-list" id="chatList">
-      <!-- Static chat items with trash icon -->
-      <li onclick="loadChat('User1')">
-        <span class="chat-name">User1</span>
-        <span class="delete-chat" onclick="deleteChat(event, 'User1')">🗑️</span>
+    <ul class="channel-list" id="channelList">
+      <li onclick="loadChannel('general')">
+        <span class="channel-name"># general</span>
+        <span class="delete-channel" onclick="deleteChannel(event, 'general')">🗑️</span>
       </li>
-      <li onclick="loadChat('User2')">
-        <span class="chat-name">User2</span>
-        <span class="delete-chat" onclick="deleteChat(event, 'User2')">🗑️</span>
-      </li>
-      <li onclick="loadChat('User3')">
-        <span class="chat-name">User3</span>
-        <span class="delete-chat" onclick="deleteChat(event, 'User3')">🗑️</span>
+      <li onclick="loadChannel('random')">
+        <span class="channel-name"># random</span>
+        <span class="delete-channel" onclick="deleteChannel(event, 'random')">🗑️</span>
       </li>
     </ul>
   </div>
@@ -406,7 +372,7 @@
   <!-- RIGHT CHAT AREA -->
   <div class="chat-area">
     <div class="chat-messages" id="chatMessages">
-      <p><strong>System:</strong> Select a chat or start a new one!</p>
+      <p><strong>JohnDoe:</strong> Welcome to the channel!</p>
     </div>
     <div class="chat-input">
       <input type="text" id="messageInput" placeholder="Type your message..." />
@@ -425,18 +391,27 @@
   <p>&copy; 2025 ChatHaven. All rights reserved.</p>
 </footer>
 
+<!-- JS SCRIPT (place at end so all elements are loaded) -->
 <script>
+  // ========== DOMContentLoaded to ensure elements exist ==========
   document.addEventListener('DOMContentLoaded', () => {
     /****************************************
-     * LOAD CHAT FUNCTION
+     * TEAM NAME FROM URL
      ****************************************/
-    window.loadChat = function(username) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamName = urlParams.get('team') || 'Team Name';
+    document.getElementById('teamName').textContent = teamName;
+
+    /****************************************
+     * LOAD CHANNEL
+     ****************************************/
+    window.loadChannel = function(channel) {
       const chatMessages = document.getElementById('chatMessages');
-      chatMessages.innerHTML = `<p><strong>System:</strong> Direct chat with ${username} loaded!</p>`;
+      chatMessages.innerHTML = `<p><strong>System:</strong> Loaded channel #${channel}</p>`;
     };
 
     /****************************************
-     * SEND MESSAGE FUNCTION
+     * SEND MESSAGE
      ****************************************/
     const sendMsgBtn = document.getElementById('sendMsgBtn');
     const messageInput = document.getElementById('messageInput');
@@ -454,7 +429,7 @@
     });
 
     /****************************************
-     * PROFILE MODAL LOGIC
+     * PROFILE MODAL
      ****************************************/
     const profileModal = document.getElementById('profileModal');
     const profileBtn = document.getElementById('profileBtn');
@@ -487,6 +462,12 @@
       });
     }
 
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        window.location.href = 'login.html';
+      });
+    }
+
     document.getElementById('profileForm').addEventListener('submit', (e) => {
       e.preventDefault();
       alert('Profile updated successfully!');
@@ -499,76 +480,86 @@
       passwordChangeSection.classList.add('hidden');
     });
 
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        window.location.href = 'login.html';
+    /****************************************
+     * CREATE CHANNEL MODAL
+     ****************************************/
+    const newChannelBtn = document.getElementById('newChannelBtn');
+    const createChannelModal = document.getElementById('createChannelModal');
+    const closeCreateChannelModal = document.getElementById('closeCreateChannelModal');
+    const cancelCreateChannelBtn = document.getElementById('cancelCreateChannelBtn');
+    const createChannelForm = document.getElementById('createChannelForm');
+    const channelList = document.getElementById('channelList');
+
+    newChannelBtn.addEventListener('click', () => {
+      createChannelModal.classList.remove('hidden');
+    });
+
+    if (closeCreateChannelModal) {
+      closeCreateChannelModal.addEventListener('click', () => {
+        createChannelModal.classList.add('hidden');
       });
     }
 
-    /****************************************
-     * NEW CHAT MODAL LOGIC
-     ****************************************/
-    const newChatModal = document.getElementById('newChatModal');
-    const newChatBtn = document.getElementById('newChatBtn');
-    const closeNewChatModal = document.getElementById('closeNewChatModal');
-    const userSearchInput = document.getElementById('userSearchInput');
-    const startChatBtn = document.getElementById('userSearchBtn');
-    const chatList = document.getElementById('chatList');
+    if (cancelCreateChannelBtn) {
+      cancelCreateChannelBtn.addEventListener('click', () => {
+        createChannelModal.classList.add('hidden');
+      });
+    }
 
-    newChatBtn.addEventListener('click', () => {
-      newChatModal.classList.remove('hidden');
-    });
-
-    closeNewChatModal.addEventListener('click', () => {
-      newChatModal.classList.add('hidden');
-    });
-
-    startChatBtn.addEventListener('click', () => {
-      const userQuery = userSearchInput.value.trim();
-      if (userQuery) {
-        // Create a new chat list item with trash icon using helper function
-        const newLi = createChatListItem(userQuery);
-        chatList.appendChild(newLi);
-        userSearchInput.value = '';
-        newChatModal.classList.add('hidden');
-        loadChat(userQuery);
+    window.addEventListener('click', (event) => {
+      if (event.target === createChannelModal) {
+        createChannelModal.classList.add('hidden');
       }
     });
 
-    /****************************************
-     * DELETE CHAT FUNCTIONALITY
-     ****************************************/
-    window.deleteChat = function(e, chatName) {
+    createChannelForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const channelName = document.getElementById('channelNameInput').value.trim();
+      if (channelName) {
+        // Create new channel item using the helper function.
+        const newChannelItem = createChannelListItem(channelName);
+        channelList.appendChild(newChannelItem);
+        alert(`Channel "${channelName}" created!`);
+        createChannelForm.reset();
+        createChannelModal.classList.add('hidden');
+      } else {
+        alert('Please enter a channel name.');
+      }
+    });
+  });
+
+  function createChannelListItem(channelName) {
+    const li = document.createElement('li');
+
+    // Create and append the channel name span.
+    const nameSpan = document.createElement('span');
+    nameSpan.classList.add('channel-name');
+    nameSpan.textContent = `# ${channelName}`;
+    nameSpan.onclick = () => loadChannel(channelName);
+    li.appendChild(nameSpan);
+
+    // Create and append the trash icon.
+    const trashSpan = document.createElement('span');
+    trashSpan.classList.add('delete-channel');
+    trashSpan.textContent = "🗑️";
+    trashSpan.onclick = (e) => {
+      // Prevent the click from triggering loadChannel on the li.
       e.stopPropagation();
-      if (confirm(`Are you sure you want to delete the chat with ${chatName}?`)) {
-        e.target.parentElement.remove();
+      if (confirm(`Are you sure you want to delete channel #${channelName}?`)) {
+        li.remove();
       }
     };
+    li.appendChild(trashSpan);
 
-    /****************************************
-     * HELPER FUNCTION: Create Chat List Item
-     ****************************************/
-    function createChatListItem(chatName) {
-      const li = document.createElement('li');
-      li.style.position = 'relative';
-      li.onclick = () => loadChat(chatName);
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'chat-name';
-      nameSpan.textContent = chatName;
-      li.appendChild(nameSpan);
-      const trashSpan = document.createElement('span');
-      trashSpan.className = 'delete-chat';
-      trashSpan.textContent = '🗑️';
-      trashSpan.onclick = (event) => {
-        event.stopPropagation();
-        if (confirm(`Are you sure you want to delete the chat with ${chatName}?`)) {
-          li.remove();
-        }
-      };
-      li.appendChild(trashSpan);
-      return li;
+    return li;
+  }
+
+  function deleteChannel(e, channelName) {
+    e.stopPropagation();
+    if (confirm(`Are you sure you want to delete channel #${channelName}?`)) {
+      e.target.parentElement.remove();
     }
-  });
+  }
 </script>
 </body>
 </html>
