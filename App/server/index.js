@@ -77,17 +77,18 @@ app.post('/login', (req, res) => {
 });
 
 // Route to handle creating teams and saving data into the database
-app.post('/saveTeamData', (req, res) => {
-  const { name, description } = req.body;
+app.post('/teams', (req, res) => {
+  const { teamName, teamDescription } = req.body;
+  console.log(req.body);
 
   const sql = 'INSERT INTO teams (teamName, teamDescription) VALUES (?, ?)';
-  connection.query(sql, [name, description], (err, result) => {
+  connection.query(sql, [teamName, teamDescription], (err, result) => {
     if (err) {
       console.error('Error inserting data:', err);
-      res.status(500).json({ success: false, error: 'Failed to sign up' });
+      res.status(500).json({ success: false, error: 'Failed to create team' });
     } else {
-      console.log('Data inserted:', result);
-      res.redirect('/');
+      console.log('Team created:', result);
+      res.status(201).json({ success: true, message: 'Team created successfully!' });
     }
   });
 });
