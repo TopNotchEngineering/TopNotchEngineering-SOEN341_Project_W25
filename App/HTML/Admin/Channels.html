@@ -456,7 +456,7 @@
 
     if (logoutBtn) {
       logoutBtn.addEventListener('click', () => {
-        window.location.href = 'login.html';
+        window.location.href = '../login.html';
       });
     }
 
@@ -550,6 +550,48 @@
       e.target.parentElement.remove();
     }
   }
+  createChannelForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const channelName = document.getElementById('channelNameInput').value;
+  
+  if (channelName) {
+    // Prepare the data payload
+    const payload = {
+      channelName
+    };
+
+    // Send POST request to create the channel
+    fetch('http://localhost:5008/createChannel', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.channelId) {
+        // Optionally, add the new channel to the list dynamically
+        const newChannelItem = createChannelListItem(channelName);
+        channelList.appendChild(newChannelItem);
+        alert(`Channel "${channelName}" created!`);
+        createChannelForm.reset();
+        createChannelModal.classList.add('hidden');
+      } else {
+        alert('Error creating channel: ' + data.error);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while creating the channel.');
+    });
+  } else {
+    alert('Please enter a channel name.');
+  }
+});
+
+
+
 </script>
 </body>
 </html>

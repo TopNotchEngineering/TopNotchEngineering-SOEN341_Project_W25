@@ -190,11 +190,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (response.ok) {
           if (roleElement.value === "1") {
             alert("You have been logged as admin!");
-            window.location.href = "AdminDashboard.html"; // Redirect to admin dashboard 
+             // Redirect to the admin dashboard and display the sessions username
+            window.location.href = `Admin/AdminDashboard.html?username=${loginData.username}`; // Redirect to the admin dashboard and display the sessions username
           }
           else {
             alert("You have been logged in as user!");
-            window.location.href = "UserDashboard.html"; // Redirect to user dashboard
+            window.location.href = `User/UserDashboard.html?username=${loginData.username}`; // Redirect to the user dashboard and display the sessions username
           }
         } else {
             alert("Login failed: " + data.message);
@@ -205,5 +206,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
   });
+  
+
+ 
+
+  
+  
+  
+  
+  
 
   

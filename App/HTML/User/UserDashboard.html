@@ -190,6 +190,10 @@
         <h2>Edit Profile</h2>
         <!-- Profile Details Form -->
         <form id="profileForm">
+
+            <!-- Hidden field to store the original username-->
+            <input type="hidden" id="originalUsernameInput" value=" " />
+
             <div class="form-group">
                 <label for="profileUsernameInput">Username</label>
                 <input type="text" id="profileUsernameInput" name="username" value="User" required>
@@ -213,24 +217,24 @@
         </form>
         <hr />
         <button id="changePasswordBtn" class="nav-btn" style="margin-bottom: 1rem;">Change Password</button>
-        <!-- Change Password Section (initially hidden) -->
-        <div id="passwordChangeSection" class="hidden">
-            <form id="passwordChangeForm">
-                <div class="form-group">
-                    <label for="currentPassword">Current Password</label>
-                    <input type="password" id="currentPassword" name="currentPassword" required>
-                </div>
-                <div class="form-group">
-                    <label for="newPassword">New Password</label>
-                    <input type="password" id="newPassword" name="newPassword" required>
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" required>
-                </div>
-                <button type="submit" class="save-btn">Save Password</button>
-            </form>
+    <!-- Change Password Section (initially hidden) -->
+    <div id="passwordChangeSection" class="hidden">
+      <form id="passwordChangeForm">
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input type="password" id="currentPassword" name="currentPassword" required>
         </div>
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" name="newPassword" required>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+        <button type="submit" class="save-btn">Save Password</button>
+      </form>
+    </div>
     </div>
 </div>
 
@@ -251,60 +255,201 @@
     const username = urlParams.get('username') || 'User';
     document.getElementById('welcomeMessage').innerHTML = `Welcome to your dashboard, ${username}.
     <br>Please choose a tab above to get started.`;
+  
     // Also prefill the username in the profile form
     document.getElementById('profileUsernameInput').value = username;
-
+    
     // Event listener for Logout button inside the modal
     document.getElementById('modalLogoutBtn').addEventListener('click', () => {
-        // Clear session or perform logout tasks here
-        window.location.href = 'login.html';
+      // Clear session or perform logout tasks here
+      window.location.href = 'login.html';
     });
-
+  
     // Modal handling for Profile button
     const profileModal = document.getElementById('profileModal');
     const profileBtn = document.getElementById('profileBtn');
     const closeModal = document.getElementById('closeModal');
-
+  
     profileBtn.addEventListener('click', () => {
-        profileModal.classList.remove('hidden');
+      profileModal.classList.remove('hidden');
     });
-
+  
     closeModal.addEventListener('click', () => {
-        profileModal.classList.add('hidden');
-        // Hide password change section if visible
-        document.getElementById('passwordChangeSection').classList.add('hidden');
+      profileModal.classList.add('hidden');
+      // Hide password change section if visible
+      document.getElementById('passwordChangeSection').classList.add('hidden');
     });
-
+  
     // Close modal if user clicks outside the modal content
     window.addEventListener('click', (event) => {
-        if (event.target === profileModal) {
-            profileModal.classList.add('hidden');
-            document.getElementById('passwordChangeSection').classList.add('hidden');
-        }
+      if (event.target === profileModal) {
+        profileModal.classList.add('hidden');
+        document.getElementById('passwordChangeSection').classList.add('hidden');
+      }
     });
-
+  
     // Toggle Change Password section visibility
     const changePasswordBtn = document.getElementById('changePasswordBtn');
     const passwordChangeSection = document.getElementById('passwordChangeSection');
     changePasswordBtn.addEventListener('click', () => {
-        passwordChangeSection.classList.toggle('hidden');
+      passwordChangeSection.classList.toggle('hidden');
     });
-
+  
+    // Fetches the user data from the database using the username stored in the URL
+    function populateProfileModal() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+    
+    if (!username) {
+      console.error('No username found in the URL');
+      return;
+    }
+    
+    // Fetch user data from your backend endpoint
+    fetch(`http://localhost:5008/getUser?username=${username}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(userData => {
+        // Populate the profile modal fields with the data from the server
+        document.getElementById('profileUsernameInput').value = userData.username;
+        document.getElementById('profileFirstNameInput').value = userData.firstName;
+        document.getElementById('profileLastNameInput').value = userData.lastName;
+        document.getElementById('profileEmailInput').value = userData.email;
+  
+       // IMPORTANT: Update the hidden field with the original username
+        document.getElementById('originalUsernameInput').value = userData.username;
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+  }
+  
+  // When the profile button is clicked, show the modal and populate the fields
+  profileBtn.addEventListener('click', () => {
+    // First, fetch and populate the user data
+    populateProfileModal();
+  
+    // Then show the modal
+    profileModal.classList.remove('hidden');
+  });
+  
     // Handle profile form submission (placeholder)
-    document.getElementById('profileForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        // Add logic to update profile details here
-        alert('Profile updated successfully!');
-        profileModal.classList.add('hidden');
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      profileModal.classList.add('hidden');
     });
-
-    // Handle password change form submission (placeholder)
-    document.getElementById('passwordChangeForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        // Add logic to verify and update the password here
-        alert('Password updated successfully!');
-        passwordChangeSection.classList.add('hidden');
+  
+  /** Valides that both the new password and confirm password watch
+   * Sends a POST request to the /changePasword endpoint
+  */
+  document.getElementById('passwordChangeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+    
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+    
+      // Check if new password and confirm password match
+      if (newPassword !== confirmPassword) {
+        alert("The new passwords do not match!");
+        return;
+      }
+    
+     // Retrieve the updated username from the hidden field instead of the URL
+    const username = document.getElementById('originalUsernameInput').value;
+    if (!username) {
+        alert("Username not found.");
+        return;
+    }
+    
+      if (!username) {
+        alert("Username not found.");
+        return;
+      }
+    
+      // Create the data payload
+      const data = { username, currentPassword, newPassword };
+    
+      try {
+        const response = await fetch('http://localhost:5008/changePassword', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+    
+        const result = await response.json();
+    
+        if (response.ok) {
+          alert(result.message);
+          // Hide the password change section after success.
+          document.getElementById('passwordChangeSection').classList.add('hidden');
+        } else {
+          alert("Error: " + result.error);
+        }
+      } catch (error) {
+        alert("An error occurred.");
+        console.error("Error updating password:", error);
+      }
     });
+  
+  /**
+   * Handles updating the profil form when the admin wants to update their account info
+   * add a hidden original username field
+   * event listener that calls the updateUser endpoint
+  */
+  document.getElementById('profileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+  
+    // Get the values from the form
+    const originalUsername = document.getElementById('originalUsernameInput').value;
+    const username = document.getElementById('profileUsernameInput').value;
+    const firstName = document.getElementById('profileFirstNameInput').value;
+    const lastName = document.getElementById('profileLastNameInput').value;
+    const email = document.getElementById('profileEmailInput').value;
+  
+    // Create a payload with the updated user details
+    const data = { originalUsername, username, firstName, lastName, email };
+  
+    try {
+      const response = await fetch('http://localhost:5008/updateUser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+  
+      if (response.ok) {
+        // Update the form fields with the new data (if needed)
+        document.getElementById('profileUsernameInput').value = result.updatedUser.username;
+        document.getElementById('profileFirstNameInput').value = result.updatedUser.firstName;
+        document.getElementById('profileLastNameInput').value = result.updatedUser.lastName;
+        document.getElementById('profileEmailInput').value = result.updatedUser.email;
+        // **Update the hidden field with the new username**
+        document.getElementById('originalUsernameInput').value = result.updatedUser.username;
+  
+  
+        // Optionally update the welcome message, etc.
+        document.getElementById('welcomeMessage').innerHTML = `
+          Welcome to your dashboard, ${result.updatedUser.username}.<br>
+          Please choose a tab above to get started.
+        `;
+        
+        alert(result.message);
+        // Close the modal if you want
+        document.getElementById('profileModal').classList.add('hidden');
+      } else {
+        alert("Error: " + result.error);
+      }
+    } catch (error) {
+      alert("An error occurred while updating the profile.");
+      console.error("Update error:", error);
+    }
+  });  
 </script>
 </body>
 </html>
