@@ -189,37 +189,4 @@ function TeamCreation(event) {
     });
   }
 
-  // This function handlers saving the channel data to the database
-function ChannelCreation(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-  
-    // Get form values
-    var name = document.getElementById('ChannelName').value;
-  
-    // Create an object with the form data
-    var ChannelData = {
-        ChannelName: name,
-    };
-  
-    // Send form data to the backend
-    fetch('/saveChannelData', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(ChannelData)
-    })
-    .then(response => {
-      if (response.ok) {
-        // Handle success (e.g., show a success message)
-        console.log('Data saved successfully!');
-      } else {
-        // Handle errors
-        console.error('Error saving data');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-  }
 
