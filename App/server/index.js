@@ -56,7 +56,6 @@ app.post('/register', (req, res) => {
 // Route to handle login data by comparing incoming username and password to existing data in the database
 app.post('/login', (req, res) => {
   const { username, logInPassword, isAdmin } = req.body;
-  console.log(req.body);
 
   const sql = `SELECT * FROM members WHERE username = ? AND logInPassword = ? AND isAdmin = ?`;
   const values = [username, logInPassword, isAdmin];
@@ -77,17 +76,18 @@ app.post('/login', (req, res) => {
 });
 
 // Route to handle creating teams and saving data into the database
-app.post('/saveTeamData', (req, res) => {
-  const { name, description } = req.body;
+app.post('/teams', (req, res) => {
+  const { teamName, teamDescription } = req.body;
+  console.log(req.body);
 
   const sql = 'INSERT INTO teams (teamName, teamDescription) VALUES (?, ?)';
-  connection.query(sql, [name, description], (err, result) => {
+  connection.query(sql, [teamName, teamDescription], (err, result) => {
     if (err) {
       console.error('Error inserting data:', err);
-      res.status(500).json({ success: false, error: 'Failed to sign up' });
+      res.status(500).json({ success: false, error: 'Failed to create team' });
     } else {
-      console.log('Data inserted:', result);
-      res.redirect('/');
+      console.log('Team created:', result);
+      res.status(201).json({ success: true, message: 'Team created successfully!' });
     }
   });
 });
@@ -114,6 +114,37 @@ app.get('/getUser', (req, res) => {
     }
     // Return the first matching user record
     return res.status(200).json(results[0]);
+  }); 
+});
+
+// Endpoint to get all the team data from the database
+app.get('/getTeams', (req, res) => {
+
+  const sql = 'SELECT teamName, teamDescription FROM teams';
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching teams:', err);
+      res.status(500).json({ error: 'Database error' });
+    } else {
+      console.log('Teams:', results);
+      res.status(200).json({ teams: results});
+    }
+  });
+});
+
+// Endpoint to delete a team from the database
+app.post('/deleteTeam', (req, res) => {
+  const { teamName } = req.body;
+
+  const sql = 'DELETE FROM teams WHERE teamName = ?';
+  connection.query(sql, [teamName], (err, result) => {
+    if (err) {
+      console.error('Error deleting team:', err);
+      res.status(500).json({ error: 'Database error' });
+    } else {
+      console.log('Team deleted:', result);
+      res.status(200).json({ message: 'Team deleted successfully' });
+    }
   });
 });
 
