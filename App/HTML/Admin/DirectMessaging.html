@@ -237,6 +237,8 @@
       margin-bottom: 1rem;
       overflow-y: auto;
       background-color: #fff;
+      
+      max-height: 100vh;
     }
     .chat-input {
       display: flex;
@@ -437,18 +439,46 @@
     const sendMsgBtn = document.getElementById('sendMsgBtn');
     const messageInput = document.getElementById('messageInput');
     const chatMessages = document.getElementById('chatMessages');
-
-    sendMsgBtn.addEventListener('click', () => {
-      const message = messageInput.value.trim();
-      if (message) {
+            
+            let i = 0;
+    
+    sendMsgBtn.addEventListener('click', sendMessage)
+    function sendMessage() {
+    const message = messageInput.value.trim();
+    if (message) {
+        // Create message element
         const messageElement = document.createElement('p');
-        messageElement.innerHTML = `<strong>You:</strong> ${message}`;
+
+        // Append message element to chat messages container
         chatMessages.appendChild(messageElement);
+
+        // Style the delete button
+        messageElement.innerHTML = `<br><div style="background-color: #1af; padding: 10px; border-radius: 20px; width: fit-content; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow effect */"><br><strong>You: ${message} </strong></div>`;
+
+        // Clear the message input and scroll to the bottom
         messageInput.value = '';
         chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    scrollPageToBottom();
+};
+//  For send message on keypress enter
+    messageInput.addEventListener('keypress', (event) => {
+      if(event.key === "Enter"){
+        sendMessage();
       }
-    });
-
+    })
+//  To scroll page
+    function scrollPageToBottom() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    messageInput.addEventListener('keypress', (event) => {
+      if(event.key === "Enter"){
+        sendMessage();
+      }
+    })
     /* PROFILE MODAL LOGIC */
     const profileModal = document.getElementById('profileModal');
     const profileBtn = document.getElementById('profileBtn');

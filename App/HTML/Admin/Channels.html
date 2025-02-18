@@ -214,6 +214,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
       padding: 1rem;
     }
     .chat-messages {
@@ -223,8 +224,13 @@
       padding: 1rem;
       margin-bottom: 1rem;
       overflow-y: auto;
+      overflow-x: hidden;
       background-color: #fff;
+      display: inline-block;
+      max-height: 100vh;
     }
+
+    
     .chat-input {
       display: flex;
     }
@@ -256,7 +262,7 @@
     .delete-channel:hover {
       color: #c82333;
     }
-
+    
   </style>
 </head>
 <body>
@@ -411,17 +417,83 @@
     const messageInput = document.getElementById('messageInput');
     const chatMessages = document.getElementById('chatMessages');
 
-    sendMsgBtn.addEventListener('click', () => {
-      const message = messageInput.value.trim();
-      if (message) {
-        const messageElement = document.createElement('p');
-        messageElement.innerHTML = `<strong>You:</strong> ${message}`;
+    let i = 0;
+    
+    sendMsgBtn.addEventListener('click', sendMessage)
+    function sendMessage() {
+    const message = messageInput.value.trim();
+    if (message) {
+        // Create message element
+        const messageElement = document.createElement('div');
+        messageElement.innerHTML = `<br><strong>You: ${message} </strong>`;
+        messageElement.style.cssText = `
+            position: relative;
+            
+            background-color: #1af;
+            padding: 10px;
+            border-radius: 20px;
+            width: fit-content;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+            margin-bottom: 10px;
+        `;
+        // Create delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '❌';
+        
+        // Style the delete button
+        deleteButton.style.cssText = `
+            border: none;
+            background-color: transparent;
+            display: none;
+            cursor: pointer;
+            margin-left: 20px;
+            z-index: 2;
+            position: relative;
+            
+        `;
+
+        // Append delete button to message element
+        messageElement.appendChild(deleteButton);
+
+        // Append message element to chat messages container
         chatMessages.appendChild(messageElement);
+
+        // Add event listeners for showing/hiding the delete button
+        messageElement.addEventListener('mouseover', () => {
+            deleteButton.style.display = 'inline';
+        });
+        messageElement.addEventListener('mouseout', () => {
+            deleteButton.style.display = 'none';
+        });
+
+        // Add event listener for delete button to remove the message
+        deleteButton.addEventListener('click', () => {
+          if (confirm(`Are you sure you want to delete the message?`)) {
+            messageElement.remove();
+          }
+        });
+
+        // Clear the message input and scroll to the bottom
         messageInput.value = '';
         chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-    });
 
+        
+    }
+    scrollPageToBottom();
+};
+//  For send message on keypress enter
+    messageInput.addEventListener('keypress', (event) => {
+      if(event.key === "Enter"){
+        sendMessage();
+      }
+    })
+//  To scroll page
+    function scrollPageToBottom() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
     /* PROFILE MODAL */
     const profileModal = document.getElementById('profileModal');
     const profileBtn = document.getElementById('profileBtn');
