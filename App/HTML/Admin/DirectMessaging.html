@@ -448,39 +448,12 @@
     if (message) {
         // Create message element
         const messageElement = document.createElement('p');
-        messageElement.innerHTML = `<br><strong>You:</strong> ${message}`;
-
-        // Create delete button
-        const deleteButton = document.createElement('button');
-        // deleteButton.textContent = '❌';
-        
-        // Style the delete button
-        deleteButton.style.cssText = `
-            border: none;
-            background-color: transparent;
-            display: none;
-            cursor: pointer;
-            margin-left: 10px;
-        `;
-
-        // Append delete button to message element
-        messageElement.appendChild(deleteButton);
 
         // Append message element to chat messages container
         chatMessages.appendChild(messageElement);
 
-        // Add event listeners for showing/hiding the delete button
-        messageElement.addEventListener('mouseover', () => {
-            deleteButton.style.display = 'inline';
-        });
-        messageElement.addEventListener('mouseout', () => {
-            deleteButton.style.display = 'none';
-        });
-
-        // Add event listener for delete button to remove the message
-        deleteButton.addEventListener('click', () => {
-            messageElement.remove();
-        });
+        // Style the delete button
+        messageElement.innerHTML = `<br><div style="background-color: #1af; padding: 10px; border-radius: 20px; width: fit-content;"><br><strong>You: ${message} </strong></div>`;
 
         // Clear the message input and scroll to the bottom
         messageInput.value = '';
