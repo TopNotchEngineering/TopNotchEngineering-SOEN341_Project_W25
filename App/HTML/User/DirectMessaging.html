@@ -237,7 +237,7 @@
       margin-bottom: 1rem;
       overflow-y: auto;
       background-color: #fff;
-
+      
       max-height: 100vh;
     }
     .chat-input {
@@ -450,7 +450,7 @@
         chatMessages.appendChild(messageElement);
 
         // Style the delete button
-        messageElement.innerHTML = `<br><div style="background-color: #1af; padding: 10px; border-radius: 20px; width: fit-content;"><br><strong>You: ${message} </strong></div>`;
+        messageElement.innerHTML = `<br><div style="background-color: #1af; padding: 10px; border-radius: 20px; width: fit-content; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow effect */"><br><strong>You: ${message} </strong></div>`;
 
         // Clear the message input and scroll to the bottom
         messageInput.value = '';

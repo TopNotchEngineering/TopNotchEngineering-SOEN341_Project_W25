@@ -224,8 +224,9 @@
       padding: 1rem;
       margin-bottom: 1rem;
       overflow-y: auto;
+      overflow-x: hidden;
       background-color: #fff;
-
+      display: inline-block;
       max-height: 100vh;
     }
 
@@ -423,9 +424,18 @@
     const message = messageInput.value.trim();
     if (message) {
         // Create message element
-        const messageElement = document.createElement('p');
-        messageElement.innerHTML = `<br><div style="background-color: #1af; padding: 10px; border-radius: 20px; width: fit-content;"><br><strong>You: ${message} </strong></div>`;
-
+        const messageElement = document.createElement('div');
+        messageElement.innerHTML = `<br><strong>You: ${message} </strong>`;
+        messageElement.style.cssText = `
+            position: relative;
+            
+            background-color: #1af;
+            padding: 10px;
+            border-radius: 20px;
+            width: fit-content;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+            margin-bottom: 10px;
+        `;
         // Create delete button
         const deleteButton = document.createElement('button');
         deleteButton.textContent = '❌';
@@ -439,6 +449,7 @@
             margin-left: 20px;
             z-index: 2;
             position: relative;
+            
         `;
 
         // Append delete button to message element
