@@ -326,23 +326,6 @@
 
   <!-- Teams container (with id for JS) -->
   <div class="teams-container" id="teamsContainer">
-    <!-- Example team cards. In production, these would be generated dynamically. -->
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamAlpha'">
-      <h2>Team Alpha</h2>
-      <p>Description for Team Alpha</p>
-    </div>
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamBeta'">
-      <h2>Team Beta</h2>
-      <p>Description for Team Beta</p>
-    </div>
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamGamma'">
-      <h2>Team Gamma</h2>
-      <p>Description for Team Gamma</p>
-    </div>
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamGiga'">
-      <h2>Team Giga</h2>
-      <p>Description for Team Giga</p>
-    </div>
   </div>
 </main>
 
@@ -435,6 +418,45 @@
   });
 
   /*************************************************
+   * FETCH TEAMS AND DISPLAY
+   *************************************************/
+   document.addEventListener('DOMContentLoaded', () => {
+    const teamsContainer = document.getElementById('teamsContainer');
+
+    fetch('http://localhost:5008/getTeams')
+      .then(response => response.json())
+      .then(data => {
+        data.teams.forEach(team => {
+          const teamCard = document.createElement('div');
+          teamCard.classList.add('team-card');
+          teamCard.innerHTML = `<h2>${team.teamName}</h2><p>${team.teamDescription}</p>`;
+          teamCard.onclick = () => {
+            location.href = 'Channels.html?team=' + encodeURIComponent(team.name);
+          };
+          teamsContainer.appendChild(teamCard);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching teams:', error);
+      });
+  });
+
+  /*************************************************
+   * LINK TO TEAM SPECIFIC CHANNELS PAGE
+   *************************************************/
+  document.addEventListener('DOMContentLoaded', () => {
+    const teamsContainer = document.getElementById('teamsContainer');
+
+    teamsContainer.addEventListener('click', (event) => {
+      const teamCard = event.target.closest('.team-card');
+      if (teamCard) {
+        const teamName = teamCard.querySelector('h2').textContent.trim();
+        location.href = 'Channels.html?team=' + encodeURIComponent(teamName);
+      }
+    });
+  });
+
+  /*************************************************
    * CREATE TEAM MODAL LOGIC
    *************************************************/
   document.addEventListener('DOMContentLoaded', () => {
@@ -464,27 +486,7 @@
         createTeamModal.classList.add('hidden');
       }
     });
-
-    createTeamForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const teamName = document.getElementById('teamNameInput').value.trim();
-      const teamDesc = document.getElementById('teamDescInput').value.trim();
-      if (teamName && teamDesc) {
-        alert(`Team Created!\nName: ${teamName}\nDescription: ${teamDesc}`);
-        const newCard = document.createElement('div');
-        newCard.classList.add('team-card');
-        newCard.innerHTML = `<h2>${teamName}</h2><p>${teamDesc}</p>`;
-        newCard.onclick = () => {
-          location.href = 'Channels.html?team=' + encodeURIComponent(teamName);
-        };
-        teamsContainer.appendChild(newCard);
-        createTeamForm.reset();
-        createTeamModal.classList.add('hidden');
-      } else {
-        alert('Please fill out both fields.');
-      }
     });
-  });
 
   /*************************************************
    * DELETE TEAM MODAL LOGIC
@@ -540,27 +542,49 @@
     // Confirm Delete
     confirmDeleteTeamBtn.addEventListener('click', () => {
       const teamToDelete = teamDeleteSelect.value;
-      if (!teamToDelete) {
-        alert('No teams available to delete.');
-        return;
-      }
+    if (!teamToDelete) {
+    alert('No teams available to delete.');
+    return;
+    }
 
-      const confirmMsg = `Are you sure you want to delete "${teamToDelete}"?`;
-      if (confirm(confirmMsg)) {
-        // Remove the matching card from the DOM
-        const allTeams = teamsContainer.querySelectorAll('.team-card');
-        allTeams.forEach(card => {
-          const nameElem = card.querySelector('h2');
-          if (nameElem && nameElem.textContent.trim() === teamToDelete) {
-            card.remove();
-          }
-        });
-        alert(`Team "${teamToDelete}" has been deleted.`);
+    const confirmMsg = `Are you sure you want to delete "${teamToDelete}"?`;
+    if (confirm(confirmMsg)) {
+    // Remove the matching card from the DOM
+    const allTeams = teamsContainer.querySelectorAll('.team-card');
+    allTeams.forEach(card => {
+      const nameElem = card.querySelector('h2');
+      if (nameElem && nameElem.textContent.trim() === teamToDelete) {
+      card.remove();
       }
-      deleteTeamModal.classList.add('hidden');
+    });
+
+    // Delete the team from the database
+    fetch('http://localhost:5008/deleteTeam', {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ teamName: teamToDelete })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message === 'Team deleted successfully') {
+      alert(`Team "${teamToDelete}" has been deleted.`);
+      } else {
+      alert(`Failed to delete team "${teamToDelete}".`);
+      }
+    })
+    .catch(error => {
+      console.error('Error deleting team:', error);
+      alert('An error occurred while deleting the team.');
+    });
+    }
+    deleteTeamModal.classList.add('hidden');
     });
   });
 
 </script>
+<!-- JS file if needed -->
+<script src="/App/JS/script.js"></script>
 </body>
 </html>
