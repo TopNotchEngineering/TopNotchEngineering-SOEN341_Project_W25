@@ -448,11 +448,11 @@
     if (message) {
         // Create message element
         const messageElement = document.createElement('p');
-        messageElement.innerHTML = `<br><br><strong>You:</strong> ${message}`;
+        messageElement.innerHTML = `<br><strong>You:</strong> ${message}`;
 
         // Create delete button
         const deleteButton = document.createElement('button');
-        deleteButton.textContent = '❌';
+        // deleteButton.textContent = '❌';
         
         // Style the delete button
         deleteButton.style.cssText = `
