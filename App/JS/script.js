@@ -206,14 +206,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
   });
-  
 
- 
+    // Function to handle team creation
+document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById("createTeamForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
 
-  
-  
-  
-  
-  
+      const teamData = {
+          teamName: document.getElementById("teamNameInput").value,
+          teamDescription: document.getElementById("teamDescInput").value
+      };
+      console.log(teamData);
 
-  
+      try {
+          const response = await fetch("http://localhost:5008/teams", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(teamData)
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+              alert("Team created successfully!");
+              window.location.reload(); // Reload the page to see the new team
+          } else {
+              alert("Team creation failed: " + data.message);
+          }
+      } catch (error) {
+          alert("An error occurred.");
+          console.error("Team Creation Error:", error);
+      }
+  });
+});
