@@ -206,7 +206,7 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-    .channel-list li:hover {
+    .channel-list li:hover{
       background-color: #e9ecef;
     }
 
@@ -231,7 +231,27 @@
       max-height: 100vh;
     }
 
+    .message{
+      position: relative;
+      transition: all 1s ease;
+      background-color: #1af;
+      padding: 10px;
+      border-radius: 20px;
+      width: fit-content;
+      box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+      margin-bottom: 10px;
+    }
     
+    .delete-msg{
+      border: none;
+        background-color: transparent;
+        display: none;
+        cursor: pointer;
+        margin-left: 20px;
+        z-index: 2;
+        position: relative;
+    }
+
     .chat-input {
       display: flex;
     }
@@ -262,6 +282,17 @@
 
     .delete-channel:hover {
       color: #c82333;
+    }
+    
+    .adduser{
+      width: 20px;
+      float: right;
+      border-radius: 5px;
+    }
+
+    .adduser:hover{
+      background-color:#5f5;
+      cursor: crosshair;
     }
     
   </style>
@@ -367,11 +398,19 @@
     <ul class="channel-list" id="channelList">
       <li onclick="loadChannel('general')">
         <span class="channel-name"># general</span>
+        <a href="../../HTML/Admin/AdminDashboard.html">
+          <span class="adduser"><img src="../../images/addusericon.png" class="adduser"></span>
+        </a>
         <span class="delete-channel" onclick="deleteChannel(event, 'general')">🗑️</span>
+        
       </li>
       <li onclick="loadChannel('random')">
         <span class="channel-name"># random</span>
+        <a href="../../HTML/Admin/AdminDashboard.html">
+          <span class="adduser"><img src="../../images/addusericon.png" class="adduser"></span>
+          </a>
         <span class="delete-channel" onclick="deleteChannel(event, 'random')">🗑️</span>
+        
       </li>
     </ul>
   </div>
@@ -427,31 +466,13 @@
         // Create message element
         const messageElement = document.createElement('div');
         messageElement.innerHTML = `<br><strong>You: ${message} </strong>`;
-        messageElement.style.cssText = `
-            position: relative;
-            transition: width 1s ease;
-            background-color: #1af;
-            padding: 10px;
-            border-radius: 20px;
-            width: fit-content;
-            box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3); /* Add shadow effect */
-            margin-bottom: 10px;
-        `;
+        messageElement.classList.add('message');
         // Create delete button
         const deleteButton = document.createElement('button');
         deleteButton.textContent = '❌';
         
         // Style the delete button
-        deleteButton.style.cssText = `
-            border: none;
-            background-color: transparent;
-            display: none;
-            cursor: pointer;
-            margin-left: 20px;
-            z-index: 2;
-            position: relative;
-            
-        `;
+        deleteButton.classList.add('delete-msg');
 
         // Append delete button to message element
         messageElement.appendChild(deleteButton);
@@ -461,20 +482,12 @@
 
         // Add event listeners for showing/hiding the delete button
         messageElement.addEventListener('mouseover', () => {
-          messageElement.style.cssText = `
-            position: relative;
-            transition: width 1s ease;
-            background-color: #1af;
-            padding: 10px;
-            border-radius: 20px;
-            width: fit-content;
-            box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3); /* Add shadow effect */
-            margin-bottom: 10px;
-        `;
+          
             deleteButton.style.display = 'inline';
-           
+            
         });
         messageElement.addEventListener('mouseout', () => {
+         
             deleteButton.style.display = 'none';
         });
 
@@ -608,7 +621,10 @@
     // Create and append the channel name span.
     const nameSpan = document.createElement('span');
     nameSpan.classList.add('channel-name');
-    nameSpan.textContent = `# ${channelName}`;
+    nameSpan.innerHTML = `# ${channelName} 
+      <a href="../../HTML/Admin/AdminDashboard.html">
+          <span class="channel-name"><img src="../../images/addusericon.png" class="adduser"></span>
+      </a>`;
     nameSpan.onclick = () => loadChannel(channelName);
     li.appendChild(nameSpan);
 
