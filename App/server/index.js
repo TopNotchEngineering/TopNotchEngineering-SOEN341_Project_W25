@@ -224,22 +224,62 @@ app.post('/updateUser', (req, res) => {
   });
 });
 
- // Route to handle creating channels and saving data into the database
- app.post('/createChannel', (req, res) => {
-  const { channelName } = req.body;
+// Route to handle creating channels and saving data into the database
+app.post('/createChannel', (req, res) => {
+  const { channelName, teamName } = req.body;
   console.log(req.body);
 
-  const sql = 'INSERT INTO channels (channelName) VALUES (?)';
-  connection.query(sql, [channelName], (err, result) => {
+  const sql = 'INSERT INTO channels (channelName, teamName) VALUES (?, ?)';
+  connection.query(sql, [channelName, teamName], (err, result) => {
     if (err) {
       console.error('Error inserting data:', err);
       res.status(500).json({ success: false, error: 'Failed to create channel' });
     } else {
       console.log('Channel created:', result);
-      res.redirect('/');
+      // Instead of redirecting:
+      res.status(200).json({ success: true, message: 'Channel created successfully' });
     }
   });
-}); 
+});
+
+/**
+ * Enpoint to fetch the channel data
+ */
+app.get('/getChannels', (req, res) => {
+  const teamName = req.query.teamName;
+  if (!teamName) {
+    return res.status(400).json({ error: 'Team name is required' });
+  }
+
+  const sql = 'SELECT channelName FROM channels WHERE teamName = ?';
+  connection.query(sql, [teamName], (err, results) => {
+    if (err) {
+      console.error('Error fetching channels:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    // results is an array of objects like [{ channelName: 'general' }, { channelName: 'random' }]
+    res.status(200).json({ channels: results });
+  });
+});
+
+/**
+ * Enpoint to delete a channel
+ */
+app.post('/deleteChannel', (req, res) => {
+  const { channelName, teamName } = req.body;
+  if (!channelName || !teamName) {
+    return res.status(400).json({ error: 'channelName and teamName are required' });
+  }
+
+  const sql = 'DELETE FROM channels WHERE channelName = ? AND teamName = ?';
+  connection.query(sql, [channelName, teamName], (err, result) => {
+    if (err) {
+      console.error('Error deleting channel:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(200).json({ message: 'Channel deleted successfully' });
+  });
+});
 
 
 // Start server
