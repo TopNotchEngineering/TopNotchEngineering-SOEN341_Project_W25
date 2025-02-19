@@ -339,6 +339,12 @@
     alert('Password updated successfully!');
     passwordChangeSection.classList.add('hidden');
   });
+
+  // Event listener for Logout button inside the modal
+  document.getElementById('modalLogoutBtn').addEventListener('click', () => {
+    // Clear session or perform logout tasks here
+    window.location.href = '../login.html';
+  });
 </script>
 </body>
 </html>

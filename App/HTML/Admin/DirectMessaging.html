@@ -523,11 +523,11 @@
       passwordChangeSection.classList.add('hidden');
     });
 
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        window.location.href = 'login.html';
-      });
-    }
+    // Event listener for Logout button inside the modal
+    document.getElementById('modalLogoutBtn').addEventListener('click', () => {
+      // Clear session or perform logout tasks here
+      window.location.href = '../login.html';
+    });
 
     /* NEW CHAT MODAL LOGIC */
     const newChatModal = document.getElementById('newChatModal');
@@ -587,6 +587,7 @@
       return li;
     }
   });
+  
 </script>
 </body>
 </html>
