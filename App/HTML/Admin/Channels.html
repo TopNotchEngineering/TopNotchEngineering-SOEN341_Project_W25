@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="../../images/chathaven_logo.png">
   <title>ChatHaven - Channels</title>
   <!-- Link to your global CSS -->
   <link rel="stylesheet" href="/App/CSS/styles.css" />
@@ -421,19 +422,19 @@
     
     sendMsgBtn.addEventListener('click', sendMessage)
     function sendMessage() {
-    const message = messageInput.value.trim();
+    const message = messageInput.value.trim() + ' ';
     if (message) {
         // Create message element
         const messageElement = document.createElement('div');
         messageElement.innerHTML = `<br><strong>You: ${message} </strong>`;
         messageElement.style.cssText = `
             position: relative;
-            
+            transition: width 1s ease;
             background-color: #1af;
             padding: 10px;
             border-radius: 20px;
             width: fit-content;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+            box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3); /* Add shadow effect */
             margin-bottom: 10px;
         `;
         // Create delete button
@@ -460,7 +461,18 @@
 
         // Add event listeners for showing/hiding the delete button
         messageElement.addEventListener('mouseover', () => {
+          messageElement.style.cssText = `
+            position: relative;
+            transition: width 1s ease;
+            background-color: #1af;
+            padding: 10px;
+            border-radius: 20px;
+            width: fit-content;
+            box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+            margin-bottom: 10px;
+        `;
             deleteButton.style.display = 'inline';
+           
         });
         messageElement.addEventListener('mouseout', () => {
             deleteButton.style.display = 'none';
