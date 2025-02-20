@@ -443,7 +443,6 @@
             deleteButton.style.display = 'inline';
           });
           messageElement.addEventListener('mouseout', () => {
-
             deleteButton.style.display = 'none';
           });
           deleteButton.addEventListener('click', () => {
@@ -507,13 +506,13 @@
         e.preventDefault();
         alert('Profile updated successfully!');
         profileModal.classList.add('hidden');
-
       });
       document.getElementById('passwordChangeForm').addEventListener('submit', (e) => {
         e.preventDefault();
         alert('Password updated successfully!');
         passwordChangeSection.classList.add('hidden');
       });
+>>>>>>> main
 
       /* CREATE CHANNEL MODAL */
     const newChannelBtn = document.getElementById('newChannelBtn');
