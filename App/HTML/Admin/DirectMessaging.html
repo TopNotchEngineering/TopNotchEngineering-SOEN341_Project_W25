@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="../../images/chathaven_logo.png">
   <title>ChatHaven - Direct Messages</title>
   <link rel="stylesheet" href="/App/CSS/styles.css" />
 
@@ -447,14 +448,23 @@
     const message = messageInput.value.trim();
     if (message) {
         // Create message element
-        const messageElement = document.createElement('p');
+        const messageElement = document.createElement('div');
 
         // Append message element to chat messages container
         chatMessages.appendChild(messageElement);
 
         // Style the delete button
-        messageElement.innerHTML = `<br><div style="background-color: #1af; padding: 10px; border-radius: 20px; width: fit-content; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow effect */"><br><strong>You: ${message} </strong></div>`;
-
+        messageElement.innerHTML = `<br><strong>You: ${message} </strong>`;
+        messageElement.style.cssText = `
+            position: relative;
+            transition: width 1s ease;
+            background-color: #1af;
+            padding: 10px;
+            border-radius: 20px;
+            width: fit-content;
+            box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+            margin-bottom: 10px;
+        `;
         // Clear the message input and scroll to the bottom
         messageInput.value = '';
         chatMessages.scrollTop = chatMessages.scrollHeight;
