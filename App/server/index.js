@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const http = require('http'); // <-- Import HTTP module
 
 const app = express();
 app.use(cors({
@@ -32,7 +33,6 @@ connection.connect((err) => {
   }
   console.log('Connected to MySQL database!');
 });
-
 
 // Route to handle signup data to database
 app.post('/register', (req, res) => {
@@ -86,7 +86,6 @@ app.post('/teams', (req, res) => {
       console.error('Error inserting data:', err);
       res.status(500).json({ success: false, error: 'Failed to create team' });
     } else {
-      console.log('Team created:', result);
       res.status(201).json({ success: true, message: 'Team created successfully!' });
     }
   });
@@ -251,7 +250,7 @@ app.get('/getChannels', (req, res) => {
     return res.status(400).json({ error: 'Team name is required' });
   }
 
-  const sql = 'SELECT channelName FROM channels WHERE teamName = ?';
+  const sql = 'SELECT DISTINCT channelName FROM channels WHERE teamName = ?';
   connection.query(sql, [teamName], (err, results) => {
     if (err) {
       console.error('Error fetching channels:', err);
@@ -281,6 +280,139 @@ app.post('/deleteChannel', (req, res) => {
   });
 });
 
+// Get all non-admin users
+app.get('/getNonAdminUsers', (req, res) => {
+  const sql = 'SELECT username FROM members WHERE isAdmin = 0';
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching non-admin users:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    // Return an array of objects like [{ username: 'john_doe' }, { username: 'jane_smith' }]
+    res.json(results);
+  });
+});
+
+app.post('/addUserToChannel', (req, res) => {
+  const { channelName, teamName, channelMember } = req.body;
+  if (!channelName || !teamName || !channelMember) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  // Construct a room name for Socket.IO broadcasting
+  const roomName = `${teamName}-${channelName}`;
+
+  // Insert the user into the channels table
+  const sql = 'INSERT INTO channels (channelName, teamName, channelMember) VALUES (?, ?, ?)';
+  connection.query(sql, [channelName, teamName, channelMember], (err, result) => {
+    if (err) {
+      console.error('Error adding user to channel:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    // Create an automatic system message about the new user being added
+    const autoMessage = `${channelMember} was added to the channel.`;
+    const insertMessageSql = 'INSERT INTO chatMessages (channelName, teamName, sender, message) VALUES (?, ?, ?, ?)';
+    connection.query(insertMessageSql, [channelName, teamName, 'System', autoMessage], (err2, result2) => {
+      if (err2) {
+        console.error('Error inserting system message:', err2);
+        return res.status(500).json({ error: 'Database error inserting system message' });
+      }
+
+      // Now roomName is defined in this scope
+      console.log(`Broadcasting system message to room: ${roomName}`);
+      io.to(roomName).emit('message', {
+        sender: 'System',
+        message: autoMessage,
+        id: result2.insertId
+      });
+
+      // Send a successful response to the client
+      res.status(200).json({
+        message: 'User added to channel successfully'
+      });
+    });
+  });
+});
+
+// Endpoint to add a chat message to the database
+app.post('/addMessage', (req, res) => {
+  const { channelName, teamName, sender, message } = req.body;
+  
+  if (!channelName || !teamName || !sender || !message) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  
+  const sql = 'INSERT INTO chatMessages (channelName, teamName, sender, message) VALUES (?, ?, ?, ?)';
+  connection.query(sql, [channelName, teamName, sender, message], (err, result) => {
+    if (err) {
+      console.error('Error inserting message:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(201).json({ message: 'Message stored successfully' });
+  });
+});
+
+app.get('/getMessages', (req, res) => {
+  const { channelName, teamName } = req.query;
+  if (!channelName || !teamName) {
+    return res.status(400).json({ error: 'channelName and teamName are required' });
+  }
+  // Order messages by insertion order (or timestamp if you have one)
+  const sql = `SELECT * FROM chatMessages WHERE channelName = ? AND teamName = ? ORDER BY idchatMessages ASC`;
+  connection.query(sql, [channelName, teamName], (err, results) => {
+    if (err) {
+      console.error('Error fetching messages:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    return res.status(200).json({ messages: results });
+  });
+});
+
+
+// Create HTTP server and attach Socket.IO
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+// Listen for new socket connections
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  // Join socket to a room for a specific channel
+  socket.on('joinChannel', ({ channelName, teamName }) => {
+    const roomName = `${teamName}-${channelName}`;
+    socket.join(roomName);
+    console.log(`Socket ${socket.id} joined room ${roomName}`);
+  });
+
+    socket.on('newMessage', (data) => {
+      const { channelName, teamName, sender, message } = data;
+      // Insert the message into the database
+      const sql = 'INSERT INTO chatMessages (channelName, teamName, sender, message) VALUES (?, ?, ?, ?)';
+      connection.query(sql, [channelName, teamName, sender, message], (err, result) => {
+        if (err) {
+          console.error('Error inserting message:', err);
+          socket.emit('errorMessage', { error: 'Database error' });
+          return;
+        }
+        // Broadcast the new message to all users in the same channel (room)
+        const roomName = `${teamName}-${channelName}`;
+        io.to(roomName).emit('message', { sender, message, id: result.insertId });
+      });
+    });
+  
+  
+    // Handle disconnections
+    socket.on('disconnect', () => {
+      console.log('User disconnected:', socket.id);
+    });
+  });
 
 // Start server
 const PORT = 5008;
