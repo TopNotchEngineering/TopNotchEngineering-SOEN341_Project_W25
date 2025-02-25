@@ -7,7 +7,6 @@
   <!-- Link to your global CSS -->
   <link rel="stylesheet" href="/App/CSS/styles.css" />
 
-  <!-- Layout overrides specifically for Channels Page -->
   <style>
     /* NAVIGATION BAR STYLES */
     .nav-container {
@@ -150,7 +149,6 @@
       cursor: pointer;
     }
 
-    /* Channels Page Layout Overrides */
     main#channelsPage {
       /* Cancel out default max-width, margin, and padding from styles.css */
       max-width: 100% !important;
@@ -227,7 +225,6 @@
       overflow-y: auto;
       overflow-x: hidden;
       background-color: #fff;
-      display: inline-block;
       max-height: 100vh;
     }
 
@@ -238,18 +235,18 @@
       padding: 10px;
       border-radius: 20px;
       width: fit-content;
-      box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+      box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3);
       margin-bottom: 10px;
     }
     
     .delete-msg{
       border: none;
-        background-color: transparent;
-        display: none;
-        cursor: pointer;
-        margin-left: 20px;
-        z-index: 2;
-        position: relative;
+      background-color: transparent;
+      display: none;
+      cursor: pointer;
+      margin-left: 20px;
+      z-index: 2;
+      position: relative;
     }
 
     .chat-input {
@@ -279,19 +276,18 @@
       color: #dc3545;
       font-size: 1rem;
     }
-
     .delete-channel:hover {
       color: #c82333;
     }
     
-    .adduser{
+    .adduser {
       width: 20px;
       float: right;
       border-radius: 5px;
+      cursor: pointer;
     }
-
-    .adduser:hover{
-      background-color:#5f5;
+    .adduser:hover {
+      background-color: #5f5;
       cursor: crosshair;
     }
     
@@ -314,7 +310,7 @@
     </div>
   </nav>
 
-  <!-- PROFILE MODAL (remains unchanged) -->
+  <!-- PROFILE MODAL -->
   <div id="profileModal" class="modal hidden">
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
@@ -341,7 +337,7 @@
           <label for="channelNameInput"><h2>New Channel</h2></label>
           <input type="text" id="channelNameInput" name="channelName" placeholder="Enter new channel name..." required />
         </div>
-        <!-- New Team Name Field (auto-populated) -->
+        <!-- Auto-populated Team Name Field -->
         <div class="form-group">
           <label for="teamNameInput">Team Name</label>
           <input type="text" id="teamNameInput" name="teamName" readonly required />
@@ -349,6 +345,28 @@
         <div class="modal-actions">
           <button type="button" id="cancelCreateChannelBtn" class="cancel-btn">Cancel</button>
           <button type="submit" class="save-btn">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADD USER MODAL -->
+  <div id="addUserModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeAddUserModal" class="close">&times;</span>
+      <h2>Add User to Channel</h2>
+      <form id="addUserForm">
+        <!-- Hidden fields to store the current channel and team -->
+        <input type="hidden" id="modalChannelName" name="channelName" />
+        <input type="hidden" id="modalTeamName" name="teamName" />
+        
+        <div class="form-group">
+          <select id="channelMember" name="channelMember" required>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="save-btn">Add User</button>
+          <button type="button" id="closeAddUserModalBtn" class="cancel-btn">Cancel</button>
         </div>
       </form>
     </div>
@@ -370,7 +388,7 @@
     <!-- RIGHT CHAT AREA -->
     <div class="chat-area">
       <div class="chat-messages" id="chatMessages">
-        <p><strong>JohnDoe:</strong> Welcome to the channel!</p>
+        <p><strong>System:</strong> Welcome to the channel!</p>
       </div>
       <div class="chat-input">
         <input type="text" id="messageInput" placeholder="Type your message..." />
@@ -389,94 +407,167 @@
     <p>&copy; 2025 ChatHaven. All rights reserved.</p>
   </footer>
 
-  <!-- JS SCRIPT -->
+  <!-- Socket.IO Library -->
+  <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Extract team name from URL (?team=MyTeam)
+      // Initialize a single Socket.IO connection
+      const socket = io('http://localhost:5008');
+      
+      // Get team name from URL parameters or default
       const urlParams = new URLSearchParams(window.location.search);
       const teamNameFromURL = urlParams.get('team') || 'Team Name';
-
-      // Update the team name in the sidebar header
       document.getElementById('teamName').textContent = teamNameFromURL;
-
-      // Fetch and display channels for the team
-      fetchChannelsForTeam(teamNameFromURL);
-
-      /* Function to load a channel */
-      window.loadChannel = function(channel) {
+      
+      // Define a placeholder username – replace this with actual user data as needed
+      const username = 'YourUsername';
+      
+      // Global variable to track current channel
+      window.currentChannel = null;
+      
+      // Unified function to load a channel, join via socket, and fetch its messages
+      window.loadChannel = function(channelName) {
+        window.currentChannel = channelName;
+        socket.emit('joinChannel', { teamName: teamNameFromURL, channelName });
         const chatMessages = document.getElementById('chatMessages');
-        chatMessages.innerHTML = `<p><strong>System:</strong> Loaded channel #${channel}</p>`;
+        chatMessages.innerHTML = ''; // Clear previous messages
+        
+        // Fetch historical messages for the channel
+        fetch(`http://localhost:5008/getMessages?channelName=${encodeURIComponent(channelName)}&teamName=${encodeURIComponent(teamNameFromURL)}`)
+          .then(response => response.json())
+          .then(data => {
+            data.messages.forEach(msg => {
+              const messageElement = document.createElement('div');
+              if (msg.sender === 'System') {
+                messageElement.innerHTML = `<strong>System:</strong> ${msg.message}`;
+                messageElement.style.color = 'red';
+              } else {
+                messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.message}`;
+              }
+              chatMessages.appendChild(messageElement);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          })
+          .catch(err => console.error('Error fetching messages:', err));
       };
 
-      /* SEND MESSAGE functionality */
+      // Listen for incoming messages via Socket.IO
+      socket.on('message', (data) => {
+        if (!window.currentChannel) return;
+        const chatMessages = document.getElementById('chatMessages');
+        const messageElement = document.createElement('div');
+        if (data.sender === 'System') {
+          messageElement.innerHTML = `<strong>System:</strong> ${data.message}`;
+          messageElement.style.color = 'red';
+        } else {
+          messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message}`;
+        }
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      });
+
+      // Sending chat messages via Socket.IO
       const sendMsgBtn = document.getElementById('sendMsgBtn');
       const messageInput = document.getElementById('messageInput');
-      const chatMessages = document.getElementById('chatMessages');
-
-      sendMsgBtn.addEventListener('click', sendMessage);
+      
       function sendMessage() {
         const message = messageInput.value.trim();
-        if (message) {
-          const messageElement = document.createElement('div');
-          messageElement.innerHTML = `<br><strong>You: ${message}</strong>`;
-          messageElement.style.cssText = `
-            background-color: #1af;
-            padding: 10px;
-            border-radius: 20px;
-            width: fit-content;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            margin-bottom: 10px;
-          `;
-          const deleteButton = document.createElement('button');
-          deleteButton.textContent = '❌';
-          deleteButton.style.cssText = `
-            border: none;
-            background-color: transparent;
-            display: none;
-            cursor: pointer;
-            margin-left: 20px;
-          `;
-          messageElement.appendChild(deleteButton);
-          chatMessages.appendChild(messageElement);
-
-          messageElement.addEventListener('mouseover', () => {
-            deleteButton.style.display = 'inline';
-          });
-          messageElement.addEventListener('mouseout', () => {
-            deleteButton.style.display = 'none';
-          });
-          deleteButton.addEventListener('click', () => {
-            if (confirm(`Are you sure you want to delete the message?`)) {
-              messageElement.remove();
-            }
-          });
-          messageInput.value = '';
-          chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (!message) return;
+        if (!window.currentChannel) {
+          alert('Please select a channel first.');
+          return;
         }
-        scrollPageToBottom();
-      };
-
+        socket.emit('newMessage', {
+          channelName: window.currentChannel,
+          teamName: teamNameFromURL,
+          sender: username,
+          message
+        });
+        messageInput.value = '';
+      }
+      sendMsgBtn.addEventListener('click', sendMessage);
       messageInput.addEventListener('keypress', (event) => {
         if (event.key === "Enter") {
           sendMessage();
         }
       });
 
-      function scrollPageToBottom() {
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: 'smooth'
-        });
+      // Fetch and display channels for the team
+      fetchChannelsForTeam(teamNameFromURL);
+      
+      function createChannelListItem(channelName) {
+        const li = document.createElement('li');
+        
+        // Create channel name span
+        const nameSpan = document.createElement('span');
+        nameSpan.classList.add('channel-name');
+        nameSpan.innerHTML = `# ${channelName} `;
+        nameSpan.onclick = () => loadChannel(channelName);
+        li.appendChild(nameSpan);
+        
+        // Create add-user icon
+        const addUserIcon = document.createElement('img');
+        addUserIcon.src = "../../images/addusericon.png";
+        addUserIcon.classList.add('adduser');
+        li.appendChild(addUserIcon);
+        
+        // Create trash icon for deleting the channel
+        const trashSpan = document.createElement('span');
+        trashSpan.classList.add('delete-channel');
+        trashSpan.textContent = "🗑️";
+        trashSpan.onclick = (e) => {
+          e.stopPropagation();
+          if (confirm(`Are you sure you want to delete channel #${channelName}?`)) {
+            const teamName = document.getElementById('teamName').textContent;
+            fetch('http://localhost:5008/deleteChannel', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ channelName, teamName })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.message === 'Channel deleted successfully') {
+                li.remove();
+              } else {
+                alert('Error deleting channel: ' + data.error);
+              }
+            })
+            .catch(error => {
+              console.error('Error deleting channel:', error);
+              alert('An error occurred while deleting the channel.');
+            });
+          }
+        };
+        li.appendChild(trashSpan);
+        return li;
+      }
+      
+      function fetchChannelsForTeam(teamName) {
+        fetch(`http://localhost:5008/getChannels?teamName=${encodeURIComponent(teamName)}`)
+          .then(response => response.json())
+          .then(data => {
+            const channelList = document.getElementById('channelList');
+            channelList.innerHTML = '';
+            if (data.channels && data.channels.length > 0) {
+              data.channels.forEach(channelObj => {
+                const newChannelItem = createChannelListItem(channelObj.channelName);
+                channelList.appendChild(newChannelItem);
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching channels:', error);
+          });
       }
 
-      /* PROFILE MODAL (existing code remains unchanged) */
+      // PROFILE MODAL functionality
       const profileModal = document.getElementById('profileModal');
       const profileBtn = document.getElementById('profileBtn');
       const closeModal = document.getElementById('closeModal');
       const changePasswordBtn = document.getElementById('changePasswordBtn');
       const passwordChangeSection = document.getElementById('passwordChangeSection');
       const logoutBtn = document.getElementById('modalLogoutBtn');
-
+      
       profileBtn.addEventListener('click', () => {
         profileModal.classList.remove('hidden');
       });
@@ -512,140 +603,154 @@
         alert('Password updated successfully!');
         passwordChangeSection.classList.add('hidden');
       });
-
-      /* CREATE CHANNEL MODAL */
-    const newChannelBtn = document.getElementById('newChannelBtn');
-    const createChannelModal = document.getElementById('createChannelModal');
-    const closeCreateChannelModal = document.getElementById('closeCreateChannelModal');
-    const cancelCreateChannelBtn = document.getElementById('cancelCreateChannelBtn');
-    const createChannelForm = document.getElementById('createChannelForm');
-    const channelList = document.getElementById('channelList');
-
-    // Open the modal and auto-populate the team name field
-    newChannelBtn.addEventListener('click', () => {
-      const teamNameInputField = document.getElementById('teamNameInput');
-      teamNameInputField.value = teamNameFromURL;
-      createChannelModal.classList.remove('hidden');
-    });
-    if (closeCreateChannelModal) {
-      closeCreateChannelModal.addEventListener('click', () => {
-        createChannelModal.classList.add('hidden');
+      
+      // CREATE CHANNEL MODAL functionality
+      const newChannelBtn = document.getElementById('newChannelBtn');
+      const createChannelModal = document.getElementById('createChannelModal');
+      const closeCreateChannelModal = document.getElementById('closeCreateChannelModal');
+      const cancelCreateChannelBtn = document.getElementById('cancelCreateChannelBtn');
+      const createChannelForm = document.getElementById('createChannelForm');
+      
+      newChannelBtn.addEventListener('click', () => {
+        const teamNameInputField = document.getElementById('teamNameInput');
+        teamNameInputField.value = teamNameFromURL;
+        createChannelModal.classList.remove('hidden');
       });
-    }
-    if (cancelCreateChannelBtn) {
-      cancelCreateChannelBtn.addEventListener('click', () => {
-        createChannelModal.classList.add('hidden');
-      });
-    }
-    window.addEventListener('click', (event) => {
-      if (event.target === createChannelModal) {
-        createChannelModal.classList.add('hidden');
-      }
-    });
-
-    // Submit the create channel form (sending both channelName and teamName)
-    createChannelForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const channelName = document.getElementById('channelNameInput').value.trim();
-      const teamNameValue = document.getElementById('teamNameInput').value.trim();
-      if (channelName) {
-        const payload = { channelName, teamName: teamNameValue };
-        fetch('http://localhost:5008/createChannel', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            const newChannelItem = createChannelListItem(channelName);
-            channelList.appendChild(newChannelItem);
-            alert(`Channel "${channelName}" created!`);
-            createChannelForm.reset();
-            createChannelModal.classList.add('hidden');
-          } else {
-            alert('Error creating channel: ' + data.error);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('An error occurred while creating the channel.');
-        });
-      } else {
-        alert('Please enter a channel name.');
-      }
-    });
-  });
-
-  /* Helper function to create a new channel list item with delete functionality */
-  function createChannelListItem(channelName) {
-    const li = document.createElement('li');
-
-    // Create the channel name span
-    const nameSpan = document.createElement('span');
-    nameSpan.classList.add('channel-name');
-    nameSpan.innerHTML = `# ${channelName} 
-      <a href="../../HTML/Admin/AdminDashboard.html">
-          <span class="channel-name"><img src="../../images/addusericon.png" class="adduser"></span>
-      </a>`;
-    nameSpan.onclick = () => loadChannel(channelName);
-    li.appendChild(nameSpan);
-
-    // Create the trash icon span for deleting the channel
-    const trashSpan = document.createElement('span');
-    trashSpan.classList.add('delete-channel');
-    trashSpan.textContent = "🗑️";
-    trashSpan.onclick = (e) => {
-      e.stopPropagation();
-      if (confirm(`Are you sure you want to delete channel #${channelName}?`)) {
-        // Get the team name (from the sidebar header or global variable)
-        const teamName = document.getElementById('teamName').textContent;
-        // Send a request to delete the channel from the database
-        fetch('http://localhost:5008/deleteChannel', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ channelName, teamName })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message === 'Channel deleted successfully') {
-            li.remove();
-          } else {
-            alert('Error deleting channel: ' + data.error);
-          }
-        })
-        .catch(error => {
-          console.error('Error deleting channel:', error);
-          alert('An error occurred while deleting the channel.');
+      if (closeCreateChannelModal) {
+        closeCreateChannelModal.addEventListener('click', () => {
+          createChannelModal.classList.add('hidden');
         });
       }
-    };
-    li.appendChild(trashSpan);
-    return li;
-  }
-
-  /* Function to fetch channels based on team name */
-  function fetchChannelsForTeam(teamName) {
-    fetch(`http://localhost:5008/getChannels?teamName=${encodeURIComponent(teamName)}`)
-      .then(response => response.json())
-      .then(data => {
-        const channelList = document.getElementById('channelList');
-        channelList.innerHTML = ''; // Clear any existing channels
-        if (data.channels && data.channels.length > 0) {
-          data.channels.forEach(channelObj => {
-            // channelObj is expected to have the property channelName
-            const newChannelItem = createChannelListItem(channelObj.channelName);
-            channelList.appendChild(newChannelItem);
+      if (cancelCreateChannelBtn) {
+        cancelCreateChannelBtn.addEventListener('click', () => {
+          createChannelModal.classList.add('hidden');
+        });
+      }
+      window.addEventListener('click', (event) => {
+        if (event.target === createChannelModal) {
+          createChannelModal.classList.add('hidden');
+        }
+      });
+      
+      createChannelForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const channelName = document.getElementById('channelNameInput').value.trim();
+        const teamNameValue = document.getElementById('teamNameInput').value.trim();
+        if (channelName) {
+          const payload = { channelName, teamName: teamNameValue };
+          fetch('http://localhost:5008/createChannel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              const channelList = document.getElementById('channelList');
+              const newChannelItem = createChannelListItem(channelName);
+              channelList.appendChild(newChannelItem);
+              alert(`Channel "${channelName}" created!`);
+              createChannelForm.reset();
+              createChannelModal.classList.add('hidden');
+            } else {
+              alert('Error creating channel: ' + data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while creating the channel.');
           });
         } else {
+          alert('Please enter a channel name.');
         }
-      })
-      .catch(error => {
-        console.error('Error fetching channels:', error);
       });
-  }
-</script>
-
-<script src="/App/JS/script.js"></script>
+      
+      // Function to populate non-admin users in the modal dropdown
+      async function populateNonAdminUsers() {
+        try {
+          const response = await fetch('http://localhost:5008/getNonAdminUsers');
+          if (!response.ok) {
+            throw new Error('Failed to fetch non-admin users');
+          }
+          const users = await response.json();
+          const memberSelect = document.getElementById('channelMember');
+          memberSelect.innerHTML = '<option value="">Select a user</option>';
+          users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.username;
+            option.textContent = user.username;
+            memberSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Error populating non-admin users:', error);
+        }
+      }
+      
+      // Use event delegation on the channel list container to handle clicks on add-user icons
+      document.getElementById('channelList').addEventListener('click', (e) => {
+        if (e.target && e.target.classList.contains('adduser')) {
+          e.preventDefault();
+          const li = e.target.closest('li');
+          const channelNameText = li.querySelector('.channel-name').textContent;
+          const channelName = channelNameText.replace('# ', '').trim();
+          const teamName = document.getElementById('teamName').textContent.trim();
+          document.getElementById('modalChannelName').value = channelName;
+          document.getElementById('modalTeamName').value = teamName;
+          populateNonAdminUsers();
+          document.getElementById('addUserModal').classList.remove('hidden');
+        }
+      });
+      
+      // Close add user modal when clicking the close button
+      document.getElementById('closeAddUserModal').addEventListener('click', () => {
+        document.getElementById('addUserModal').classList.add('hidden');
+      });
+      
+      // Close add user modal when clicking outside the modal content
+      window.addEventListener('click', (event) => {
+        const modal = document.getElementById('addUserModal');
+        if (event.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+      
+      // Handle submission of the add user modal form
+      document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const channelName = document.getElementById('modalChannelName').value;
+        const teamName = document.getElementById('modalTeamName').value;
+        const channelMember = document.getElementById('channelMember').value;
+        
+        try {
+          const response = await fetch('http://localhost:5008/addUserToChannel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ channelName, teamName, channelMember })
+          });
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.error || 'Failed to add user to channel');
+          }
+          alert(result.message);
+          // If the channel in the modal is the currently open channel, append a system message immediately.
+          if (window.currentChannel === channelName) {
+            const chatMessages = document.getElementById('chatMessages');
+            const systemMessage = document.createElement('div');
+            systemMessage.innerHTML = `<strong>System:</strong> ${channelMember} was added to the channel.`;
+            systemMessage.style.color = 'red';
+            chatMessages.appendChild(systemMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          }
+          document.getElementById('addUserModal').classList.add('hidden');
+        } catch (error) {
+          alert(error.message);
+          console.error('Channel user addition error:', error);
+        }
+      });
+      
+    });
+  </script>
+  
+  <script src="/App/JS/script.js"></script>
 </body>
 </html>
