@@ -5,23 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6940c01-55a1-45e8-ae00-75d4eadc18be" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/App/.github/workflows/test.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/Admin/AdminDashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/Admin/AdminDashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/Admin/Channels.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/Admin/Channels.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/Admin/DirectMessaging.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/Admin/DirectMessaging.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/Admin/Teams.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/Admin/Teams.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/AdminDashboard.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/AdminPage_AddTeams.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/AdminPage_AddUsers.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/AdminPage_Template.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/AdminPage_Template_Dashboard.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/AdminPage_Template_Teams.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/ChatHaven_Channels.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/ChatHaven_Home.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/User/Channels.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/Channels.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/User/DirectMessaging.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/DirectMessaging.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/User/Teams.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/Teams.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/User/UserDashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/UserDashboard.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +52,7 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "AdminDashboard",
+    "git-widget-placeholder": "CI-CD",
     "last_opened_file_path": "C:/Users/shadi/OneDrive/Documents/GitHub/TopNotchEngineering-SOEN341_Project_W25/App/images",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -89,7 +74,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-WS-243.23654.157" />
+        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-WS-243.24978.60" />
       </set>
     </attachedChunks>
   </component>
@@ -106,6 +91,7 @@
       <workItem from="1739582889695" duration="270000" />
       <workItem from="1739583256141" duration="10671000" />
       <workItem from="1739669881763" duration="7448000" />
+      <workItem from="1740895297293" duration="1050000" />
     </task>
     <servers />
   </component>
