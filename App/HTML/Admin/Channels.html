@@ -74,7 +74,7 @@
       background-color: rgba(0,0,0,0.4);
     }
     .hidden {
-      display: none; /* toggled by JS */
+      display: none;
     }
     .modal-content {
       background-color: #fefefe;
@@ -150,13 +150,12 @@
     }
 
     main#channelsPage {
-      /* Cancel out default max-width, margin, and padding from styles.css */
       max-width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
       flex: 1;
       display: flex;
-      flex-direction: row; /* sidebar on left, chat on right */
+      flex-direction: row;
     }
 
     /* SIDEBAR (TEAM NAME + CHANNELS) */
@@ -173,7 +172,6 @@
       margin-bottom: 1rem;
       font-size: 1.5rem;
     }
-    /* Channels header container with a "New" button */
     .channels-header {
       display: flex;
       align-items: center;
@@ -204,7 +202,7 @@
       cursor: pointer;
       transition: background-color 0.3s;
     }
-    .channel-list li:hover{
+    .channel-list li:hover {
       background-color: #e9ecef;
     }
 
@@ -227,8 +225,7 @@
       background-color: #fff;
       max-height: 100vh;
     }
-
-    .message{
+    .message {
       position: relative;
       transition: all 1s ease;
       background-color: #1af;
@@ -238,17 +235,16 @@
       box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3);
       margin-bottom: 10px;
     }
-    
-    .delete-msg{
+    .delete-msg {
+      display: none;
       border: none;
       background-color: transparent;
-      display: none;
       cursor: pointer;
-      margin-left: 20px;
-      z-index: 2;
-      position: relative;
+      margin-left: 10px;
+      font-weight: bold;
+      color: red;
+      font-size: 1.5rem;
     }
-
     .chat-input {
       display: flex;
     }
@@ -269,7 +265,6 @@
     .chat-input button:hover {
       background-color: #0056b3;
     }
-
     .delete-channel {
       float: right;
       cursor: cell;
@@ -279,7 +274,6 @@
     .delete-channel:hover {
       color: #c82333;
     }
-    
     .adduser {
       width: 20px;
       float: right;
@@ -290,7 +284,6 @@
       background-color: #5f5;
       cursor: crosshair;
     }
-    
   </style>
 </head>
 <body>
@@ -385,7 +378,7 @@
       <ul class="channel-list" id="channelList"></ul>
     </div>
 
-    <!-- RIGHT CHAT AREA -->
+    <!-- CHAT AREA -->
     <div class="chat-area">
       <div class="chat-messages" id="chatMessages">
         <p><strong>System:</strong> Welcome to the channel!</p>
@@ -411,39 +404,77 @@
   <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Initialize a single Socket.IO connection
+      // Initialize Socket.IO connection
       const socket = io('http://localhost:5008');
-      
-      // Get team name from URL parameters or default
-      const urlParams = new URLSearchParams(window.location.search);
-      const teamNameFromURL = urlParams.get('team') || 'Team Name';
-      document.getElementById('teamName').textContent = teamNameFromURL;
-      
-      // Define a placeholder username – replace this with actual user data as needed
-      const username = 'YourUsername';
-      
+
+// Ensure the 'isAdmin' query parameter is set if not already present
+const params = new URLSearchParams(window.location.search);
+if (!params.has('isAdmin')) {
+  params.set('isAdmin', 'true');
+  const newUrl = window.location.pathname + '?' + params.toString();
+  window.history.replaceState(null, '', newUrl);
+}
+
+// Parse URL parameters for team, username, and admin status
+const urlParams = new URLSearchParams(window.location.search);
+const teamNameFromURL = urlParams.get('team') || 'Team Name';
+const currentUsername = urlParams.get('username') || 'Username';
+const AdminStatus = urlParams.get('isAdmin') || 'admin';
+
+const isAdmin = urlParams.get('isAdmin') === 'true';
+
+document.getElementById('teamName').textContent = teamNameFromURL;
+
+
       // Global variable to track current channel
       window.currentChannel = null;
-      
-      // Unified function to load a channel, join via socket, and fetch its messages
+
+      // Function to render a single message with a delete button if user is admin
+      function renderMessage(msg) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.dataset.messageId = msg.idchatMessages; // use database id
+
+        // Basic message content
+        messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.message}`;
+
+        // Append delete button only for admins
+        if (isAdmin) {
+          const deleteBtn = document.createElement('button');
+          deleteBtn.classList.add('delete-msg');
+          deleteBtn.textContent = 'x';
+          deleteBtn.style.display = 'inline-block';
+          deleteBtn.addEventListener('click', () => {
+            deleteMessage(msg.idchatMessages);
+          });
+          messageElement.appendChild(deleteBtn);
+        }
+        return messageElement;
+      }
+
+      // Delete message function that emits a Socket.IO event
+      function deleteMessage(messageId) {
+        socket.emit('deleteMessage', {
+          messageId: messageId,
+          channelName: window.currentChannel,
+          teamName: teamNameFromURL,
+          username: currentUsername
+        });
+      }
+
+      // function to load a channel
       window.loadChannel = function(channelName) {
         window.currentChannel = channelName;
         socket.emit('joinChannel', { teamName: teamNameFromURL, channelName });
         const chatMessages = document.getElementById('chatMessages');
-        chatMessages.innerHTML = ''; // Clear previous messages
-        
-        // Fetch historical messages for the channel
+        chatMessages.innerHTML = '';
+
+        // Fetch historical messages
         fetch(`http://localhost:5008/getMessages?channelName=${encodeURIComponent(channelName)}&teamName=${encodeURIComponent(teamNameFromURL)}`)
           .then(response => response.json())
           .then(data => {
             data.messages.forEach(msg => {
-              const messageElement = document.createElement('div');
-              if (msg.sender === 'System') {
-                messageElement.innerHTML = `<strong>System:</strong> ${msg.message}`;
-                messageElement.style.color = 'red';
-              } else {
-                messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.message}`;
-              }
+              const messageElement = renderMessage(msg);
               chatMessages.appendChild(messageElement);
             });
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -451,25 +482,33 @@
           .catch(err => console.error('Error fetching messages:', err));
       };
 
-      // Listen for incoming messages via Socket.IO
+      // Listen for new incoming messages via Socket.IO
       socket.on('message', (data) => {
         if (!window.currentChannel) return;
         const chatMessages = document.getElementById('chatMessages');
-        const messageElement = document.createElement('div');
-        if (data.sender === 'System') {
-          messageElement.innerHTML = `<strong>System:</strong> ${data.message}`;
-          messageElement.style.color = 'red';
-        } else {
-          messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message}`;
-        }
+        // Create a message element and append it
+        const messageElement = renderMessage({
+          idchatMessages: data.id,
+          sender: data.sender,
+          message: data.message
+        });
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+      });
+
+      // Listen for delete message event from server to remove message from UI
+      socket.on('deleteMessage', (data) => {
+        const { messageId } = data;
+        const msgElem = document.querySelector(`[data-message-id="${messageId}"]`);
+        if (msgElem) {
+          msgElem.remove();
+        }
       });
 
       // Sending chat messages via Socket.IO
       const sendMsgBtn = document.getElementById('sendMsgBtn');
       const messageInput = document.getElementById('messageInput');
-      
+
       function sendMessage() {
         const message = messageInput.value.trim();
         if (!message) return;
@@ -480,7 +519,7 @@
         socket.emit('newMessage', {
           channelName: window.currentChannel,
           teamName: teamNameFromURL,
-          sender: username,
+          sender: currentUsername,
           message
         });
         messageInput.value = '';
@@ -494,24 +533,20 @@
 
       // Fetch and display channels for the team
       fetchChannelsForTeam(teamNameFromURL);
-      
+
       function createChannelListItem(channelName) {
         const li = document.createElement('li');
-        
-        // Create channel name span
         const nameSpan = document.createElement('span');
         nameSpan.classList.add('channel-name');
         nameSpan.innerHTML = `# ${channelName} `;
         nameSpan.onclick = () => loadChannel(channelName);
         li.appendChild(nameSpan);
-        
-        // Create add-user icon
+
         const addUserIcon = document.createElement('img');
         addUserIcon.src = "../../images/addusericon.png";
         addUserIcon.classList.add('adduser');
         li.appendChild(addUserIcon);
-        
-        // Create trash icon for deleting the channel
+
         const trashSpan = document.createElement('span');
         trashSpan.classList.add('delete-channel');
         trashSpan.textContent = "🗑️";
@@ -541,7 +576,7 @@
         li.appendChild(trashSpan);
         return li;
       }
-      
+
       function fetchChannelsForTeam(teamName) {
         fetch(`http://localhost:5008/getChannels?teamName=${encodeURIComponent(teamName)}`)
           .then(response => response.json())
@@ -686,7 +721,7 @@
         }
       }
       
-      // Use event delegation on the channel list container to handle clicks on add-user icons
+      // Event delegation for add-user icon clicks
       document.getElementById('channelList').addEventListener('click', (e) => {
         if (e.target && e.target.classList.contains('adduser')) {
           e.preventDefault();
@@ -720,7 +755,6 @@
         const channelName = document.getElementById('modalChannelName').value;
         const teamName = document.getElementById('modalTeamName').value;
         const channelMember = document.getElementById('channelMember').value;
-        
         try {
           const response = await fetch('http://localhost:5008/addUserToChannel', {
             method: 'POST',
@@ -732,11 +766,9 @@
             throw new Error(result.error || 'Failed to add user to channel');
           }
           alert(result.message);
-          // If the channel in the modal is the currently open channel, append a system message immediately.
           if (window.currentChannel === channelName) {
             const chatMessages = document.getElementById('chatMessages');
             const systemMessage = document.createElement('div');
-            systemMessage.innerHTML = `<strong>System:</strong> ${channelMember} was added to the channel.`;
             systemMessage.style.color = 'red';
             chatMessages.appendChild(systemMessage);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -747,10 +779,8 @@
           console.error('Channel user addition error:', error);
         }
       });
-      
     });
   </script>
-  
   <script src="/App/JS/script.js"></script>
 </body>
 </html>
