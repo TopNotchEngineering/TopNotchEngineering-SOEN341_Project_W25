@@ -167,7 +167,7 @@
     </div>
     <ul class="nav-links">
       <li><a id="teamsLink" href="#">Teams</a>
-      <li><a href="DirectMessaging.html">Direct Messaging</a></li>
+      <li><a id="DirectMessagingLink" href = "#">Direct Messaging</a></li>
     </ul>
     <div class="profile-container">
       <button id="profileBtn" class="profile-btn">
@@ -468,6 +468,20 @@
   
       // 3. Run after DOM is ready
       document.addEventListener('DOMContentLoaded', setTeamsLink);
+
+      function setDirectMessagingLink() {
+        // 1. Get the username
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        
+        // 2. If we have it, update the link
+        if (username) {
+          document.getElementById('DirectMessagingLink').href = `DirectMessaging.html?username=${username}`;
+        }
+      }
+  
+      // 3. Run after DOM is ready
+      document.addEventListener('DOMContentLoaded', setDirectMessagingLink);
 </script>
 </body>
 </html>

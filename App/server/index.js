@@ -106,6 +106,19 @@ app.get('/getUser', (req, res) => {
   });
 });
 
+// Get all users
+app.get('/getUsers', (req, res) => {
+  const sql = 'SELECT username, firstName, lastName, logInEmail AS email FROM members';
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching users:', err);
+      res.status(500).json({ error: 'Database error' });
+    } else {
+      res.status(200).json({ users: results });
+    }
+  });
+});
+
 // Get all teams
 app.get('/getTeams', (req, res) => {
   const sql = 'SELECT teamName, teamDescription FROM teams';
@@ -313,6 +326,28 @@ app.get('/getMessages', (req, res) => {
   });
 });
 
+// Get private messages
+app.get('/getPrivateMessages', (req, res) => {
+  const senderParam = req.query.sender; 
+  const receiverParam = req.query.receiver
+  console.log('sender:', senderParam);
+  console.log('receiver:', receiverParam);
+  if (!senderParam || !receiverParam) {
+    return res.status(400).json({ error: 'sender and receiver required' });
+  }
+  const senderValues = senderParam.split(',');
+  const receiverValues = receiverParam.split(',');
+  const sql = `SELECT * FROM privateMessages WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?)  ORDER BY idPrivateMessages ASC`;
+  connection.query(sql, [senderValues[0], receiverValues[1], senderValues[1], receiverValues[0]], (err, results) => {
+    console.log('results:', results);
+    if (err) {
+      console.error('Error fetching private messages:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    return res.status(200).json({ messages: results });
+  });
+});
+
 // Endpoint for admins to delete a chat message via HTTP request 
 app.post('/deleteMessage', (req, res) => {
   const { messageId, channelName, teamName, username } = req.body;
@@ -379,11 +414,29 @@ io.on('connection', (socket) => {
     });
   });
 
+  // Handle new private messages
+  socket.on('newPrivateMessage', (data) => {
+    const { sender, receiver, message } = data;
+    console.log('Received private message:', data);
+    const sql = 'INSERT INTO privateMessages (sender, receiver, message) VALUES (?, ?, ?)';
+    connection.query(sql, [sender, receiver, message], (err, result) => {
+      if (err) {
+        console.error('Error inserting private message:', err);
+        socket.emit('errorMessage', { error: 'Database error' });
+        return;
+      }
+      io.to(sender).emit('privateMessage', { sender, receiver, message, id: result.insertId });
+      io.to(receiver).emit('privateMessage', { sender, receiver, message, id: result.insertId });
+    });
+  });
+
   socket.on('deleteMessage', (data) => {
     const { messageId, channelName, teamName, username } = data;
+    console.log('Received delete message:', data);
     if (!messageId || !channelName || !teamName || !username) {
       return socket.emit('errorMessage', { error: 'Missing required fields' });
     }
+
   
     // Check if the user is an admin
     const adminCheckSql = 'SELECT isAdmin FROM members WHERE username = ?';
@@ -419,6 +472,33 @@ io.on('connection', (socket) => {
     });
   });
   
+  // delete private message
+  socket.on('deletePrivateMessage', (data) => {
+    const { messageId, sender, receiver } = data;
+    console.log('Received delete private message:', data);
+    if (!messageId || !sender || !receiver) {
+      return socket.emit('errorMessage', { error: 'Missing required fields' });
+    }
+    const deleteSql = 'DELETE FROM privateMessages WHERE idPrivateMessages = ? AND sender = ? AND receiver = ?';
+    connection.query(deleteSql, [messageId, sender, receiver], (err, result) => {
+      if (err) {
+        console.error('Error deleting private message:', err);
+        return socket.emit('errorMessage', { error: 'Database error' });
+      }
+      io.to(sender).emit('deletePrivateMessage', { messageId });
+      io.to(receiver).emit('deletePrivateMessage', { messageId });
+
+      const systemMessage = 'This message was deleted by sender';
+      const insertMessageSql = 'INSERT INTO privateMessages (sender, receiver, message) VALUES (?, ?, ?)';
+      connection.query(insertMessageSql, ['System', receiver, systemMessage], (err2, result2) => {
+        if (err2) {
+          console.error('Error inserting system message:', err2);
+          return socket.emit('errorMessage', { error: 'Database error inserting system message' });
+        }
+        io.to(receiver).emit('privateMessage', { sender: 'System', receiver, message: systemMessage, id: result2.insertId });
+      });
+    });
+  });
   
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
