@@ -235,6 +235,9 @@
       box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3);
       margin-bottom: 10px;
     }
+    .message:hover .delete-msg{
+      display: block; 
+    }
     .delete-msg {
       display: none;
       border: none;
@@ -292,8 +295,8 @@
     <div class="nav-container">
       <div class="logo">ChatHaven</div>
       <ul class="nav-links">
-        <li><a href="Teams.html">Teams</a></li>
-        <li><a href="DirectMessaging.html">Direct Messaging</a></li>
+        <li><a id="teamsLink" href="#">Teams</a>
+          <li><a id="DirectMessagingLink" href = "#">Direct Messaging</a></li>
       </ul>
       <div class="profile-container">
         <button id="profileBtn" class="profile-btn">
@@ -443,10 +446,13 @@ document.getElementById('teamName').textContent = teamNameFromURL;
           const deleteBtn = document.createElement('button');
           deleteBtn.classList.add('delete-msg');
           deleteBtn.textContent = 'x';
-          deleteBtn.style.display = 'inline-block';
+          
           deleteBtn.addEventListener('click', () => {
             deleteMessage(msg.idchatMessages);
           });
+          messageElement.addEventListener('mouseover', () => {deleteBtn.style.display = 'inline-block'});
+          messageElement.addEventListener('mouseout', () => {deleteBtn.style.display = 'none'});
+
           messageElement.appendChild(deleteBtn);
         }
         return messageElement;
@@ -780,6 +786,34 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         }
       });
     });
+
+    function setTeamsLink() {
+        // 1. Get the username
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        
+        // 2. If we have it, update the link
+        if (username) {
+          document.getElementById('teamsLink').href = `Teams.html?username=${username}`;
+        }
+      }
+  
+      // 3. Run after DOM is ready
+      document.addEventListener('DOMContentLoaded', setTeamsLink);
+
+      function setDirectMessagingLink() {
+        // 1. Get the username
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        
+        // 2. If we have it, update the link
+        if (username) {
+          document.getElementById('DirectMessagingLink').href = `DirectMessaging.html?username=${username}`;
+        }
+      }
+  
+      // 3. Run after DOM is ready
+      document.addEventListener('DOMContentLoaded', setDirectMessagingLink);
   </script>
   <script src="/App/JS/script.js"></script>
 </body>
