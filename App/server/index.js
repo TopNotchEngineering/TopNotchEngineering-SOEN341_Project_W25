@@ -391,6 +391,12 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
+  
+  // Joining a private message room
+  socket.on('joinPrivateRoom', ({ username }) => {
+    socket.join(username);
+    console.log(`Socket ${socket.id} joined private room: ${username}`);
+  });
 
   // Joining a channel room
   socket.on('joinChannel', ({ channelName, teamName }) => {
