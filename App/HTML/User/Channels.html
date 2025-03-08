@@ -445,13 +445,13 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         if (isAdmin) {
           const deleteBtn = document.createElement('button');
           deleteBtn.classList.add('delete-msg');
-          deleteBtn.textContent = 'x';
+          //deleteBtn.textContent = 'x';
           
           deleteBtn.addEventListener('click', () => {
             deleteMessage(msg.idchatMessages);
           });
-          messageElement.addEventListener('mouseover', () => {deleteBtn.style.display = 'inline-block'});
-          messageElement.addEventListener('mouseout', () => {deleteBtn.style.display = 'none'});
+          //messageElement.addEventListener('mouseover', () => {deleteBtn.style.display = 'inline-block'});
+          //messageElement.addEventListener('mouseout', () => {deleteBtn.style.display = 'none'});
 
           messageElement.appendChild(deleteBtn);
         }
@@ -548,10 +548,11 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         nameSpan.onclick = () => loadChannel(channelName);
         li.appendChild(nameSpan);
 
-        const addUserIcon = document.createElement('img');
-        addUserIcon.src = "../../images/addusericon.png";
-        addUserIcon.classList.add('adduser');
-        li.appendChild(addUserIcon);
+        // removed feature for users, do not need for the momment
+        //const addUserIcon = document.createElement('img');
+        //addUserIcon.src = "../../images/addusericon.png";
+        //addUserIcon.classList.add('adduser');
+        //li.appendChild(addUserIcon);
 
         const trashSpan = document.createElement('span');
         trashSpan.classList.add('delete-channel');
@@ -584,7 +585,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
       }
 
       function fetchChannelsForTeam(teamName) {
-        fetch(`http://localhost:5008/getChannels?teamName=${encodeURIComponent(teamName)}`)
+        fetch(`http://localhost:5008/getChannelUser?teamName=${encodeURIComponent(teamName)}&username=${currentUsername}`)
           .then(response => response.json())
           .then(data => {
             const channelList = document.getElementById('channelList');
