@@ -210,19 +210,7 @@
     .chat-list li:hover {
       background-color: #e9ecef;
     }
-    /* Trash icon for chat deletion */
-    .delete-chat {
-      position: absolute;
-      right: 5px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      color: #dc3545;
-      font-size: 1rem;
-    }
-    .delete-chat:hover {
-      color: #c82333;
-    }
+
     /* CHAT AREA (RIGHT COLUMN) */
     .chat-area {
       flex: 1;
@@ -261,6 +249,7 @@
       font-weight: bold;
       color: red;
       font-size: 1.5rem;
+      display: block;
     }
     .chat-input {
       display: flex;
@@ -331,8 +320,8 @@
       ChatHaven
     </div>
     <ul class="nav-links">
-      <li><a href="Teams.html">Teams</a></li>
-      <li><a href="DirectMessaging.html" class="active">Direct Messaging</a></li>
+      <li><a id="teamsLink" href="#">Teams</a>
+      <li><a id="DirectMessagingLink" href = "#" class="active">Direct Messaging</a></li>
     </ul>
     <div class="profile-container">
       <button id="profileBtn" class="profile-btn">
@@ -397,6 +386,35 @@
 
   </div>
 </div>
+<script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const senderUsername = urlParams.get('username') || 'Username';    
+    if (!senderUsername) {
+      console.error('No username found in the URL');
+    }
+  // Fetch user data from your backend endpoint
+  fetch(`http://localhost:5008/getUser?username=${senderUsername}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(userData => {
+        // Populate the profile modal fields with the data from the server
+        document.getElementById('profileUsernameInput').value = userData.username;
+        document.getElementById('profileFirstNameInput').value = userData.firstName;
+        document.getElementById('profileLastNameInput').value = userData.lastName;
+        document.getElementById('profileEmailInput').value = userData.email;
+  
+       // IMPORTANT: Update the hidden field with the original username
+        document.getElementById('originalUsernameInput').value = userData.username;
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+</script>
 
 <script>
   const urlParams = new URLSearchParams(window.location.search);
@@ -499,6 +517,24 @@
     const urlParams = new URLSearchParams(window.location.search);
     const senderUsername = urlParams.get('username') || 'Username';
 
+
+    socket.emit('joinPrivateRoom', { username: senderUsername });
+
+    // Listen for private messages
+  socket.on('privateMessage', (data) => {
+    console.log('Received private message:', data);
+    // Check if the private message is for the currently selected chat
+    if (window.currentChat === data.sender || window.currentChat === data.receiver) {
+      const chatMessages = document.getElementById('chatMessages');
+      // Create a new message element using a valid tag (e.g., div)
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('message');
+      messageElement.dataset.messageId = data.id; // for future use
+      messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message}`;
+      chatMessages.appendChild(messageElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  });
     // Global variable to track current chat
     window.currentChannel = null;
 
@@ -517,6 +553,7 @@
         // Delete button for each message
         if (msg.sender === senderUsername) {
         const deleteBtn = document.createElement('button');
+
         deleteBtn.classList.add('delete-msg');
         deleteBtn.textContent = 'x';
         deleteBtn.style.display = 'inline-block';
@@ -662,6 +699,33 @@
 
     
   });
+  function setTeamsLink() {
+        // 1. Get the username
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        
+        // 2. If we have it, update the link
+        if (username) {
+          document.getElementById('teamsLink').href = `Teams.html?username=${username}`;
+        }
+      }
+  
+      // 3. Run after DOM is ready
+      document.addEventListener('DOMContentLoaded', setTeamsLink);
+
+      function setDirectMessagingLink() {
+        // 1. Get the username
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        
+        // 2. If we have it, update the link
+        if (username) {
+          document.getElementById('DirectMessagingLink').href = `DirectMessaging.html?username=${username}`;
+        }
+      }
+  
+      // 3. Run after DOM is ready
+      document.addEventListener('DOMContentLoaded', setDirectMessagingLink);
 </script>
 </body>
 </html>
