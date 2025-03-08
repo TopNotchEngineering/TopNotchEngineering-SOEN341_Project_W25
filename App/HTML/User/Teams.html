@@ -447,8 +447,8 @@ document.addEventListener('DOMContentLoaded', () => {
    *************************************************/
   const teamsContainer = document.getElementById('teamsContainer');
 
-  fetch('http://localhost:5008/getTeams')
-    .then(response => response.json())
+  fetch(`http://localhost:5008/getTeamsUser?username=${encodeURIComponent(username)}`)
+  .then(response => response.json())
     .then(data => {
       data.teams.forEach(team => {
         const teamCard = document.createElement('div');

@@ -119,7 +119,7 @@ app.get('/getUsers', (req, res) => {
   });
 });
 
-// Get all teams
+// Get all teams for admins
 app.get('/getTeams', (req, res) => {
   const sql = 'SELECT teamName, teamDescription FROM teams';
   connection.query(sql, (err, results) => {
@@ -130,6 +130,63 @@ app.get('/getTeams', (req, res) => {
       console.log('Teams:', results);
       res.status(200).json({ teams: results });
     }
+  });
+});
+// only get the users teams
+app.get('/getTeamsUser', (req, res) => {
+  const username = req.query.username;
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
+  }
+
+  const sql = `
+    SELECT DISTINCT t.teamName, t.teamDescription
+    FROM teams t
+    INNER JOIN channels c ON t.teamName = c.teamName
+    WHERE c.channelMember = ?
+  `;
+  connection.query(sql, [username], (err, results) => {
+    if (err) {
+      console.error('Error fetching teams:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    console.log('Teams for channel member:', results);
+    res.status(200).json({ teams: results });
+  });
+});
+
+// Get channels for a team for admins
+app.get('/getChannels', (req, res) => {
+  const teamName = req.query.teamName;
+
+  if (!teamName) {
+    return res.status(400).json({ error: 'Team name is required' });
+  }
+  const sql = 'SELECT DISTINCT channelName FROM channels WHERE teamName = ?';
+  connection.query(sql, [teamName], (err, results) => {
+    if (err) {
+      console.error('Error fetching channels:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(200).json({ channels: results });
+  });
+});
+
+// Get channels for users only
+app.get('/getChannelUser', (req, res) => {
+  const teamName = req.query.teamName;
+  const username = req.query.username;
+
+  if (!teamName || !username) {
+    return res.status(400).json({ error: 'Team name is required' });
+  }
+  const sql = 'SELECT DISTINCT channelName FROM channels WHERE teamName = ? AND channelMember = ?';
+  connection.query(sql, [teamName, username], (err, results) => {
+    if (err) {
+      console.error('Error fetching channels:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(200).json({ channels: results });
   });
 });
 
@@ -220,11 +277,13 @@ app.post('/createChannel', (req, res) => {
 // Get channels for a team
 app.get('/getChannels', (req, res) => {
   const teamName = req.query.teamName;
-  if (!teamName) {
+  const username = req.query.username;
+
+  if (!teamName || !username) {
     return res.status(400).json({ error: 'Team name is required' });
   }
-  const sql = 'SELECT DISTINCT channelName FROM channels WHERE teamName = ?';
-  connection.query(sql, [teamName], (err, results) => {
+  const sql = 'SELECT DISTINCT channelName FROM channels WHERE teamName = ? AND channelMember = ?';
+  connection.query(sql, [teamName, username], (err, results) => {
     if (err) {
       console.error('Error fetching channels:', err);
       return res.status(500).json({ error: 'Database error' });
