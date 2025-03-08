@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" href="../../images/chathaven_logo.png">
   <title>ChatHaven - Teams</title>
   <link rel="stylesheet" href="/App/CSS/styles.css" />
   <style>
@@ -126,7 +127,6 @@
     .save-btn:hover {
       background-color: #218838;
     }
-
     #changePasswordBtn {
       background-color: #28a745;
       color: #fff;
@@ -135,7 +135,6 @@
       border-radius: 4px;
       cursor: pointer;
     }
-
     .logout-btn {
       background-color: #dc3545;
       color: #fff;
@@ -152,7 +151,7 @@
       display: none;
     }
 
-    /* Additional styles for team cards */
+    /* TEAMS CONTAINER */
     .teams-container {
       max-width: 1000px;
       margin: 2rem auto;
@@ -174,6 +173,73 @@
     .team-card:hover {
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
+
+    /* HEADER (CREATE/DELETE BUTTONS) */
+    .teams-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 2rem auto 1rem auto;
+      padding: 0 1rem;
+    }
+    .create-team-btn {
+      visibility: hidden;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* DELETE TEAM BUTTON */
+    .delete-team-btn {
+      visibility: hidden;
+      background-color: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 0.5rem;
+    }
+
+    /* Create Team / Delete Team Modals */
+    .modal-content h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+    }
+    .modal-content label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: bold;
+    }
+    .modal-content input,
+    .modal-content textarea,
+    .modal-content select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+    .cancel-btn {
+      background-color: #6c757d;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .cancel-btn:hover {
+      background-color: #5a6268;
+    }
   </style>
 </head>
 <body>
@@ -184,8 +250,8 @@
       ChatHaven
     </div>
     <ul class="nav-links">
-      <li><a href="Teams.html" class="active">Teams</a></li>
-      <li><a href="DirectMessaging.html">Direct Messaging</a></li>
+      <li><a id="teamsLink" href="#">Teams</a></li>
+      <li><a id="DirectMessagingLink" href = "#">Direct Messaging</a></li>
     </ul>
     <div class="profile-container">
       <button id="profileBtn" class="profile-btn">
@@ -200,7 +266,6 @@
   <div class="modal-content">
     <span id="closeModal" class="close">&times;</span>
     <h2>Edit Profile</h2>
-    <!-- Profile Details Form -->
     <form id="profileForm">
       <div class="form-group">
         <label for="profileUsernameInput">Username</label>
@@ -218,14 +283,13 @@
         <label for="profileEmailInput">Email</label>
         <input type="email" id="profileEmailInput" name="email" value="email@example.com" required>
       </div>
-      <div class="modal-actions">
+      <div class="modal-actions" style="display: flex; justify-content: space-between; align-items: center;">
         <button type="submit" class="save-btn">Save Profile</button>
         <button type="button" id="modalLogoutBtn" class="logout-btn">Logout</button>
       </div>
     </form>
     <hr />
     <button id="changePasswordBtn" class="nav-btn" style="margin-bottom: 1rem;">Change Password</button>
-    <!-- Change Password Section (initially hidden) -->
     <div id="passwordChangeSection" class="hidden">
       <form id="passwordChangeForm">
         <div class="form-group">
@@ -248,38 +312,17 @@
 
 <!-- MAIN CONTENT -->
 <main>
-  <h1>Your Teams</h1>
-  <div class="teams-container">
-    <!-- Example team cards. In production, these would be generated dynamically. -->
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamAlpha'">
-      <h2>Team Alpha</h2>
-      <p>Description for Team Alpha</p>
-    </div>
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamBeta'">
-      <h2>Team Beta</h2>
-      <p>Description for Team Beta</p>
-    </div>
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamGamma'">
-      <h2>Team Gamma</h2>
-      <p>Description for Team Gamma</p>
-    </div>
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamGamma'">
-      <h2>Team Giga</h2>
-      <p>Description for Team Giga</p>
-    </div>
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamGamma'">
-      <h2>Team Giga</h2>
-      <p>Description for Team Giga</p>
-    </div>
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamGamma'">
-      <h2>Team Giga</h2>
-      <p>Description for Team Giga</p>
-    </div>
-    <div class="team-card" onclick="location.href='Channels.html?team=TeamGamma'">
-      <h2>Team Giga</h2>
-      <p>Description for Team Giga</p>
-    </div>
-    <!-- Additional team cards as needed -->
+  <div class="teams-header">
+    <h1>Your Teams</h1>
+        <!-- Create Team + Delete Team Buttons -->
+        <div>
+          <button id="createTeamBtn" class="create-team-btn">Create Team</button>
+          <button id="deleteTeamBtn" class="delete-team-btn">Delete Team</button>
+        </div>
+      </div>
+
+  <!-- Teams container (with id for JS) -->
+  <div class="teams-container" id="teamsContainer">
   </div>
 </main>
 
@@ -294,10 +337,39 @@
 </footer>
 
 <script>
-  // Modal handling for Profile button
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Extract username from URL query parameters (e.g., ?username=JohnDoe)
+  const params = new URLSearchParams(window.location.search);
+  const username = params.get("username");
+
+  if (username) {
+    fetch(`http://localhost:5008/getUser?username=${encodeURIComponent(username)}`)
+      .then(response => response.json())
+      .then(user => {
+        if (user.error) {
+          console.error("Error fetching user data:", user.error);
+          return;
+        }
+        // Populate profile modal fields with fetched user data
+        document.getElementById("profileUsernameInput").value = user.username;
+        document.getElementById("profileFirstNameInput").value = user.firstName;
+        document.getElementById("profileLastNameInput").value = user.lastName;
+        document.getElementById("profileEmailInput").value = user.email;
+        // Store the original username for update purposes
+        window.originalUsername = user.username;
+      })
+      .catch(error => console.error("Fetch error:", error));
+  } else {
+    console.warn("No username provided in the URL.");
+  }
+
+  // Profile Modal Elements & Logic
   const profileModal = document.getElementById('profileModal');
   const profileBtn = document.getElementById('profileBtn');
   const closeModal = document.getElementById('closeModal');
+  const changePasswordBtn = document.getElementById('changePasswordBtn');
+  const passwordChangeSection = document.getElementById('passwordChangeSection');
 
   profileBtn.addEventListener('click', () => {
     profileModal.classList.remove('hidden');
@@ -305,46 +377,140 @@
 
   closeModal.addEventListener('click', () => {
     profileModal.classList.add('hidden');
-    // Hide password change section if visible
-    document.getElementById('passwordChangeSection').classList.add('hidden');
+    passwordChangeSection.classList.add('hidden');
   });
 
-  // Close modal if user clicks outside the modal content
   window.addEventListener('click', (event) => {
     if (event.target === profileModal) {
       profileModal.classList.add('hidden');
-      document.getElementById('passwordChangeSection').classList.add('hidden');
+      passwordChangeSection.classList.add('hidden');
     }
   });
 
-  // Toggle Change Password section visibility
-  const changePasswordBtn = document.getElementById('changePasswordBtn');
-  const passwordChangeSection = document.getElementById('passwordChangeSection');
   changePasswordBtn.addEventListener('click', () => {
     passwordChangeSection.classList.toggle('hidden');
   });
 
-  // Handle profile form submission (placeholder)
-  document.getElementById('profileForm').addEventListener('submit', (e) => {
+  // Update profile when the form is submitted
+  const profileForm = document.getElementById("profileForm");
+  profileForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    // Add logic to update profile details here
-    alert('Profile updated successfully!');
-    profileModal.classList.add('hidden');
+    // Gather updated values from the form
+    const updatedUsername = document.getElementById("profileUsernameInput").value;
+    const updatedFirstName = document.getElementById("profileFirstNameInput").value;
+    const updatedLastName = document.getElementById("profileLastNameInput").value;
+    const updatedEmail = document.getElementById("profileEmailInput").value;
+
+    const payload = {
+      originalUsername: window.originalUsername, // original identifier
+      username: updatedUsername,
+      firstName: updatedFirstName,
+      lastName: updatedLastName,
+      email: updatedEmail
+    };
+
+    fetch("http://localhost:5008/updateUser", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert("Error updating profile: " + data.error);
+      } else {
+        alert(data.message);
+        // Update originalUsername in case the user changed their username
+        window.originalUsername = updatedUsername;
+        profileModal.classList.add("hidden");
+      }
+    })
+    .catch(error => {
+      console.error("Error updating profile:", error);
+      alert("An error occurred while updating your profile.");
+    });
   });
 
-  // Handle password change form submission (placeholder)
-  document.getElementById('passwordChangeForm').addEventListener('submit', (e) => {
+  // Optional: Handle password change form submission
+  const passwordChangeForm = document.getElementById("passwordChangeForm");
+  passwordChangeForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    // Add logic to verify and update the password here
-    alert('Password updated successfully!');
-    passwordChangeSection.classList.add('hidden');
+    // Implement your password change logic (or use a dedicated endpoint) here
+    alert("Password updated successfully!");
+    passwordChangeSection.classList.add("hidden");
   });
 
-  // Event listener for Logout button inside the modal
-  document.getElementById('modalLogoutBtn').addEventListener('click', () => {
-    // Clear session or perform logout tasks here
-    window.location.href = '../login.html';
+  /*************************************************
+   * TEAMS FETCH & DISPLAY
+   *************************************************/
+  const teamsContainer = document.getElementById('teamsContainer');
+
+  fetch('http://localhost:5008/getTeams')
+    .then(response => response.json())
+    .then(data => {
+      data.teams.forEach(team => {
+        const teamCard = document.createElement('div');
+        teamCard.classList.add('team-card');
+        teamCard.innerHTML = `<h2>${team.teamName}</h2><p>${team.teamDescription}</p>`;
+        teamCard.onclick = () => {
+          // Navigate to the channels page for this team (pass username if available)
+          location.href = 'Channels.html?team=' + encodeURIComponent(team.teamName) +
+            (username ? "&username=" + encodeURIComponent(username) : "");
+        };
+        teamsContainer.appendChild(teamCard);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching teams:', error);
+    });
+
+  // Event delegation for team navigation (in case team cards are dynamically added later)
+  teamsContainer.addEventListener('click', (event) => {
+    const teamCard = event.target.closest('.team-card');
+    if (teamCard) {
+      const teamName = teamCard.querySelector('h2').textContent.trim();
+      location.href = 'Channels.html?team=' + encodeURIComponent(teamName) +
+        (username ? "&username=" + encodeURIComponent(username) : "");
+    }
   });
+});
+
+// Event listener for Logout button inside the modal
+document.getElementById('modalLogoutBtn').addEventListener('click', () => {
+      // Clear session or perform logout tasks here
+      window.location.href = '../login.html';
+    });
+
+    function setTeamsLink() {
+        // 1. Get the username
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        
+        // 2. If we have it, update the link
+        if (username) {
+          document.getElementById('teamsLink').href = `Teams.html?username=${username}`;
+        }
+      }
+  
+      // 3. Run after DOM is ready
+      document.addEventListener('DOMContentLoaded', setTeamsLink);
+
+      function setDirectMessagingLink() {
+        // 1. Get the username
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        
+        // 2. If we have it, update the link
+        if (username) {
+          document.getElementById('DirectMessagingLink').href = `DirectMessaging.html?username=${username}`;
+        }
+      }
+  
+      // 3. Run after DOM is ready
+      document.addEventListener('DOMContentLoaded', setDirectMessagingLink);
 </script>
+<script src="/App/JS/script.js"></script>
 </body>
 </html>
