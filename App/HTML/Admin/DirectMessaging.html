@@ -239,6 +239,16 @@
       width: fit-content;
       box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3);
       margin-bottom: 10px;
+    }
+    .delete-msg {
+      display: none;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      margin-left: 10px;
+      font-weight: bold;
+      color: red;
+      font-size: 1.5rem;
       display: block;
     }
     .chat-input {
@@ -406,6 +416,35 @@
       });
 </script>
 
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const senderUsername = urlParams.get('username') || 'Username';    
+    if (!senderUsername) {
+      console.error('No username found in the URL');
+    }
+  // Fetch user data from your backend endpoint
+  fetch(`http://localhost:5008/getUser?username=${senderUsername}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(userData => {
+        // Populate the profile modal fields with the data from the server
+        document.getElementById('profileUsernameInput').value = userData.username;
+        document.getElementById('profileFirstNameInput').value = userData.firstName;
+        document.getElementById('profileLastNameInput').value = userData.lastName;
+        document.getElementById('profileEmailInput').value = userData.email;
+  
+       // IMPORTANT: Update the hidden field with the original username
+        document.getElementById('originalUsernameInput').value = userData.username;
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+</script>
+
 <!-- NEW CHAT MODAL -->
 <div id="newChatModal" class="modal hidden">
   <div class="modal-content">
@@ -478,6 +517,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const senderUsername = urlParams.get('username') || 'Username';
 
+
     socket.emit('joinPrivateRoom', { username: senderUsername });
 
     // Listen for private messages
@@ -495,7 +535,6 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
   });
-
     // Global variable to track current chat
     window.currentChannel = null;
 
@@ -514,10 +553,14 @@
         // Delete button for each message
         if (msg.sender === senderUsername) {
         const deleteBtn = document.createElement('button');
+
+        deleteBtn.classList.add('delete-msg');
+        deleteBtn.textContent = 'x';
+        deleteBtn.style.display = 'inline-block';
         deleteBtn.addEventListener('click', () => {
           deletePrivateMessage(msg.idPrivateMessages);
         });
-
+        messageElement.appendChild(deleteBtn);
       }
         return messageElement;
       }
@@ -656,7 +699,6 @@
 
     
   });
-
   function setTeamsLink() {
         // 1. Get the username
         const urlParams = new URLSearchParams(window.location.search);

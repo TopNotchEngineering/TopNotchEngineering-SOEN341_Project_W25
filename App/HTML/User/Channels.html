@@ -7,7 +7,6 @@
   <!-- Link to your global CSS -->
   <link rel="stylesheet" href="/App/CSS/styles.css" />
 
-  <!-- Layout overrides specifically for Channels Page -->
   <style>
     /* NAVIGATION BAR STYLES */
     .nav-container {
@@ -17,11 +16,10 @@
       max-width: 1000px;
       margin: 0 auto;
     }
-    .logo a {
+    .logo {
       font-size: 1.5rem;
       font-weight: bold;
       color: #fff;
-      text-decoration: none;
     }
     .nav-links {
       flex: 1;
@@ -64,7 +62,7 @@
       object-fit: cover;
     }
 
-    /* PROFILE MODAL STYLES */
+    /* MODAL STYLES (both Profile and Create Channel) */
     .modal {
       position: fixed;
       z-index: 1000;
@@ -74,6 +72,9 @@
       height: 100%;
       overflow: auto;
       background-color: rgba(0,0,0,0.4);
+    }
+    .hidden {
+      display: none;
     }
     .modal-content {
       background-color: #fefefe;
@@ -93,11 +94,10 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .close:hover,
-    .close:focus {
+    .close:hover {
       color: #000;
-      text-decoration: none;
     }
+    /* Shared form styles inside modals */
     .modal form .form-group {
       margin-bottom: 1rem;
     }
@@ -112,7 +112,6 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-    /* Container for Save Profile and Logout buttons inside modal */
     .modal-actions {
       display: flex;
       justify-content: space-between;
@@ -130,17 +129,7 @@
     .save-btn:hover {
       background-color: #218838;
     }
-
-    #changePasswordBtn {
-      background-color: #28a745;
-      color: #fff;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .logout-btn {
+    .logout-btn, .cancel-btn {
       background-color: #dc3545;
       color: #fff;
       padding: 0.5rem 1rem;
@@ -151,25 +140,25 @@
     .logout-btn:hover {
       background-color: #c82333;
     }
-    /* Utility: hidden class */
-    .hidden {
-      display: none;
+    #changePasswordBtn {
+      background-color: #28a745;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
-    /*OVERRIDE GLOBAL "main" STYLING FOR THIS PAGE*/
+
     main#channelsPage {
-      /* Cancel out the default max-width, margin, and padding from styles.css */
       max-width: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
-
-      /* Make it fill remaining vertical space & use flex layout */
       flex: 1;
       display: flex;
-      flex-direction: row; /* sidebar on left, chat on right */
+      flex-direction: row;
     }
 
-    /*SIDEBAR (TEAM NAME + CHANNELS)*/
-
+    /* SIDEBAR (TEAM NAME + CHANNELS) */
     .sidebar {
       width: 200px;
       background-color: #f1f1f1;
@@ -181,11 +170,24 @@
     }
     .sidebar h1 {
       margin-bottom: 1rem;
-      font-size: 1.2rem;
+      font-size: 1.5rem;
     }
-    .sidebar h3 {
+    .channels-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 0.5rem;
-      font-size: 1rem;
+    }
+    .new-channel-btn {
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .new-channel-btn:hover {
+      background-color: #218838;
     }
     .channel-list {
       list-style: none;
@@ -204,23 +206,47 @@
       background-color: #e9ecef;
     }
 
-    /*CHAT AREA (MESSAGES + INPUT)*/
+    /* CHAT AREA (MESSAGES + INPUT) */
     .chat-area {
-      flex: 1; /* take all remaining horizontal space */
+      flex: 1;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
       padding: 1rem;
     }
     .chat-messages {
-      flex: 1; /* grow/shrink to fill vertical space */
+      flex: 1;
       border: 1px solid #ccc;
       border-radius: 4px;
       padding: 1rem;
       margin-bottom: 1rem;
       overflow-y: auto;
+      overflow-x: hidden;
       background-color: #fff;
-      
       max-height: 100vh;
+    }
+    .message {
+      position: relative;
+      transition: all 1s ease;
+      background-color: #1af;
+      padding: 10px;
+      border-radius: 20px;
+      width: fit-content;
+      box-shadow: 0 8px 4px rgba(0, 0, 0, 0.3);
+      margin-bottom: 10px;
+    }
+    .message:hover .delete-msg{
+      display: block; 
+    }
+    .delete-msg {
+      display: none;
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      margin-left: 10px;
+      font-weight: bold;
+      color: red;
+      font-size: 1.5rem;
     }
     .chat-input {
       display: flex;
@@ -242,212 +268,553 @@
     .chat-input button:hover {
       background-color: #0056b3;
     }
+    .delete-channel {
+      float: right;
+      cursor: cell;
+      color: #dc3545;
+      font-size: 1rem;
+    }
+    .delete-channel:hover {
+      color: #c82333;
+    }
+    .adduser {
+      width: 20px;
+      float: right;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .adduser:hover {
+      background-color: #5f5;
+      cursor: crosshair;
+    }
   </style>
 </head>
 <body>
-
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="nav-container">
-    <div class="logo">
-      ChatHaven
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">ChatHaven</div>
+      <ul class="nav-links">
+        <li><a id="teamsLink" href="#">Teams</a>
+          <li><a id="DirectMessagingLink" href = "#">Direct Messaging</a></li>
+      </ul>
+      <div class="profile-container">
+        <button id="profileBtn" class="profile-btn">
+          <img src="/App/images/profile-icon.png" alt="Profile Icon" />
+        </button>
+      </div>
     </div>
-    <ul class="nav-links">
-      <li><a href="Teams.html">Teams</a></li>
-      <li><a href="DirectMessaging.html">Direct Messaging</a></li>
-    </ul>
-    <div class="profile-container">
-      <button id="profileBtn" class="profile-btn">
-        <img src="/App/images/profile-icon.png" alt="Profile Icon" />
-      </button>
+  </nav>
+
+  <!-- PROFILE MODAL -->
+  <div id="profileModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h2>Edit Profile</h2>
+      <form id="profileForm">
+        <!-- Profile form fields go here -->
+      </form>
+      <hr />
+      <button id="changePasswordBtn" class="nav-btn" style="margin-bottom: 1rem;">Change Password</button>
+      <div id="passwordChangeSection" class="hidden">
+        <form id="passwordChangeForm">
+          <!-- Change password fields go here -->
+        </form>
+      </div>
     </div>
   </div>
-</nav>
 
-<!-- PROFILE MODAL -->
-<div id="profileModal" class="modal hidden">
-  <div class="modal-content">
-    <span id="closeModal" class="close">&times;</span>
-    <h2>Edit Profile</h2>
-    <!-- Profile Details Form -->
-    <form id="profileForm">
-      <div class="form-group">
-        <label for="profileUsernameInput">Username</label>
-        <input type="text" id="profileUsernameInput" name="username" value="User" required>
-      </div>
-      <div class="form-group">
-        <label for="profileFirstNameInput">First Name</label>
-        <input type="text" id="profileFirstNameInput" name="firstName" value="FirstName" required>
-      </div>
-      <div class="form-group">
-        <label for="profileLastNameInput">Last Name</label>
-        <input type="text" id="profileLastNameInput" name="lastName" value="LastName" required>
-      </div>
-      <div class="form-group">
-        <label for="profileEmailInput">Email</label>
-        <input type="email" id="profileEmailInput" name="email" value="email@example.com" required>
-      </div>
-      <div class="modal-actions">
-        <button type="submit" class="save-btn">Save Profile</button>
-        <button type="button" id="modalLogoutBtn" class="logout-btn">Logout</button>
-      </div>
-    </form>
-    <hr />
-    <button id="changePasswordBtn" class="nav-btn" style="margin-bottom: 1rem;">Change Password</button>
-    <!-- Change Password Section (initially hidden) -->
-    <div id="passwordChangeSection" class="hidden">
-      <form id="passwordChangeForm">
+  <!-- CREATE CHANNEL MODAL -->
+  <div id="createChannelModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeCreateChannelModal" class="close">&times;</span>
+      <form id="createChannelForm">
         <div class="form-group">
-          <label for="currentPassword">Current Password</label>
-          <input type="password" id="currentPassword" name="currentPassword" required>
+          <label for="channelNameInput"><h2>New Channel</h2></label>
+          <input type="text" id="channelNameInput" name="channelName" placeholder="Enter new channel name..." required />
         </div>
+        <!-- Auto-populated Team Name Field -->
         <div class="form-group">
-          <label for="newPassword">New Password</label>
-          <input type="password" id="newPassword" name="newPassword" required>
+          <label for="teamNameInput">Team Name</label>
+          <input type="text" id="teamNameInput" name="teamName" readonly required />
         </div>
-        <div class="form-group">
-          <label for="confirmPassword">Confirm Password</label>
-          <input type="password" id="confirmPassword" name="confirmPassword" required>
+        <div class="modal-actions">
+          <button type="button" id="cancelCreateChannelBtn" class="cancel-btn">Cancel</button>
+          <button type="submit" class="save-btn">Save</button>
         </div>
-        <button type="submit" class="save-btn">Save Password</button>
       </form>
     </div>
   </div>
-</div>
 
-<!-- MAIN CONTENT (override the global styling) -->
-<main id="channelsPage">
-  <!-- LEFT SIDEBAR: Team Name & Channels -->
-  <div class="sidebar">
-    <h1 id="teamName">Team Name</h1>
-    <h3>Channels</h3>
-    <ul class="channel-list">
-      <li onclick="loadChannel('general')"># general</li>
-      <li onclick="loadChannel('random')"># random</li>
-      <li onclick="loadChannel('project')"># project</li>
-      <li onclick="loadChannel('test')"># test</li>
-    </ul>
-  </div>
-
-  <!-- RIGHT CHAT AREA -->
-  <div class="chat-area">
-    <div class="chat-messages" id="chatMessages">
-      <p><strong>JohnDoe:</strong> Welcome to the channel!</p>
-    </div>
-    <div class="chat-input">
-      <input type="text" id="messageInput" placeholder="Type your message..." />
-      <button onclick="sendMessage()">Send</button>
+  <!-- ADD USER MODAL -->
+  <div id="addUserModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeAddUserModal" class="close">&times;</span>
+      <h2>Add User to Channel</h2>
+      <form id="addUserForm">
+        <!-- Hidden fields to store the current channel and team -->
+        <input type="hidden" id="modalChannelName" name="channelName" />
+        <input type="hidden" id="modalTeamName" name="teamName" />
+        
+        <div class="form-group">
+          <select id="channelMember" name="channelMember" required>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="save-btn">Add User</button>
+          <button type="button" id="closeAddUserModalBtn" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
-</main>
 
-<!-- FOOTER -->
-<footer class="main-footer">
-  <div class="footer-links">
-    <a href="../privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
-    <a href="../terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
-    <a href="../contact.html" target="_blank" rel="noopener noreferrer">Help</a>
-  </div>
-  <p>&copy; 2025 ChatHaven. All rights reserved.</p>
-</footer>
+  <!-- MAIN CONTENT -->
+  <main id="channelsPage">
+    <!-- LEFT SIDEBAR: Team Name & Channels -->
+    <div class="sidebar">
+      <h1 id="teamName">Team Name</h1>
+      <div class="channels-header">
+        <h3 style="margin: 0;">Channels</h3>
+        <button id="newChannelBtn" class="new-channel-btn">New</button>
+      </div>
+      <!-- Channels list will be dynamically populated here -->
+      <ul class="channel-list" id="channelList"></ul>
+    </div>
 
-<script>
-  // Get team name from URL parameter (e.g., ?team=TeamAlpha)
-  const urlParams = new URLSearchParams(window.location.search);
-  const teamName = urlParams.get('team') || 'Team Name';
-  document.getElementById('teamName').textContent = teamName;
+    <!-- CHAT AREA -->
+    <div class="chat-area">
+      <div class="chat-messages" id="chatMessages">
+        <p><strong>System:</strong> Welcome to the channel!</p>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="messageInput" placeholder="Type your message..." />
+        <button id="sendMsgBtn">Send</button>
+      </div>
+    </div>
+  </main>
 
-  function loadChannel(channel) {
-    const chatMessages = document.getElementById('chatMessages');
-    chatMessages.innerHTML = `<p><strong>System:</strong> Loaded channel #${channel}</p>`;
-  }
+  <!-- FOOTER -->
+  <footer class="main-footer">
+    <div class="footer-links">
+      <a href="../privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+      <a href="../terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>
+      <a href="../contact.html" target="_blank" rel="noopener noreferrer">Help</a>
+    </div>
+    <p>&copy; 2025 ChatHaven. All rights reserved.</p>
+  </footer>
 
-  function sendMessage() {
-    const message = messageInput.value.trim();
-    if (message) {
-        // Create message element
-        const messageElement = document.createElement('p');
+  <!-- Socket.IO Library -->
+  <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Socket.IO connection
+      const socket = io('http://localhost:5008');
 
-        // Append message element to chat messages container
-        chatMessages.appendChild(messageElement);
+// Ensure the 'isAdmin' query parameter is set if not already present
+const params = new URLSearchParams(window.location.search);
+if (!params.has('isAdmin')) {
+  params.set('isAdmin', 'true');
+  const newUrl = window.location.pathname + '?' + params.toString();
+  window.history.replaceState(null, '', newUrl);
+}
 
-        // Style the delete button
-        messageElement.innerHTML = `<br><div style="background-color: #1af; padding: 10px; border-radius: 20px; width: fit-content; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow effect */"><br><strong>You: ${message} </strong></div>`;
+// Parse URL parameters for team, username, and admin status
+const urlParams = new URLSearchParams(window.location.search);
+const teamNameFromURL = urlParams.get('team') || 'Team Name';
+const currentUsername = urlParams.get('username') || 'Username';
+const AdminStatus = urlParams.get('isAdmin') || 'admin';
 
-        // Clear the message input and scroll to the bottom
-        messageInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-    scrollPageToBottom();
-};
-//  For send message on keypress enter
-    messageInput.addEventListener('keypress', (event) => {
-      if(event.key === "Enter"){
-        sendMessage();
-      }
-    })
-//  To scroll page
-    function scrollPageToBottom() {
-            window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: 'smooth'
-            });
+const isAdmin = urlParams.get('isAdmin') === 'true';
+
+document.getElementById('teamName').textContent = teamNameFromURL;
+
+
+      // Global variable to track current channel
+      window.currentChannel = null;
+
+      // Function to render a single message with a delete button if user is admin
+      function renderMessage(msg) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        messageElement.dataset.messageId = msg.idchatMessages; // use database id
+
+        // Basic message content
+        messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.message}`;
+
+        // Append delete button only for admins
+        if (isAdmin) {
+          const deleteBtn = document.createElement('button');
+          deleteBtn.classList.add('delete-msg');
+          deleteBtn.textContent = 'x';
+          
+          deleteBtn.addEventListener('click', () => {
+            deleteMessage(msg.idchatMessages);
+          });
+          messageElement.addEventListener('mouseover', () => {deleteBtn.style.display = 'inline-block'});
+          messageElement.addEventListener('mouseout', () => {deleteBtn.style.display = 'none'});
+
+          messageElement.appendChild(deleteBtn);
         }
-    messageInput.addEventListener('keypress', (event) => {
-      if(event.key === "Enter"){
-        sendMessage();
+        return messageElement;
       }
-    })
-  // Profile Modal logic
-  const profileModal = document.getElementById('profileModal');
-  const profileBtn = document.getElementById('profileBtn');
-  const closeModal = document.getElementById('closeModal');
 
-  profileBtn.addEventListener('click', () => {
-    profileModal.classList.remove('hidden');
-  });
+      // Delete message function that emits a Socket.IO event
+      function deleteMessage(messageId) {
+        socket.emit('deleteMessage', {
+          messageId: messageId,
+          channelName: window.currentChannel,
+          teamName: teamNameFromURL,
+          username: currentUsername
+        });
+      }
 
-  if (closeModal) {
-    closeModal.addEventListener('click', () => {
-      profileModal.classList.add('hidden');
-      document.getElementById('passwordChangeSection').classList.add('hidden');
+      // function to load a channel
+      window.loadChannel = function(channelName) {
+        window.currentChannel = channelName;
+        socket.emit('joinChannel', { teamName: teamNameFromURL, channelName });
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = '';
+
+        // Fetch historical messages
+        fetch(`http://localhost:5008/getMessages?channelName=${encodeURIComponent(channelName)}&teamName=${encodeURIComponent(teamNameFromURL)}`)
+          .then(response => response.json())
+          .then(data => {
+            data.messages.forEach(msg => {
+              const messageElement = renderMessage(msg);
+              chatMessages.appendChild(messageElement);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          })
+          .catch(err => console.error('Error fetching messages:', err));
+      };
+
+      // Listen for new incoming messages via Socket.IO
+      socket.on('message', (data) => {
+        if (!window.currentChannel) return;
+        const chatMessages = document.getElementById('chatMessages');
+        // Create a message element and append it
+        const messageElement = renderMessage({
+          idchatMessages: data.id,
+          sender: data.sender,
+          message: data.message
+        });
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      });
+
+      // Listen for delete message event from server to remove message from UI
+      socket.on('deleteMessage', (data) => {
+        const { messageId } = data;
+        const msgElem = document.querySelector(`[data-message-id="${messageId}"]`);
+        if (msgElem) {
+          msgElem.remove();
+        }
+      });
+
+      // Sending chat messages via Socket.IO
+      const sendMsgBtn = document.getElementById('sendMsgBtn');
+      const messageInput = document.getElementById('messageInput');
+
+      function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
+        if (!window.currentChannel) {
+          alert('Please select a channel first.');
+          return;
+        }
+        socket.emit('newMessage', {
+          channelName: window.currentChannel,
+          teamName: teamNameFromURL,
+          sender: currentUsername,
+          message
+        });
+        messageInput.value = '';
+      }
+      sendMsgBtn.addEventListener('click', sendMessage);
+      messageInput.addEventListener('keypress', (event) => {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+      });
+
+      // Fetch and display channels for the team
+      fetchChannelsForTeam(teamNameFromURL);
+
+      function createChannelListItem(channelName) {
+        const li = document.createElement('li');
+        const nameSpan = document.createElement('span');
+        nameSpan.classList.add('channel-name');
+        nameSpan.innerHTML = `# ${channelName} `;
+        nameSpan.onclick = () => loadChannel(channelName);
+        li.appendChild(nameSpan);
+
+        const addUserIcon = document.createElement('img');
+        addUserIcon.src = "../../images/addusericon.png";
+        addUserIcon.classList.add('adduser');
+        li.appendChild(addUserIcon);
+
+        const trashSpan = document.createElement('span');
+        trashSpan.classList.add('delete-channel');
+        trashSpan.textContent = "🗑️";
+        trashSpan.onclick = (e) => {
+          e.stopPropagation();
+          if (confirm(`Are you sure you want to delete channel #${channelName}?`)) {
+            const teamName = document.getElementById('teamName').textContent;
+            fetch('http://localhost:5008/deleteChannel', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ channelName, teamName })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.message === 'Channel deleted successfully') {
+                li.remove();
+              } else {
+                alert('Error deleting channel: ' + data.error);
+              }
+            })
+            .catch(error => {
+              console.error('Error deleting channel:', error);
+              alert('An error occurred while deleting the channel.');
+            });
+          }
+        };
+        li.appendChild(trashSpan);
+        return li;
+      }
+
+      function fetchChannelsForTeam(teamName) {
+        fetch(`http://localhost:5008/getChannels?teamName=${encodeURIComponent(teamName)}`)
+          .then(response => response.json())
+          .then(data => {
+            const channelList = document.getElementById('channelList');
+            channelList.innerHTML = '';
+            if (data.channels && data.channels.length > 0) {
+              data.channels.forEach(channelObj => {
+                const newChannelItem = createChannelListItem(channelObj.channelName);
+                channelList.appendChild(newChannelItem);
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching channels:', error);
+          });
+      }
+
+      // PROFILE MODAL functionality
+      const profileModal = document.getElementById('profileModal');
+      const profileBtn = document.getElementById('profileBtn');
+      const closeModal = document.getElementById('closeModal');
+      const changePasswordBtn = document.getElementById('changePasswordBtn');
+      const passwordChangeSection = document.getElementById('passwordChangeSection');
+      const logoutBtn = document.getElementById('modalLogoutBtn');
+      
+      profileBtn.addEventListener('click', () => {
+        profileModal.classList.remove('hidden');
+      });
+      if (closeModal) {
+        closeModal.addEventListener('click', () => {
+          profileModal.classList.add('hidden');
+          passwordChangeSection.classList.add('hidden');
+        });
+      }
+      window.addEventListener('click', (event) => {
+        if (event.target === profileModal) {
+          profileModal.classList.add('hidden');
+          passwordChangeSection.classList.add('hidden');
+        }
+      });
+      if (changePasswordBtn) {
+        changePasswordBtn.addEventListener('click', () => {
+          passwordChangeSection.classList.toggle('hidden');
+        });
+      }
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          window.location.href = '../login.html';
+        });
+      }
+      document.getElementById('profileForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Profile updated successfully!');
+        profileModal.classList.add('hidden');
+      });
+      document.getElementById('passwordChangeForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Password updated successfully!');
+        passwordChangeSection.classList.add('hidden');
+      });
+      
+      // CREATE CHANNEL MODAL functionality
+      const newChannelBtn = document.getElementById('newChannelBtn');
+      const createChannelModal = document.getElementById('createChannelModal');
+      const closeCreateChannelModal = document.getElementById('closeCreateChannelModal');
+      const cancelCreateChannelBtn = document.getElementById('cancelCreateChannelBtn');
+      const createChannelForm = document.getElementById('createChannelForm');
+      
+      newChannelBtn.addEventListener('click', () => {
+        const teamNameInputField = document.getElementById('teamNameInput');
+        teamNameInputField.value = teamNameFromURL;
+        createChannelModal.classList.remove('hidden');
+      });
+      if (closeCreateChannelModal) {
+        closeCreateChannelModal.addEventListener('click', () => {
+          createChannelModal.classList.add('hidden');
+        });
+      }
+      if (cancelCreateChannelBtn) {
+        cancelCreateChannelBtn.addEventListener('click', () => {
+          createChannelModal.classList.add('hidden');
+        });
+      }
+      window.addEventListener('click', (event) => {
+        if (event.target === createChannelModal) {
+          createChannelModal.classList.add('hidden');
+        }
+      });
+      
+      createChannelForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const channelName = document.getElementById('channelNameInput').value.trim();
+        const teamNameValue = document.getElementById('teamNameInput').value.trim();
+        if (channelName) {
+          const payload = { channelName, teamName: teamNameValue };
+          fetch('http://localhost:5008/createChannel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              const channelList = document.getElementById('channelList');
+              const newChannelItem = createChannelListItem(channelName);
+              channelList.appendChild(newChannelItem);
+              alert(`Channel "${channelName}" created!`);
+              createChannelForm.reset();
+              createChannelModal.classList.add('hidden');
+            } else {
+              alert('Error creating channel: ' + data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while creating the channel.');
+          });
+        } else {
+          alert('Please enter a channel name.');
+        }
+      });
+      
+      // Function to populate non-admin users in the modal dropdown
+      async function populateNonAdminUsers() {
+        try {
+          const response = await fetch('http://localhost:5008/getNonAdminUsers');
+          if (!response.ok) {
+            throw new Error('Failed to fetch non-admin users');
+          }
+          const users = await response.json();
+          const memberSelect = document.getElementById('channelMember');
+          memberSelect.innerHTML = '<option value="">Select a user</option>';
+          users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.username;
+            option.textContent = user.username;
+            memberSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error('Error populating non-admin users:', error);
+        }
+      }
+      
+      // Event delegation for add-user icon clicks
+      document.getElementById('channelList').addEventListener('click', (e) => {
+        if (e.target && e.target.classList.contains('adduser')) {
+          e.preventDefault();
+          const li = e.target.closest('li');
+          const channelNameText = li.querySelector('.channel-name').textContent;
+          const channelName = channelNameText.replace('# ', '').trim();
+          const teamName = document.getElementById('teamName').textContent.trim();
+          document.getElementById('modalChannelName').value = channelName;
+          document.getElementById('modalTeamName').value = teamName;
+          populateNonAdminUsers();
+          document.getElementById('addUserModal').classList.remove('hidden');
+        }
+      });
+      
+      // Close add user modal when clicking the close button
+      document.getElementById('closeAddUserModal').addEventListener('click', () => {
+        document.getElementById('addUserModal').classList.add('hidden');
+      });
+      
+      // Close add user modal when clicking outside the modal content
+      window.addEventListener('click', (event) => {
+        const modal = document.getElementById('addUserModal');
+        if (event.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+      
+      // Handle submission of the add user modal form
+      document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const channelName = document.getElementById('modalChannelName').value;
+        const teamName = document.getElementById('modalTeamName').value;
+        const channelMember = document.getElementById('channelMember').value;
+        try {
+          const response = await fetch('http://localhost:5008/addUserToChannel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ channelName, teamName, channelMember })
+          });
+          const result = await response.json();
+          if (!response.ok) {
+            throw new Error(result.error || 'Failed to add user to channel');
+          }
+          alert(result.message);
+          if (window.currentChannel === channelName) {
+            const chatMessages = document.getElementById('chatMessages');
+            const systemMessage = document.createElement('div');
+            systemMessage.style.color = 'red';
+            chatMessages.appendChild(systemMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          }
+          document.getElementById('addUserModal').classList.add('hidden');
+        } catch (error) {
+          alert(error.message);
+          console.error('Channel user addition error:', error);
+        }
+      });
     });
-  }
 
-  window.addEventListener('click', (event) => {
-    if (event.target === profileModal) {
-      profileModal.classList.add('hidden');
-      document.getElementById('passwordChangeSection').classList.add('hidden');
-    }
-  });
+    function setTeamsLink() {
+        // 1. Get the username
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        
+        // 2. If we have it, update the link
+        if (username) {
+          document.getElementById('teamsLink').href = `Teams.html?username=${username}`;
+        }
+      }
+  
+      // 3. Run after DOM is ready
+      document.addEventListener('DOMContentLoaded', setTeamsLink);
 
-  const changePasswordBtn = document.getElementById('changePasswordBtn');
-  const passwordChangeSection = document.getElementById('passwordChangeSection');
-  if (changePasswordBtn) {
-    changePasswordBtn.addEventListener('click', () => {
-      passwordChangeSection.classList.toggle('hidden');
-    });
-  }
-
-  document.getElementById('profileForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert('Profile updated successfully!');
-    profileModal.classList.add('hidden');
-  });
-
-  document.getElementById('passwordChangeForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert('Password updated successfully!');
-    passwordChangeSection.classList.add('hidden');
-  });
-
-  // Logout button inside modal
-  const logoutBtn = document.getElementById('modalLogoutBtn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-      window.location.href = '../login.html';
-    });
-  }
-</script>
+      function setDirectMessagingLink() {
+        // 1. Get the username
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        
+        // 2. If we have it, update the link
+        if (username) {
+          document.getElementById('DirectMessagingLink').href = `DirectMessaging.html?username=${username}`;
+        }
+      }
+  
+      // 3. Run after DOM is ready
+      document.addEventListener('DOMContentLoaded', setDirectMessagingLink);
+  </script>
+  <script src="/App/JS/script.js"></script>
 </body>
 </html>
