@@ -299,6 +299,31 @@
     .close-modal:hover {
       color: #000;
     }
+
+    .emoji-box {
+      background-color: #1af;
+      display: none;
+      flex: 0.1;
+      border-radius: 10px;
+      width: fit-content;
+      height: fit-content;
+      flex-wrap: wrap;
+      max-height: 300px;
+    }
+
+    #emoji-button {
+      font-size: 30px;
+      float: right;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    #emoji-text {
+      font-size: 30px;
+      float: right;
+      cursor: pointer;
+      padding: 5px;
+    }
   </style>
 </head>
 <body>
@@ -411,7 +436,29 @@
   <div class="modal-content">
     <span id="closeNewChatModal" class="close-modal">&times;</span>
     <label for="userSearchInput"><h2>Start a new chat</h2></label>
+    <div class="emoji-box">
+      <div id="emoji-text">😀</div>
+      <div id="emoji-text">😊</div>
+      <div id="emoji-text">🥰</div>
+      <div id="emoji-text">😂</div>
+      <div id="emoji-text">🤔</div>
+      <div id="emoji-text">🙃</div>
+      <div id="emoji-text">😎</div>
+      <div id="emoji-text">😴</div>
+      <div id="emoji-text">😍</div>
+      <div id="emoji-text">🤩</div>
+      <div id="emoji-text">🐶</div>
+      <div id="emoji-text">🦄</div>
+      <div id="emoji-text">🌻</div>
+      <div id="emoji-text">🍕</div>
+      <div id="emoji-text">🌍</div>
+      <div id="emoji-text">⚡</div>
+      <div id="emoji-text">🎉</div>
+      <div id="emoji-text">📚</div>
+      <div id="emoji-text">❤️</div>
+      <div id="emoji-text">☔</div>
     <input type="text" id="userSearchInput" placeholder="Enter a username..." />
+    <button id="emoji-button"> 🙂 </button>
     <button id="userSearchBtn">Search</button>
   </div>
 </div>
@@ -584,6 +631,8 @@
       // Sending chat messages via Socket.IO
       const sendMsgBtn = document.getElementById('sendMsgBtn');
       const messageInput = document.getElementById('messageInput');
+      const emojibutton = document.getElementById('emoji-button');
+      const emojibox = document.querySelector('.emoji-box');
 
       function sendMessage() {
         const message = messageInput.value.trim();
@@ -600,12 +649,33 @@
           message
         });
         messageInput.value = '';
+        closeEmojiBox();
       }
       sendMsgBtn.addEventListener('click', sendMessage);
       messageInput.addEventListener('keypress', (event) => {
         if (event.key === "Enter") {
           sendMessage();
         }
+      });
+
+      const elements = document.querySelectorAll('#emoji-text');
+      elements.forEach(emoji => 
+          emoji.addEventListener('click', () => {
+          messageInput.value += emoji.innerHTML;
+          // Access each element in the collection
+        }));
+        function openEmojiBox(){
+          emojibox.style.display = "flex";
+        }
+        function closeEmojiBox(){
+          emojibox.style.display = "none";
+        }
+      emojibutton.addEventListener('click', () => {
+        if(emojibox.style.display === "none")
+          openEmojiBox();
+        else if(emojibox.style.display === "flex") 
+          closeEmojiBox();
+        else openEmojiBox();
       });
 
     /* PROFILE MODAL LOGIC */
