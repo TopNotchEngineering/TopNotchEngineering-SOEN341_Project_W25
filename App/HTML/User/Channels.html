@@ -304,6 +304,25 @@
       transition: all 1s;
     }
 
+    .quote-box {
+      background-color: #1af;
+      border-left: 4px solid #004084; /* A bolder blue for the border */
+
+      flex: 0.1;
+      padding: 20px;
+      border-radius: 10px;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+      /* width: fit-content; */
+      max-width: calc(100vw - 20px);
+      /* height: fit-content; */
+      word-wrap:break-word;
+      align-content:baseline;
+      float: right;
+      max-height: 300px;
+      transition: all 1s; 
+    }
+
     #emoji-button {
       font-size: 30px;
       float: right;
@@ -316,6 +335,15 @@
       float: right;
       cursor: pointer;
       padding: 5px;
+    }
+
+    .quote-button {
+      border: none;
+      border-radius: 10px;
+      cursor: grab;
+      background-color: rgb(34, 240, 248);
+      font-size: 1rem;
+      display: inline-block;
     }
   </style>
 </head>
@@ -484,6 +512,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
 
       // Global variable to track current channel
       window.currentChannel = null;
+      let isQuoting = false;
 
       // Function to render a single message with a delete button if user is admin
       function renderMessage(msg) {
@@ -507,6 +536,35 @@ document.getElementById('teamName').textContent = teamNameFromURL;
           //messageElement.addEventListener('mouseout', () => {deleteBtn.style.display = 'none'});
 
           messageElement.appendChild(deleteBtn);
+        }
+        const quoteBtn = document.createElement('button');
+        quoteBtn.classList.add('quote-button');
+        quoteBtn.innerText = "↩️";
+        quoteBtn.addEventListener('click', () => {
+          quoteMessage(messageElement.innerText);
+          
+        });
+        messageElement.appendChild(quoteBtn);
+        function quoteMessage(message){
+          if(!isQuoting){
+          const quoteMsg = document.createElement('div');
+          quoteMsg.classList.add('quote-box');
+          quoteMsg.innerHTML += `<strong>Quoting ${msg.sender}:</strong> <p style="color: white;">${msg.message}</p>`;
+          const removeQuote = document.createElement('div');
+          removeQuote.innerHTML = 'x'
+          removeQuote.style.display = 'inline-block';
+          removeQuote.style.float = 'right';
+          removeQuote.style.padding = '0.5rem';
+          removeQuote.style.cursor = 'pointer';
+          //removeQuote.style.display = 'inline';
+          removeQuote.addEventListener('click', () => {
+            document.querySelector('.chat-area').removeChild(quoteMsg);
+            isQuoting = false;
+          });
+          quoteMsg.appendChild(removeQuote);
+          document.querySelector('.chat-area').appendChild(quoteMsg);
+          isQuoting = true;
+        }
         }
         return messageElement;
       }
@@ -571,20 +629,25 @@ document.getElementById('teamName').textContent = teamNameFromURL;
       const emojibox = document.querySelector('.emoji-box');
 
       function sendMessage() {
-        const message = messageInput.value.trim();
+        let message = messageInput.value.trim();
         if (!message) return;
         if (!window.currentChannel) {
           alert('Please select a channel first.');
           return;
         }
+        if(isQuoting)
+        message = `${message}<br><br><b><div style="background-color: rgb(21, 255, 17); border-left: 4px solid #004084; color: white;border-radius: 10px;padding: 10px; border-top-left-radius: 0px; border-bottom-left-radius: 0px;">${document.querySelector('.quote-box').innerHTML.replace("x", "")}</b></div>`;
         socket.emit('newMessage', {
           channelName: window.currentChannel,
           teamName: teamNameFromURL,
           sender: currentUsername,
-          message
+          message: message
         });
+        
         messageInput.value = '';
         closeEmojiBox();
+        document.querySelector('.chat-area').removeChild(document.querySelector('.quote-box'));
+        isQuoting = false;
       }
       sendMsgBtn.addEventListener('click', sendMessage);
       messageInput.addEventListener('keypress', (event) => {

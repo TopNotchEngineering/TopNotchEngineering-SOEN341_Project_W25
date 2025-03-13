@@ -306,9 +306,13 @@
 
     .quote-box {
       background-color: #1af;
+      border-left: 4px solid #004084; /* A bolder blue for the border */
+
       flex: 0.1;
-      
+      padding: 20px;
       border-radius: 10px;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
       /* width: fit-content; */
       max-width: calc(100vw - 20px);
       /* height: fit-content; */
@@ -334,10 +338,13 @@
     }
 
     .quote-button {
-      float: right;
       cursor: grab;
       background-color: rgb(34, 240, 248);
       font-size: 1rem;
+      display: inline-block;
+      border: none;
+      border-radius: 10px;
+      width: 1rem;
     }
   </style>
 </head>
@@ -533,19 +540,20 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         }
         const quoteBtn = document.createElement('button');
         quoteBtn.classList.add('quote-button');
-        quoteBtn.innerText = "Q";
+        quoteBtn.innerText = "↩️";
         quoteBtn.addEventListener('click', () => {
           quoteMessage(messageElement.innerText);
+          
         });
         messageElement.appendChild(quoteBtn);
         function quoteMessage(message){
           if(!isQuoting){
           const quoteMsg = document.createElement('div');
           quoteMsg.classList.add('quote-box');
-          quoteMsg.innerHTML += `<strong>Quoting ${msg.sender}:</strong> ${msg.message}`;
+          quoteMsg.innerHTML += `<strong>Quoting ${msg.sender}:</strong> <p style="color: white;">${msg.message}</p>`;
           const removeQuote = document.createElement('div');
           removeQuote.innerHTML = 'x'
-          removeQuote.style.display = 'inline';
+          removeQuote.style.display = 'inline-block';
           removeQuote.style.float = 'right';
           removeQuote.style.padding = '0.5rem';
           removeQuote.style.cursor = 'pointer';
@@ -631,7 +639,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
           return;
         }
         if(isQuoting)
-        message += `<div>${document.querySelector('.quote-box').innerText}</div>`;
+        message = `${message}<br><br><b><div style="background-color: rgb(21, 255, 17); border-left: 4px solid #004084; color: white;border-radius: 10px;padding: 10px; border-top-left-radius: 0px; border-bottom-left-radius: 0px;">${document.querySelector('.quote-box').innerHTML.replace("x", "")}</b></div>`;
         socket.emit('newMessage', {
           channelName: window.currentChannel,
           teamName: teamNameFromURL,
@@ -641,6 +649,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         messageInput.value = '';
         closeEmojiBox();
         document.querySelector('.chat-area').removeChild(document.querySelector('.quote-box'));
+        isQuoting = false;
       }
       sendMsgBtn.addEventListener('click', sendMessage);
       messageInput.addEventListener('keypress', (event) => {
