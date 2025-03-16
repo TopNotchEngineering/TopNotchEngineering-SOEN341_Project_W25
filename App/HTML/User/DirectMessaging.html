@@ -583,14 +583,69 @@
     // Function to render a single message 
       function renderMessage(msg) {
         console.log(msg);
-        console.log(window.currentChat);
-        console.log(senderUsername);
         const messageElement = document.createElement('chatMessages');
         messageElement.classList.add('message');
         messageElement.dataset.messageId = msg.idPrivateMessages; // use database id
 
         // Basic message content
         messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.message}`;
+
+        // Handle accept/decline button clicks
+        document.getElementById('chatMessages').addEventListener('click', (e) => {
+  // Make sure that the 'msg' object is defined and accessible here.
+  // For this example, we'll assume it's a global variable.
+  if (!msg || !msg.message) {
+    console.error("Message object is not defined.");
+    return;
+  }
+  
+  const messageStr = msg.message;
+
+  // Extract the channel name between the first two single quotes
+  const firstQuoteIndex = messageStr.indexOf("'");
+  const secondQuoteIndex = messageStr.indexOf("'", firstQuoteIndex + 1);
+  const channelName = messageStr.substring(firstQuoteIndex + 1, secondQuoteIndex).trim();
+
+  // Extract the team name between the third and fourth single quotes
+  const thirdQuoteIndex = messageStr.indexOf("'", secondQuoteIndex + 1);
+  const fourthQuoteIndex = messageStr.indexOf("'", thirdQuoteIndex + 1);
+  const teamName = messageStr.substring(thirdQuoteIndex + 1, fourthQuoteIndex).trim();
+
+  const messageId = msg.idPrivateMessages;
+  const channelMember = msg.receiver;
+  const sender = msg.sender;
+
+  // Process button clicks
+  if (e.target.tagName === 'BUTTON' && e.target.textContent === 'Accept') {
+    // Add user to channel via a POST request
+    fetch('http://localhost:5008/addUserToChannel', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        channelName: channelName,
+        teamName: teamName,
+        channelMember: channelMember
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => {
+        console.error('Error adding user to channel:', error);
+      });
+      // Update the message to show the invitation was accepted
+      e.target.parentElement.innerHTML = 'You have accepted the invitation.';
+  }
+  
+  if (e.target.tagName === 'BUTTON' && e.target.textContent === 'Decline') {
+    // Update the message to show the invitation was declined
+    e.target.parentElement.innerHTML = 'You have declined the invitation.';
+  }
+});
+
 
         // Delete button for each message
         if (msg.sender === senderUsername) {
@@ -790,8 +845,6 @@
       // Clear session or perform logout tasks here
       window.location.href = '../login.html';
     });
-
-    
   });
 
   function setTeamsLink() {

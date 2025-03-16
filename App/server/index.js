@@ -180,8 +180,8 @@ app.get('/getChannelUser', (req, res) => {
   if (!teamName || !username) {
     return res.status(400).json({ error: 'Team name is required' });
   }
-  const sql = 'SELECT DISTINCT channelName FROM channels WHERE teamName = ? AND channelMember = ?';
-  connection.query(sql, [teamName, username], (err, results) => {
+  const sql = 'SELECT DISTINCT channelName, channelOwner FROM channels WHERE teamName = ? AND (channelMember = ? OR channelOwner = ?)';
+  connection.query(sql, [teamName, username, username], (err, results) => {
     if (err) {
       console.error('Error fetching channels:', err);
       return res.status(500).json({ error: 'Database error' });
@@ -323,6 +323,7 @@ app.get('/getNonAdminUsers', (req, res) => {
 // Add a user to a channel
 app.post('/addUserToChannel', (req, res) => {
   const { channelName, teamName, channelMember } = req.body;
+  console.log(req.body);
   if (!channelName || !teamName || !channelMember) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
@@ -348,6 +349,39 @@ app.post('/addUserToChannel', (req, res) => {
       });
       res.status(200).json({
         message: 'User added to channel successfully'
+      });
+    });
+  });
+});
+
+// Add a user to a channel as owner
+app.post('/addOwnerToChannel', (req, res) => {
+  const { channelName, teamName, channelOwner } = req.body;
+  if (!channelName || !teamName || !channelOwner) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  const roomName = `${teamName}-${channelName}`;
+  const sql = 'INSERT INTO channels (channelName, teamName, channelOwner) VALUES (?, ?, ?)';
+  connection.query(sql, [channelName, teamName, channelOwner], (err, result) => {
+    if (err) {
+      console.error('Error adding user to channel:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    const autoMessage = `${channelOwner} is the channel's owner.`;
+    const insertMessageSql = 'INSERT INTO chatMessages (channelName, teamName, sender, message) VALUES (?, ?, ?, ?)';
+    connection.query(insertMessageSql, [channelName, teamName, 'System', autoMessage], (err2, result2) => {
+      if (err2) {
+        console.error('Error inserting system message:', err2);
+        return res.status(500).json({ error: 'Database error inserting system message' });
+      }
+      console.log(`Broadcasting system message to room: ${roomName}`);
+      io.to(roomName).emit('message', {
+        sender: 'System',
+        message: autoMessage,
+        id: result2.insertId
+      });
+      res.status(200).json({
+        message: 'Owner added to channel successfully'
       });
     });
   });
@@ -564,7 +598,7 @@ io.on('connection', (socket) => {
       });
     });
   });
-  
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
