@@ -388,7 +388,7 @@
       <span id="closeCreateChannelModal" class="close">&times;</span>
       <form id="createChannelForm">
         <div class="form-group">
-          <label for="channelNameInput"><h2>New Channel</h2></label>
+          <label for="channelNameInput"><h2>Create Private Channel</h2></label>
           <input type="text" id="channelNameInput" name="channelName" placeholder="Enter new channel name..." required />
         </div>
         <!-- Auto-populated Team Name Field -->
@@ -408,7 +408,7 @@
   <div id="addUserModal" class="modal hidden">
     <div class="modal-content">
       <span id="closeAddUserModal" class="close">&times;</span>
-      <h2>Add User to Channel</h2>
+      <h2>Invite User to Channel</h2> 
       <form id="addUserForm">
         <!-- Hidden fields to store the current channel and team -->
         <input type="hidden" id="modalChannelName" name="channelName" />
@@ -419,7 +419,7 @@
           </select>
         </div>
         <div class="modal-actions">
-          <button type="submit" class="save-btn">Add User</button>
+          <button type="submit" class="save-btn">Send Invite</button>
           <button type="button" id="closeAddUserModalBtn" class="cancel-btn">Cancel</button>
         </div>
       </form>
@@ -676,70 +676,76 @@ document.getElementById('teamName').textContent = teamNameFromURL;
       });
 
 
-      // Fetch and display channels for the team
-      fetchChannelsForTeam(teamNameFromURL);
+  // Fetch and display channels for the team
+  fetchChannelsForTeam(teamNameFromURL);
 
-      function createChannelListItem(channelName) {
-        const li = document.createElement('li');
-        const nameSpan = document.createElement('span');
-        nameSpan.classList.add('channel-name');
-        nameSpan.innerHTML = `# ${channelName} `;
-        nameSpan.onclick = () => loadChannel(channelName);
-        li.appendChild(nameSpan);
+  function createChannelListItem(channelObj) {
+  const channelName = channelObj.channelName;
+  const li = document.createElement('li');
 
-        // removed feature for users, do not need for the momment
-        //const addUserIcon = document.createElement('img');
-        //addUserIcon.src = "../../images/addusericon.png";
-        //addUserIcon.classList.add('adduser');
-        //li.appendChild(addUserIcon);
+  const nameSpan = document.createElement('span');
+  nameSpan.classList.add('channel-name');
+  nameSpan.innerHTML = `# ${channelName} `;
+  nameSpan.onclick = () => loadChannel(channelName);
+  li.appendChild(nameSpan);
 
-        const trashSpan = document.createElement('span');
-        trashSpan.classList.add('delete-channel');
-        trashSpan.textContent = "🗑️";
-        trashSpan.onclick = (e) => {
-          e.stopPropagation();
-          if (confirm(`Are you sure you want to delete channel #${channelName}?`)) {
-            const teamName = document.getElementById('teamName').textContent;
-            fetch('http://localhost:5008/deleteChannel', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ channelName, teamName })
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.message === 'Channel deleted successfully') {
-                li.remove();
-              } else {
-                alert('Error deleting channel: ' + data.error);
-              }
-            })
-            .catch(error => {
-              console.error('Error deleting channel:', error);
-              alert('An error occurred while deleting the channel.');
-            });
-          }
-        };
-        li.appendChild(trashSpan);
-        return li;
+  const addUserIcon = document.createElement('img');
+  addUserIcon.src = "../../images/addusericon.png";
+  addUserIcon.classList.add('adduser');
+
+  const trashSpan = document.createElement('span');
+  trashSpan.classList.add('delete-channel');
+  trashSpan.textContent = "🗑️";
+  trashSpan.onclick = (e) => {
+    e.stopPropagation();
+    if (confirm(`Are you sure you want to delete channel #${channelName}?`)) {
+      const teamName = document.getElementById('teamName').textContent;
+      fetch('http://localhost:5008/deleteChannel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channelName, teamName })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message === 'Channel deleted successfully') {
+          li.remove();
+        } else {
+          alert('Error deleting channel: ' + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting channel:', error);
+        alert('An error occurred while deleting the channel.');
+      });
+    }
+  };
+
+  // Append the icons to the list item if the user is the channel owner
+  if (channelObj.channelOwner === currentUsername) {
+    li.appendChild(addUserIcon);
+    li.appendChild(trashSpan);
+  }
+  return li;
+}
+
+function fetchChannelsForTeam(teamName) {
+  fetch(`http://localhost:5008/getChannelUser?teamName=${encodeURIComponent(teamName)}&username=${currentUsername}`)
+    .then(response => response.json())
+    .then(data => {
+      const channelList = document.getElementById('channelList');
+      channelList.innerHTML = '';
+      if (data.channels && data.channels.length > 0) {
+        data.channels.forEach(channelObj => {
+          const newChannelItem = createChannelListItem(channelObj);
+          channelList.appendChild(newChannelItem);
+        });
       }
+    })
+    .catch(error => {
+      console.error('Error fetching channels:', error);
+    });
+}
 
-      function fetchChannelsForTeam(teamName) {
-        fetch(`http://localhost:5008/getChannelUser?teamName=${encodeURIComponent(teamName)}&username=${currentUsername}`)
-          .then(response => response.json())
-          .then(data => {
-            const channelList = document.getElementById('channelList');
-            channelList.innerHTML = '';
-            if (data.channels && data.channels.length > 0) {
-              data.channels.forEach(channelObj => {
-                const newChannelItem = createChannelListItem(channelObj.channelName);
-                channelList.appendChild(newChannelItem);
-              });
-            }
-          })
-          .catch(error => {
-            console.error('Error fetching channels:', error);
-          });
-      }
 
       // PROFILE MODAL functionality
       const profileModal = document.getElementById('profileModal');
@@ -844,6 +850,25 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         } else {
           alert('Please enter a channel name.');
         }
+        // Add current user to the new channel with a post request
+        fetch('http://localhost:5008/addOwnerToChannel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channelName, teamName: teamNameValue, channelOwner: currentUsername })
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert(`You have been added to the channel "${channelName}"!`);
+            } else {
+              alert('Error adding user to channel: ' + data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while adding user to the channel.');
+          });
+        
       });
       
       // Function to populate non-admin users in the modal dropdown
@@ -895,37 +920,38 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         }
       });
       
-      // Handle submission of the add user modal form
-      document.getElementById('addUserForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const channelName = document.getElementById('modalChannelName').value;
-        const teamName = document.getElementById('modalTeamName').value;
-        const channelMember = document.getElementById('channelMember').value;
-        try {
-          const response = await fetch('http://localhost:5008/addUserToChannel', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ channelName, teamName, channelMember })
-          });
-          const result = await response.json();
-          if (!response.ok) {
-            throw new Error(result.error || 'Failed to add user to channel');
-          }
-          alert(result.message);
-          if (window.currentChannel === channelName) {
-            const chatMessages = document.getElementById('chatMessages');
-            const systemMessage = document.createElement('div');
-            systemMessage.style.color = 'red';
-            chatMessages.appendChild(systemMessage);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-          }
-          document.getElementById('addUserModal').classList.add('hidden');
-        } catch (error) {
-          alert(error.message);
-          console.error('Channel user addition error:', error);
-        }
+      
+    // Handle invite form submission
+    document.getElementById('addUserForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Get the channel and team details as well as the channel member to invite
+      const channelName = document.getElementById('modalChannelName').value;
+      const teamName = document.getElementById('modalTeamName').value;
+      const channelMember = document.getElementById('channelMember').value.trim();
+
+      // Construct the invitation message 
+      const inviteMessage = `Hello ${channelMember}, I am inviting you to join my channel '${channelName}' on team '${teamName}'.`;
+
+      // Append accept and decline buttons to the message
+      const acceptButton = `<button style="background-color: #28a745; color: #fff; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">Accept</button>`;
+      const declineButton = `<button style="background-color: #dc3545; color: #fff; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">Decline</button>`;
+      const messageWithButtons = `${inviteMessage} ${acceptButton} ${declineButton}`;
+
+      // Emit the direct message invitation using the same event used for sending DMs
+      socket.emit('newPrivateMessage', {
+        sender: currentUsername,
+        receiver: channelMember,
+        message: messageWithButtons
       });
+
+      // Optionally give feedback to the sender
+      alert('Invitation sent as a direct message!');
+
+      // Close the modal
+      document.getElementById('addUserModal').classList.add('hidden');
     });
+});
 
     function setTeamsLink() {
         // 1. Get the username
