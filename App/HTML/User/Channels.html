@@ -149,6 +149,44 @@
       cursor: pointer;
     }
 
+    #changeStatusBtn {
+      background-color: #28a745;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #statusChangeForm {
+      display: flex;
+      justify-content: space-evenly;
+    }
+
+    #statusChangeForm button{
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    #statusChangeForm #statusOptionOnline{
+      background-color: #0eb635
+    }
+
+    #statusChangeForm #statusOptionAway{
+      background-color: #e5960e
+    }
+
+    #statusChangeForm #statusOptionOffline{
+      background-color: #525252
+    }
+
+    #statusChangeForm #statusOptionDND{
+      background-color: #0e59e5
+    }
+
     main#channelsPage {
       max-width: 100% !important;
       margin: 0 !important;
@@ -370,6 +408,17 @@
     <div class="modal-content">
       <span id="closeModal" class="close">&times;</span>
       <h2>Edit Profile</h2>
+      <div>
+        <button id="changeStatusBtn"  class="nav-btn" style="margin-bottom: 1rem;">Update Status</button>
+        <div id="statusChangeSection" class="hidden">
+          <form id="statusChangeForm">
+            <button id="statusOptionOnline">Online</button>
+            <button id="statusOptionAway">Away</button>
+            <button id="statusOptionOffline">Offline</button>
+            <button id="statusOptionDND">Do Not Disturb</button>
+          </form>
+        </div>
+      </div>
       <form id="profileForm">
         <!-- Profile form fields go here -->
       </form>
@@ -755,42 +804,81 @@ function fetchChannelsForTeam(teamName) {
       const changePasswordBtn = document.getElementById('changePasswordBtn');
       const passwordChangeSection = document.getElementById('passwordChangeSection');
       const logoutBtn = document.getElementById('modalLogoutBtn');
-      
+      const changeStatusBtn = document.getElementById('changeStatusBtn');
+      const statusChangeSection = document.getElementById('statusChangeSection');
+      const statusInput = document.getElementById('statusInput');
+      const statusOptionAway = document.getElementById('statusOptionAway');
+      const statusOptionOnline = document.getElementById('statusOptionOnline');
+      const statusOptionDND = document.getElementById('statusOptionDND');
+      const statusOptionOffline = document.getElementById('statusOptionOffline');
+
+      // Open profile modal
       profileBtn.addEventListener('click', () => {
         profileModal.classList.remove('hidden');
       });
+
+      // Close profile modal
       if (closeModal) {
         closeModal.addEventListener('click', () => {
           profileModal.classList.add('hidden');
           passwordChangeSection.classList.add('hidden');
         });
       }
+
+      // Close profile modal when clicked outside
       window.addEventListener('click', (event) => {
         if (event.target === profileModal) {
           profileModal.classList.add('hidden');
           passwordChangeSection.classList.add('hidden');
         }
       });
+
+      // Toggle password change section
       if (changePasswordBtn) {
         changePasswordBtn.addEventListener('click', () => {
           passwordChangeSection.classList.toggle('hidden');
         });
       }
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-          window.location.href = '../login.html';
+
+      // Toggle status change section
+      if (changeStatusBtn) {
+        changeStatusBtn.addEventListener('click', () => {
+          statusChangeSection.classList.toggle('hidden');
         });
       }
-      document.getElementById('profileForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert('Profile updated successfully!');
-        profileModal.classList.add('hidden');
-      });
-      document.getElementById('passwordChangeForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        alert('Password updated successfully!');
-        passwordChangeSection.classList.add('hidden');
-      });
+
+      // Update profile status
+      if (statusOptionAway) {
+        statusOptionAway.addEventListener('click', () => {
+          e.preventDefault();
+          statusInput.style.color = "#e5960e";
+          statusInput.textContent = "Away"; 
+        });
+      }
+
+      if (statusOptionOnline) {
+        statusOptionOnline.addEventListener('click', () => {
+          e.preventDefault();
+          statusInput.style.color = "#0eb635"; 
+          statusInput.textContent = "Online"; 
+        });
+      }
+
+      if (statusOptionOffline) {
+        statusOptionOffline.addEventListener('click', () => {
+          e.preventDefault();
+          statusInput.style.color = "#525252";  
+          statusInput.textContent = "Offline"; 
+        });
+      }
+
+      if (statusOptionDND) {
+        statusOptionDND.addEventListener('click', () => {
+          e.preventDefault();
+          statusInput.style.color = "#0e59e5";  
+          statusInput.textContent = "Do Not Disturb";  
+        });
+      }
       
       // CREATE CHANNEL MODAL functionality
       const newChannelBtn = document.getElementById('newChannelBtn');
