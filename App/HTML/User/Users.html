@@ -147,6 +147,45 @@
         #modalLogoutBtn:hover {
             background-color: #c82333;
         }
+
+        #changeStatusBtn {
+        background-color: #28a745;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+
+        #statusChangeForm {
+        display: flex;
+        justify-content: space-evenly;
+        }
+
+        #statusChangeForm button{
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+
+        #statusChangeForm #statusOptionOnline{
+        background-color: #0eb635
+        }
+
+        #statusChangeForm #statusOptionAway{
+        background-color: #e5960e
+        }
+
+        #statusChangeForm #statusOptionOffline{
+        background-color: #525252
+        }
+
+        #statusChangeForm #statusOptionDND{
+        background-color: #dc3545
+        }
+
         /* Utility: hidden class */
         .hidden {
             display: none;
@@ -228,6 +267,9 @@
         .user-item.online {
             border-left: 4px solid #28a745;
         }
+        .user-item.away {
+            border-left: 4px solid #e5960e;
+        }
         .user-item.offline {
             border-left: 4px solid #6c757d;
         }
@@ -266,6 +308,17 @@
     <div class="modal-content">
         <span id="closeModal" class="close">&times;</span>
         <h2>Edit Profile</h2>
+        <div>
+            <button id="changeStatusBtn"  class="nav-btn" style="margin-bottom: 1rem;">Update Status</button>
+            <div id="statusChangeSection" class="hidden">
+              <form id="statusChangeForm">
+                <button id="statusOptionOnline">Online</button>
+                <button id="statusOptionAway">Away</button>
+                <button id="statusOptionOffline">Offline</button>
+                <button id="statusOptionDND">Do Not Disturb</button>
+              </form>
+            </div>
+          </div>
         <!-- Profile Details Form -->
         <form id="profileForm">
             <!-- Hidden field to store the original username -->
@@ -324,8 +377,9 @@
         <div class="filters-header">
             <button id="filterAll">All</button>
             <button id="filterOnline">Online</button>
-            <button id="filterOffline">Offline</button>
             <button id="filterBusy">Busy</button>
+            <button id="filterAway">Away</button>
+            <button id="filterOffline">Offline</button>
         </div>
     </div>
 
@@ -361,7 +415,7 @@
     // Render users in #userDisplayBox
     function displayUsers(filteredUsers) {
         const userBox = document.getElementById('userDisplayBox');
-        userBox.innerHTML = ''; // Clear existing
+        userBox.innerHTML = '';
 
         if (!filteredUsers.length) {
             userBox.innerHTML = '<p>No users found for this status.</p>';
@@ -370,14 +424,44 @@
 
         filteredUsers.forEach(user => {
             const userDiv = document.createElement('div');
-            userDiv.classList.add('user-item', user.status); // e.g. "user-item online"
+            userDiv.classList.add('user-item', user.status);
             userDiv.innerHTML = `
-        <span class="username">${user.username}</span>
-        <span class="status">${user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span>
-      `;
+                <span class="username">${user.username}</span>
+                <div class="status-container">
+                    <span class="status">${user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span>
+                    ${user.status === 'offline' || user.status === 'away' ? `<span class="last-seen">: ${user.lastSeen || 'Unknown'}</span>` : ''}
+                </div>
+            `;
             userBox.appendChild(userDiv);
         });
     }
+
+
+
+    function updateUserStatus(username, newStatus) {
+        const user = allUsers.find(u => u.username === username);
+        if (user) {
+            user.status = newStatus;
+            displayUsers(allUsers);
+        }
+    }
+
+    document.getElementById('statusChangeForm').addEventListener('click', (e) => {
+        if (e.target.tagName === 'BUTTON') {
+            e.preventDefault();
+            const statusMap = {
+                statusOptionOnline: 'online',
+                statusOptionAway: 'away',
+                statusOptionOffline: 'offline',
+                statusOptionDND: 'busy'
+            };
+            const newStatus = statusMap[e.target.id];
+            const username = document.getElementById('profileUsernameInput').value;
+            updateUserStatus(username, newStatus);
+        }
+    });
+
+    
 
     // Filter functions
     function filterAll() {
@@ -391,10 +475,17 @@
         const offlineUsers = allUsers.filter(u => u.status === 'offline');
         displayUsers(offlineUsers);
     }
+    function filterAway() {
+        const awayUsers = allUsers.filter(u => u.status === 'away');
+        displayUsers(awayUsers);
+    }
     function filterBusy() {
         const busyUsers = allUsers.filter(u => u.status === 'busy');
         displayUsers(busyUsers);
     }
+
+
+
 
     // On page load, show ALL by default
     document.addEventListener('DOMContentLoaded', () => {
@@ -405,45 +496,91 @@
         document.getElementById('filterOnline').addEventListener('click', filterOnline);
         document.getElementById('filterOffline').addEventListener('click', filterOffline);
         document.getElementById('filterBusy').addEventListener('click', filterBusy);
+        document.getElementById('filterAway').addEventListener('click', filterAway)
 
         // Profile Modal logic
-        const profileModal = document.getElementById('profileModal');
-        const profileBtn   = document.getElementById('profileBtn');
-        const closeModal   = document.getElementById('closeModal');
-        const changePasswordBtn     = document.getElementById('changePasswordBtn');
-        const passwordChangeSection = document.getElementById('passwordChangeSection');
-        const logoutBtn             = document.getElementById('modalLogoutBtn');
+    const profileModal = document.getElementById('profileModal');
+    const profileBtn = document.getElementById('profileBtn');
+    const closeModal = document.getElementById('closeModal');
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const passwordChangeSection = document.getElementById('passwordChangeSection');
+    const logoutBtn = document.getElementById('modalLogoutBtn');
+    const changeStatusBtn = document.getElementById('changeStatusBtn');
+    const statusChangeSection = document.getElementById('statusChangeSection');
+    const statusInput = document.getElementById('statusInput');
+    const statusOptionAway = document.getElementById('statusOptionAway');
+    const statusOptionOnline = document.getElementById('statusOptionOnline');
+    const statusOptionDND = document.getElementById('statusOptionDND');
+    const statusOptionOffline = document.getElementById('statusOptionOffline');
 
-        // Show modal on click
-        profileBtn.addEventListener('click', () => {
-            profileModal.classList.remove('hidden');
+      // Open profile modal
+      profileBtn.addEventListener('click', () => {
+        profileModal.classList.remove('hidden');
+      });
+
+      // Close profile modal
+      if (closeModal) {
+        closeModal.addEventListener('click', () => {
+          profileModal.classList.add('hidden');
+          passwordChangeSection.classList.add('hidden');
         });
-        // Close modal
-        if (closeModal) {
-            closeModal.addEventListener('click', () => {
-                profileModal.classList.add('hidden');
-                passwordChangeSection.classList.add('hidden');
-            });
+      }
+
+      // Close profile modal when clicked outside
+      window.addEventListener('click', (event) => {
+        if (event.target === profileModal) {
+          profileModal.classList.add('hidden');
+          passwordChangeSection.classList.add('hidden');
         }
-        window.addEventListener('click', (event) => {
-            if (event.target === profileModal) {
-                profileModal.classList.add('hidden');
-                passwordChangeSection.classList.add('hidden');
-            }
+      });
+
+      // Toggle password change section
+      if (changePasswordBtn) {
+        changePasswordBtn.addEventListener('click', () => {
+          passwordChangeSection.classList.toggle('hidden');
         });
-        // Toggle Change Password form
-        if (changePasswordBtn) {
-            changePasswordBtn.addEventListener('click', () => {
-                passwordChangeSection.classList.toggle('hidden');
-            });
-        }
-        // Logout
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                // Clear session or perform logout tasks here
-                window.location.href = '../login.html';
-            });
-        }
+      }
+
+      // Toggle status change section
+      if (changeStatusBtn) {
+        changeStatusBtn.addEventListener('click', () => {
+          statusChangeSection.classList.toggle('hidden');
+        });
+      }
+
+      // Update profile status
+      if (statusOptionAway) {
+        statusOptionAway.addEventListener('click', () => {
+          e.preventDefault();
+          statusInput.style.color = "#e5960e";
+          statusInput.textContent = "Away"; 
+        });
+      }
+
+      if (statusOptionOnline) {
+        statusOptionOnline.addEventListener('click', () => {
+          e.preventDefault();
+          statusInput.style.color = "#0eb635"; 
+          statusInput.textContent = "Online"; 
+        });
+      }
+
+      if (statusOptionOffline) {
+        statusOptionOffline.addEventListener('click', () => {
+          e.preventDefault();
+          statusInput.style.color = "#525252";  
+          statusInput.textContent = "Offline"; 
+        });
+      }
+
+      if (statusOptionDND) {
+        statusOptionDND.addEventListener('click', () => {
+          e.preventDefault();
+          statusInput.style.color = "#0e59e5";  
+          statusInput.textContent = "Do Not Disturb";  
+        });
+      }
+
         // Mock form submissions
         document.getElementById('profileForm').addEventListener('submit', (e) => {
             e.preventDefault();
