@@ -913,52 +913,34 @@ function fetchChannelsForTeam(teamName) {
         const channelName = document.getElementById('channelNameInput').value.trim();
         const teamNameValue = document.getElementById('teamNameInput').value.trim();
         if (channelName) {
-          const payload = { channelName, teamName: teamNameValue };
-          fetch('http://localhost:5008/createChannel', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              const channelList = document.getElementById('channelList');
-              const newChannelItem = createChannelListItem(channelName);
-              channelList.appendChild(newChannelItem);
-              alert(`Channel "${channelName}" created!`);
-              createChannelForm.reset();
-              createChannelModal.classList.add('hidden');
-            } else {
-              alert('Error creating channel: ' + data.error);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while creating the channel.');
-          });
-        } else {
-          alert('Please enter a channel name.');
-        }
-        // Add current user to the new channel with a post request
-        fetch('http://localhost:5008/addOwnerToChannel', {
+          const payload = { channelName, teamName: teamNameValue, channelOwner: currentUsername };
+          fetch('http://localhost:5008/createPrivateChannel', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ channelName, teamName: teamNameValue, channelOwner: currentUsername })
+          body: JSON.stringify(payload)
         })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              alert(`You have been added to the channel "${channelName}"!`);
-            } else {
-              alert('Error adding user to channel: ' + data.error);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while adding user to the channel.');
-          });
-        
+        .then(response => response.json())
+        .then(data => {
+        if (data) {
+          const channelList = document.getElementById('channelList');
+          const newChannelItem = createChannelListItem(channelName);
+          alert(`Channel "${channelName}" created!`);
+          createChannelForm.reset();
+          createChannelModal.classList.add('hidden');
+          channelList.appendChild(newChannelItem);
+          window.location.reload();
+        } else {
+        alert('Error creating channel: ' + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while creating the channel.');
       });
+    } else {
+      alert('Please enter a channel name.');
+  }
+});
       
       // Function to populate non-admin users in the modal dropdown
       async function populateNonAdminUsers() {

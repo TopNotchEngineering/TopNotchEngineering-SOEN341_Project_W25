@@ -354,8 +354,8 @@ app.post('/addUserToChannel', (req, res) => {
   });
 });
 
-// Add a user to a channel as owner
-app.post('/addOwnerToChannel', (req, res) => {
+// Create a private channel and add owner to it
+app.post('/createPrivateChannel', (req, res) => {
   const { channelName, teamName, channelOwner } = req.body;
   if (!channelName || !teamName || !channelOwner) {
     return res.status(400).json({ error: 'Missing required fields' });
