@@ -259,7 +259,7 @@
     .user-item.offline {
       border-left: 4px solid #6c757d;
     }
-    .user-item.busy {
+    .user-item.dnd {
       border-left: 4px solid #dc3545;
     }
     .user-item .username {
@@ -439,11 +439,12 @@ function displayUsers(users) {
 
     // Only set the last seen text for away or offline statuses.
     let lastSeenText = '';
+    console.log(user.lastSeen)
     if (status === 'away' || status === 'offline') {
       if (user.lastSeen) {
         // Format to show only the time in Montreal time zone.
         const timeOnly = new Date(user.lastSeen).toLocaleTimeString('en-US', {
-          timeZone: 'America/Toronto',
+          timeZone: 'Etc/GMT+8',
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
