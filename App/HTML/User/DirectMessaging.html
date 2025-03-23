@@ -408,7 +408,7 @@
     <ul class="nav-links">
       <li><a id="teamsLink" href="#">Teams</a>
       <li><a id="DirectMessagingLink" href = "#" class="active">Direct Messaging</a></li>
-      <li><a id="Users" href="#">Users</a></li>
+      <li><a id="UsersLink" href="#">Users</a></li>
     </ul>
     <div class="profile-container">
       <button id="profileBtn" class="profile-btn">
@@ -608,7 +608,7 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const senderUsername = urlParams.get('username') || 'Username';
-
+    const teamNameFromURL = urlParams.get('team') || 'Team Name';
     socket.emit('joinPrivateRoom', { username: senderUsername });
 
     // Listen for private messages
@@ -631,73 +631,73 @@
     window.currentChannel = null;
     let isQuoting = false;
 
-    // Function to render a single message 
-      function renderMessage(msg) {
-        console.log(msg);
-        const messageElement = document.createElement('chatMessages');
-        messageElement.classList.add('message');
-        messageElement.dataset.messageId = msg.idPrivateMessages; // use database id
+  function renderMessage(msg) {
+  const messageElement = document.createElement('div');
+  messageElement.classList.add('message');
+  messageElement.dataset.messageId = msg.idPrivateMessages;
 
-        // Basic message content
-        messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.message}`;
+  messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.message}`;
 
-        // Handle accept/decline button clicks
-        document.getElementById('chatMessages').addEventListener('click', (e) => {
-  // Make sure that the 'msg' object is defined and accessible here.
-  // For this example, we'll assume it's a global variable.
-  if (!msg || !msg.message) {
-    console.error("Message object is not defined.");
-    return;
-  }
-  
-  const messageStr = msg.message;
+  if (msg.message.includes('Accept') && msg.message.includes('Decline')) {
+    const buttons = messageElement.querySelectorAll('button');
+    if (buttons.length >= 2) {
+      const acceptButton = buttons[0];
+      const declineButton = buttons[1];
 
-  // Extract the channel name between the first two single quotes
-  const firstQuoteIndex = messageStr.indexOf("'");
-  const secondQuoteIndex = messageStr.indexOf("'", firstQuoteIndex + 1);
-  const channelName = messageStr.substring(firstQuoteIndex + 1, secondQuoteIndex).trim();
+      acceptButton.addEventListener('click', () => {
+        const messageStr = msg.message;
+        const firstQuoteIndex = messageStr.indexOf("'");
+        const secondQuoteIndex = messageStr.indexOf("'", firstQuoteIndex + 1);
+        const channelName = messageStr.substring(firstQuoteIndex + 1, secondQuoteIndex).trim();
+        const thirdQuoteIndex = messageStr.indexOf("'", secondQuoteIndex + 1);
+        const fourthQuoteIndex = messageStr.indexOf("'", thirdQuoteIndex + 1);
+        const teamName = messageStr.substring(thirdQuoteIndex + 1, fourthQuoteIndex).trim();
 
-  // Extract the team name between the third and fourth single quotes
-  const thirdQuoteIndex = messageStr.indexOf("'", secondQuoteIndex + 1);
-  const fourthQuoteIndex = messageStr.indexOf("'", thirdQuoteIndex + 1);
-  const teamName = messageStr.substring(thirdQuoteIndex + 1, fourthQuoteIndex).trim();
+        fetch('http://localhost:5008/addUserToChannel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            channelName: channelName,
+            teamName: teamName,
+            channelMember: msg.receiver
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
 
-  const messageId = msg.idPrivateMessages;
-  const channelMember = msg.receiver;
-  const sender = msg.sender;
-
-  // Process button clicks
-  if (e.target.tagName === 'BUTTON' && e.target.textContent === 'Accept') {
-    // Add user to channel via a POST request
-    fetch('http://localhost:5008/addUserToChannel', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        channelName: channelName,
-        teamName: teamName,
-        channelMember: channelMember
-      })
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-      })
-      .catch(error => {
-        console.error('Error adding user to channel:', error);
+            fetch('http://localhost:5008/updateOfferDecision', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ messageId: msg.idPrivateMessages, decision: 'yes' })
+            })
+              .then(resp => resp.json())
+              .then(updateData => {
+                console.log(updateData);
+                // Update the UI to reflect the decision
+                messageElement.innerHTML = 'You have accepted the invitation.';
+              })
+              .catch(err => console.error('Error updating invitation:', err));
+          })
+          .catch(error => console.error('Error adding user to channel:', error));
       });
-      // Update the message to show the invitation was accepted
-      e.target.parentElement.innerHTML = 'You have accepted the invitation.';
-  }
-  
-  if (e.target.tagName === 'BUTTON' && e.target.textContent === 'Decline') {
-    // Update the message to show the invitation was declined
-    e.target.parentElement.innerHTML = 'You have declined the invitation.';
-  }
-});
 
-
+      declineButton.addEventListener('click', () => {
+        fetch('http://localhost:5008/updateOfferDecision', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messageId: msg.idPrivateMessages, decision: 'no' })
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            // Update the UI to reflect the decision
+            messageElement.innerHTML = 'You have declined the invitation.';
+          })
+          .catch(error => console.error('Error updating offer decision:', error));
+      });
+    }
+  }
         // Delete button for each message
         if (msg.sender === senderUsername) {
         const deleteBtn = document.createElement('button');
@@ -976,6 +976,15 @@
   
       // 3. Run after DOM is ready
       document.addEventListener('DOMContentLoaded', setDirectMessagingLink);
+
+      function setUsersLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            if (username) {
+                document.getElementById('UsersLink').href = `Users.html?username=${username}`;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', setUsersLink);
 </script>
 </body>
 </html>
