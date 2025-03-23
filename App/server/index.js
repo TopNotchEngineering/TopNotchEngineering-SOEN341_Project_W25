@@ -91,7 +91,7 @@ app.get('/getUser', (req, res) => {
   if (!username) {
     return res.status(400).json({ error: 'No username provided' });
   }
-  const sql = "SELECT username, firstName, lastName, logInEmail AS email FROM members WHERE username = ?";
+  const sql = "SELECT username, firstName, lastName, logInEmail AS email, status, lastSeen FROM members WHERE username = ?";
   connection.query(sql, [username], (err, results) => {
     if (err) {
       console.error('Error fetching user data:', err);
@@ -106,7 +106,7 @@ app.get('/getUser', (req, res) => {
 
 // Get all users
 app.get('/getUsers', (req, res) => {
-  const sql = 'SELECT username, firstName, lastName, logInEmail AS email FROM members';
+  const sql = 'SELECT username, firstName, lastName, logInEmail AS email, status, lastSeen FROM members';
   connection.query(sql, (err, results) => {
     if (err) {
       console.error('Error fetching users:', err);
@@ -574,6 +574,41 @@ app.post('/removeUserFromChannel', (req, res) => {
       }
       // Send the response regardless of system message insertion result.
       res.status(200).json({ message: 'User removed from channel successfully' });
+    });
+  });
+});
+
+// Update user status endpoint
+app.post('/updateStatus', (req, res) => {
+  const { username, status } = req.body;
+  if (!username || !status) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  
+  let sql, params;
+  if (status === 'away' || status === 'offline') {
+    // When setting away/offline, update lastSeen to the current time
+    sql = 'UPDATE members SET status = ?, lastSeen = NOW() WHERE username = ?';
+    params = [status, username];
+  } else {
+    sql = 'UPDATE members SET status = ? WHERE username = ?';
+    params = [status, username];
+  }
+  
+  connection.query(sql, params, (err, result) => {
+    if (err) {
+      console.error('Error updating status:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    // Fetch updated user data including lastSeen
+    connection.query('SELECT username, status, lastSeen FROM members WHERE username = ?', [username], (err2, results) => {
+      if (err2) {
+        console.error('Error fetching updated user data:', err2);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      const updatedUser = results[0];
+      io.emit('statusUpdated', updatedUser); // emit event for real time update
+      res.status(200).json({ message: 'Status updated successfully', user: updatedUser });
     });
   });
 });
