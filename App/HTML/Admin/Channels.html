@@ -398,7 +398,7 @@
       <ul class="nav-links">
         <li><a id="teamsLink" href="#">Teams</a>
         <li><a id="DirectMessagingLink" href = "#">Direct Messaging</a></li>
-        <li><a id="Users" href = "#">Users</a></li>
+        <li><a id="UsersLink" href = "#">Users</a></li>
       </ul>
       <div class="profile-container">
         <button id="profileBtn" class="profile-btn">
@@ -1072,6 +1072,15 @@ document.getElementById('teamName').textContent = teamNameFromURL;
   
       // 3. Run after DOM is ready
       document.addEventListener('DOMContentLoaded', setDirectMessagingLink);
+
+      function setUsersLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            if (username) {
+                document.getElementById('UsersLink').href = `Users.html?username=${username}`;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', setUsersLink);
   </script>
   <script src="/App/JS/script.js"></script>
 </body>

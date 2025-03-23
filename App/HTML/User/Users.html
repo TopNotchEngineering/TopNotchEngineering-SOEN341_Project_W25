@@ -293,7 +293,7 @@
         <ul class="nav-links">
             <li><a id="teamsLink" href="#">Teams</a></li>
             <li><a id="DirectMessagingLink" href="#">Direct Messaging</a></li>
-            <li><a id="Users" href="#" class="active">Users</a></li>
+            <li><a id="UsersLink" href="#" class="active">Users</a></li>
         </ul>
         <div class="profile-container">
             <button id="profileBtn" class="profile-btn">
@@ -610,6 +610,15 @@
         }
         setTeamsLink();
         setDirectMessagingLink();
+
+        function setUsersLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            if (username) {
+                document.getElementById('UsersLink').href = `Users.html?username=${username}`;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', setUsersLink);
     });
 </script>
 </body>
