@@ -259,7 +259,7 @@
     .user-item.offline {
       border-left: 4px solid #6c757d;
     }
-    .user-item.busy {
+    .user-item.dnd {
       border-left: 4px solid #dc3545;
     }
     .user-item .username {
@@ -443,7 +443,7 @@ function displayUsers(users) {
       if (user.lastSeen) {
         // Format to show only the time in Montreal time zone.
         const timeOnly = new Date(user.lastSeen).toLocaleTimeString('en-US', {
-          timeZone: 'America/Toronto',
+          timeZone: 'Etc/GMT+8',
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
@@ -515,7 +515,7 @@ function filterBusy() {
 fetch('http://localhost:5008/getUsers')
     .then(response => response.json())
     .then(data => {
-    const busyUsers = data.users.filter(u => u.status === 'busy');
+    const busyUsers = data.users.filter(u => u.status === 'dnd');
     displayUsers(busyUsers);
     })
     .catch(error => console.error('Error fetching busy users:', error));
