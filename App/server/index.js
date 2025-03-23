@@ -34,8 +34,6 @@ connection.connect((err) => {
   console.log('Connected to MySQL database!');
 });
 
-// ----- REST API Endpoints -----
-
 // Register a new user
 app.post('/register', (req, res) => {
   const { username, firstName, lastName, country, logInEmail, logInPassword, isAdmin } = req.body;
@@ -93,7 +91,7 @@ app.get('/getUser', (req, res) => {
   if (!username) {
     return res.status(400).json({ error: 'No username provided' });
   }
-  const sql = "SELECT username, firstName, lastName, logInEmail AS email FROM members WHERE username = ?";
+  const sql = "SELECT username, firstName, lastName, logInEmail AS email, status, lastSeen FROM members WHERE username = ?";
   connection.query(sql, [username], (err, results) => {
     if (err) {
       console.error('Error fetching user data:', err);
@@ -108,7 +106,7 @@ app.get('/getUser', (req, res) => {
 
 // Get all users
 app.get('/getUsers', (req, res) => {
-  const sql = 'SELECT username, firstName, lastName, logInEmail AS email FROM members';
+  const sql = 'SELECT username, firstName, lastName, logInEmail AS email, status, lastSeen FROM members';
   connection.query(sql, (err, results) => {
     if (err) {
       console.error('Error fetching users:', err);
@@ -468,6 +466,149 @@ app.post('/deleteMessage', (req, res) => {
       const roomName = `${teamName}-${channelName}`;
       io.to(roomName).emit('deleteMessage', { messageId });
       res.status(200).json({ message: 'Message deleted successfully' });
+    });
+  });
+});
+
+// Update invitation message endpoint
+app.post('/updateOfferDecision', (req, res) => {
+  const { messageId, decision } = req.body;
+  
+  // Determine the new message based on the decision
+  const newMessage = decision === 'yes'
+    ? 'Your invitation was accepted.'
+    : 'Your invitation was declined';
+
+  const sql = 'UPDATE privateMessages SET message = ? WHERE idPrivateMessages = ?';
+  connection.query(sql, [newMessage, messageId], (err, result) => {
+    if (err) {
+      console.error('Error updating invitation message:', err);
+      return res.status(500).json({ error: 'Database error updating invitation message' });
+    }
+    res.status(200).json({ message: 'Invitation message updated successfully' });
+  });
+});
+
+// GET endpoint to retrieve available channels for a team that the user is not part of.
+app.get('/getAvailableChannels', (req, res) => {
+  const { teamName, username } = req.query;
+  if (!teamName || !username) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  const sql = `
+    SELECT DISTINCT channelName, channelOwner
+    FROM channels 
+    WHERE teamName = ? 
+      AND channelName NOT IN (
+        SELECT DISTINCT channelName 
+        FROM channels 
+        WHERE teamName = ? AND (channelMember = ? OR channelOwner = ?)
+      )
+  `;
+  connection.query(sql, [teamName, teamName, username, username], (err, results) => {
+    if (err) {
+      console.error('Error fetching available channels:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(200).json({ channels: results });
+  });
+});
+
+// POST endpoint to process a join channel request.
+app.post('/joinChannel', (req, res) => {
+  const { channelName, teamName, username } = req.body;
+  if (!channelName || !teamName || !username) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  // Optionally, check if the user is already in the channel before proceeding.
+  const checkSql = `
+    SELECT * FROM channels 
+    WHERE teamName = ? AND channelName = ? 
+      AND (channelMember = ? OR channelOwner = ?)
+  `;
+  connection.query(checkSql, [teamName, channelName, username, username], (err, results) => {
+    if (err) {
+      console.error('Error checking channel membership:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    if (results.length > 0) {
+      return res.status(400).json({ error: 'User is already a member of this channel' });
+    }
+    // Insert a new record to add the user to the channel.
+    const insertSql = `INSERT INTO channels (channelName, teamName, channelMember) VALUES (?, ?, ?)`;
+    connection.query(insertSql, [channelName, teamName, username], (err, results) => {
+      if (err) {
+        console.error('Error joining channel:', err);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      res.status(200).json({ message: 'Successfully joined the channel' });
+    });
+  });
+});
+
+app.post('/removeUserFromChannel', (req, res) => {
+  const { channelName, teamName, username } = req.body;
+  if (!channelName || !teamName || !username) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  const sql = `
+    DELETE FROM channels 
+    WHERE channelName = ? 
+      AND teamName = ? 
+      AND (channelMember = ? OR channelOwner = ?)
+  `;
+  connection.query(sql, [channelName, teamName, username, username], (err, result) => {
+    if (err) {
+      console.error('Error removing user from channel:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    // Insert a system message stating that the user has left the channel
+    const systemMessage = `${username} has left the channel.`;
+    const insertMessageSql = 'INSERT INTO chatMessages (channelName, teamName, sender, message) VALUES (?, ?, ?, ?)';
+    connection.query(insertMessageSql, [channelName, teamName, 'System', systemMessage], (err2, result2) => {
+      if (err2) {
+        console.error('Error inserting system message:', err2);
+      } else {
+        const roomName = `${teamName}-${channelName}`;
+        io.to(roomName).emit('message', { sender: 'System', message: systemMessage, id: result2.insertId });
+      }
+      // Send the response regardless of system message insertion result.
+      res.status(200).json({ message: 'User removed from channel successfully' });
+    });
+  });
+});
+
+// Update user status endpoint
+app.post('/updateStatus', (req, res) => {
+  const { username, status } = req.body;
+  if (!username || !status) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  
+  let sql, params;
+  if (status === 'away' || status === 'offline') {
+    // When setting away/offline, update lastSeen to the current time
+    sql = 'UPDATE members SET status = ?, lastSeen = NOW() WHERE username = ?';
+    params = [status, username];
+  } else {
+    sql = 'UPDATE members SET status = ? WHERE username = ?';
+    params = [status, username];
+  }
+  
+  connection.query(sql, params, (err, result) => {
+    if (err) {
+      console.error('Error updating status:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    // Fetch updated user data including lastSeen
+    connection.query('SELECT username, status, lastSeen FROM members WHERE username = ?', [username], (err2, results) => {
+      if (err2) {
+        console.error('Error fetching updated user data:', err2);
+        return res.status(500).json({ error: 'Database error' });
+      }
+      const updatedUser = results[0];
+      io.emit('statusUpdated', updatedUser); // emit event for real time update
+      res.status(200).json({ message: 'Status updated successfully', user: updatedUser });
     });
   });
 });

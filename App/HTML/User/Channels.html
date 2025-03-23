@@ -198,7 +198,7 @@
 
     /* SIDEBAR (TEAM NAME + CHANNELS) */
     .sidebar {
-      width: 200px;
+      width: 300px;
       background-color: #f1f1f1;
       border-right: 1px solid #ccc;
       padding: 1rem;
@@ -393,7 +393,7 @@
       <ul class="nav-links">
         <li><a id="teamsLink" href="#">Teams</a>
         <li><a id="DirectMessagingLink" href = "#">Direct Messaging</a></li>
-        <li><a id="Users" href="#">Users</a></li>
+        <li><a id="UsersLink" href="#">Users</a></li>
       </ul>
       <div class="profile-container">
         <button id="profileBtn" class="profile-btn">
@@ -454,6 +454,27 @@
     </div>
   </div>
 
+  <!-- JOIN CHANNEL MODAL -->
+<div id="joinChannelModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closeJoinChannelModal" class="close">&times;</span>
+    <h2>Join a Channel</h2>
+    <form id="joinChannelForm">
+      <div class="form-group">
+        <label for="joinChannelSelect">Select a Channel</label>
+        <select id="joinChannelSelect" name="channel" required>
+          <option value="">-- Select a Channel --</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="cancelJoinChannelBtn" class="cancel-btn">Cancel</button>
+        <button type="submit" class="save-btn">Join Channel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
   <!-- ADD USER MODAL -->
   <div id="addUserModal" class="modal hidden">
     <div class="modal-content">
@@ -476,6 +497,45 @@
     </div>
   </div>
 
+  <!-- REMOVE CHANNEL MODAL -->
+<div id="removeChannelModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closeRemoveChannelModal" class="close">&times;</span>
+    <h2>Leave Channel</h2>
+    <form id="removeChannelForm">
+      <div class="form-group">
+        <label for="channelSelect">Select a channel to leave:</label>
+        <select id="channelSelect" name="channelSelect" required>
+          <!-- Options will be populated dynamically -->
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="cancelRemoveChannelBtn" class="cancel-btn">Cancel</button>
+        <button type="submit" class="save-btn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Join Channel Modal -->
+<div id="joinChannelModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closeJoinChannelModal" class="close">&times;</span>
+    <h2>Join Channel</h2>
+    <form id="joinChannelForm">
+      <div class="form-group">
+        <label for="joinChannelSelect">Select a channel to join:</label>
+        <select id="joinChannelSelect" name="joinChannelSelect" required>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" id="cancelJoinChannelBtn" class="cancel-btn">Cancel</button>
+        <button type="submit" class="save-btn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
   <!-- MAIN CONTENT -->
   <main id="channelsPage">
     <!-- LEFT SIDEBAR: Team Name & Channels -->
@@ -484,6 +544,8 @@
       <div class="channels-header">
         <h3 style="margin: 0;">Channels</h3>
         <button id="newChannelBtn" class="new-channel-btn">New</button>
+        <button id="joinChannelBtn" class="new-channel-btn">Join</button>
+        <button id="removeChannelBtn" class="new-channel-btn">Drop</button>
       </div>
       <!-- Channels list will be dynamically populated here -->
       <ul class="channel-list" id="channelList"></ul>
@@ -559,7 +621,148 @@ const isAdmin = urlParams.get('isAdmin') === 'true';
 
 document.getElementById('teamName').textContent = teamNameFromURL;
 
+// REMOVE CHANNEL MODAL functionality
 
+// Get elements
+const removeChannelBtn = document.getElementById('removeChannelBtn');
+const removeChannelModal = document.getElementById('removeChannelModal');
+const closeRemoveChannelModal = document.getElementById('closeRemoveChannelModal');
+const cancelRemoveChannelBtn = document.getElementById('cancelRemoveChannelBtn');
+const removeChannelForm = document.getElementById('removeChannelForm');
+const channelSelect = document.getElementById('channelSelect');
+
+// When the "Leave Channel" button is clicked, fetch the channels the user is a member of and show the modal
+removeChannelBtn.addEventListener('click', () => {
+  fetch(`http://localhost:5008/getChannelUser?teamName=${encodeURIComponent(teamNameFromURL)}&username=${encodeURIComponent(currentUsername)}`)
+    .then(response => response.json())
+    .then(data => {
+      // Clear previous options
+      channelSelect.innerHTML = '';
+      if (data.channels && data.channels.length > 0) {
+        data.channels.forEach(channelObj => {
+          const option = document.createElement('option');
+          option.value = channelObj.channelName;
+          option.textContent = channelObj.channelName;
+          channelSelect.appendChild(option);
+        });
+      } else {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'No channels available';
+        channelSelect.appendChild(option);
+      }
+      removeChannelModal.classList.remove('hidden');
+    })
+    .catch(error => {
+      console.error('Error fetching channels for removal:', error);
+    });
+});
+
+// Close modal handlers
+closeRemoveChannelModal.addEventListener('click', () => {
+  removeChannelModal.classList.add('hidden');
+});
+cancelRemoveChannelBtn.addEventListener('click', () => {
+  removeChannelModal.classList.add('hidden');
+});
+
+// Handle form submission: remove user from selected channel
+removeChannelForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const selectedChannel = channelSelect.value;
+  if (!selectedChannel) {
+    alert('Please select a channel.');
+    return;
+  }
+  fetch('http://localhost:5008/removeUserFromChannel', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      channelName: selectedChannel,
+      teamName: teamNameFromURL,
+      username: currentUsername
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.message) {
+      alert(data.message);
+      removeChannelModal.classList.add('hidden');
+      // Optionally, update the sidebar to remove the channel that was left
+      const channelListItems = document.querySelectorAll('.channel-list li');
+      channelListItems.forEach(li => {
+        const channelNameText = li.querySelector('.channel-name').textContent.trim().replace('# ', '');
+        if (channelNameText === selectedChannel) {
+          li.remove();
+        }
+      });
+    } else {
+      alert('Error removing from channel: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error in remove channel request:', error);
+    alert('An error occurred while processing your request.');
+  });
+});
+
+// Join channel functionality
+const joinChannelBtn = document.getElementById('joinChannelBtn');
+const joinChannelModal = document.getElementById('joinChannelModal');
+const closeJoinChannelModal = document.getElementById('closeJoinChannelModal');
+const cancelJoinChannelBtn = document.getElementById('cancelJoinChannelBtn');
+const joinChannelForm = document.getElementById('joinChannelForm');
+const joinChannelSelect = document.getElementById('joinChannelSelect');
+
+// When the "Join Channel" button is clicked, fetch available channels
+joinChannelBtn.addEventListener('click', () => {
+  fetch(`http://localhost:5008/getAvailableChannels?teamName=${encodeURIComponent(teamNameFromURL)}&username=${encodeURIComponent(currentUsername)}`)
+    .then(response => response.json())
+    .then(data => {
+      // Clear previous options
+      joinChannelSelect.innerHTML = '';
+      if (data.channels && data.channels.length > 0) {
+        data.channels.forEach(channelObj => {
+          const option = document.createElement('option');
+          option.value = channelObj.channelName;
+          option.textContent = channelObj.channelName;
+          // Store the channel owner in a data attribute
+          option.dataset.owner = channelObj.channelOwner;
+          joinChannelSelect.appendChild(option);
+        });
+      } else {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'No channels available';
+        joinChannelSelect.appendChild(option);
+      }
+      joinChannelModal.classList.remove('hidden');
+    })
+    .catch(error => {
+      console.error('Error fetching available channels:', error);
+    });
+});
+
+// Modal close handlers
+closeJoinChannelModal.addEventListener('click', () => {
+  joinChannelModal.classList.add('hidden');
+});
+cancelJoinChannelBtn.addEventListener('click', () => {
+  joinChannelModal.classList.add('hidden');
+});
+
+// Handle form submission: send a join request message as a direct message to the channel owner
+joinChannelForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const selectedOption = joinChannelSelect.options[joinChannelSelect.selectedIndex];
+  const selectedChannel = selectedOption.value;
+  const channelOwner = selectedOption.dataset.owner;
+  
+  if (!selectedChannel) {
+    alert('Please select a channel.');
+    return;
+  }
+});
       // Global variable to track current channel
       window.currentChannel = null;
       let isQuoting = false;
@@ -568,7 +771,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
       function renderMessage(msg) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message');
-        messageElement.dataset.messageId = msg.idchatMessages; // use database id
+        messageElement.dataset.messageId = msg.idchatMessages; 
 
         // Basic message content
         messageElement.innerHTML = `<strong>${msg.sender}:</strong> ${msg.message}`;
@@ -1020,8 +1223,44 @@ function fetchChannelsForTeam(teamName) {
       alert('Invitation sent as a direct message!');
 
       // Close the modal
-      document.getElementById('addUserModal').classList.add('hidden');
+      document.getElementById('addUserForm').classList.add('hidden');
     });
+    
+    document.getElementById('joinChannelForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // Get the selected option from the joinChannelSelect element
+  const joinChannelSelect = document.getElementById('joinChannelSelect');
+  const selectedOption = joinChannelSelect.options[joinChannelSelect.selectedIndex];
+  const selectedChannel = selectedOption.value;
+  const channelOwner = selectedOption.dataset.owner; // Retrieve the channel owner
+
+  if (!selectedChannel) {
+    alert('Please select a channel.');
+    return;
+  }
+
+  // For example, build an invitation message using the channelOwner
+  const teamName = document.getElementById('teamName').textContent.trim();
+  const inviteMessage = `Hello ${currentUsername}, I would like to join your channel '${selectedChannel}' on team '${teamName}'.`;
+
+  // Append accept and decline buttons to the message
+  const acceptButton = `<button style="background-color: #28a745; color: #fff; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">Accept</button>`;
+  const declineButton = `<button style="background-color: #dc3545; color: #fff; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;">Decline</button>`;
+  const messageWithButtons = `${inviteMessage} ${acceptButton} ${declineButton}`;
+
+  // Emit the invitation to the channel owner as a direct message
+  socket.emit('newPrivateMessage', {
+    sender: channelOwner,
+    receiver: currentUsername,
+    message: messageWithButtons
+  });
+
+  alert('Invitation sent as a direct message!');
+  // Optionally close the modal
+  document.getElementById('joinChannelForm').classList.add('hidden');
+});
+    
 });
 
     function setTeamsLink() {
@@ -1051,7 +1290,13 @@ function fetchChannelsForTeam(teamName) {
   
       // 3. Run after DOM is ready
       document.addEventListener('DOMContentLoaded', setDirectMessagingLink);
+
+      function setUsersLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            if (username) {
+                document.getElementById('UsersLink').href = `Users.html?username=${username}`;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', setUsersLink);
   </script>
-  <script src="/App/JS/script.js"></script>
-</body>
-</html>
