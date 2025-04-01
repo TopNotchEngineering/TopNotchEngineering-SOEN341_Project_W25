@@ -42,6 +42,14 @@
     }
     .profile-container {
       margin-left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #navUsername {
+      color: #fff;
+      font-size: 0.9rem;
     }
     /* PROFILE BUTTON AS A CIRCLE */
     .profile-btn {
@@ -282,6 +290,7 @@
       <li><a id="UsersLink" href="#" class="active">Users</a></li>
     </ul>
     <div class="profile-container">
+      <span id="navUsername">JohnDoe</span>
       <button id="profileBtn" class="profile-btn">
         <img src="/App/images/profile-icon.png" alt="Profile Icon" />
       </button>
@@ -653,6 +662,13 @@ function setUsersLink() {
     }
 }
 document.addEventListener('DOMContentLoaded', setUsersLink);
+});
+
+// Fetch navbar Username
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const username = urlParams.get('username') || 'User';
+  document.getElementById('navUsername').textContent = username;
 });
 </script>
 </body>

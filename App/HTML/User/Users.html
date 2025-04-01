@@ -42,7 +42,16 @@
     }
     .profile-container {
       margin-left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+
+    #navUsername {
+      color: #fff;
+      font-size: 0.9rem;
+    }
+
     /* PROFILE BUTTON AS A CIRCLE */
     .profile-btn {
       width: 40px;
@@ -282,6 +291,7 @@
       <li><a id="UsersLink" href="#" class="active">Users</a></li>
     </ul>
     <div class="profile-container">
+      <span id="navUsername">JohnDoe</span>
       <button id="profileBtn" class="profile-btn">
         <img src="/App/images/profile-icon.png" alt="Profile Icon" />
       </button>
@@ -393,7 +403,7 @@
 const socket = io('http://localhost:5008');
 socket.on('statusUpdated', (data) => {
   console.log('Status updated:', data);
-  // You can either update the affected user's UI element directly or refresh the whole user list:
+  // Either update the affected user's UI element directly or refresh the whole user list:
   fetchAndDisplayUsers();
 });
 const urlParams = new URLSearchParams(window.location.search);
@@ -401,6 +411,13 @@ const senderUsername = urlParams.get('username') || 'Username';
 if (!senderUsername) {
 console.error('No username found in the URL');
 }
+
+// Change username next to profile icon
+document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const username = urlParams.get('username') || 'User';
+  document.getElementById('navUsername').textContent = username;
+});
 
 // Fetch user data from your backend endpoint
 fetch(`http://localhost:5008/getUser?username=${senderUsername}`)
