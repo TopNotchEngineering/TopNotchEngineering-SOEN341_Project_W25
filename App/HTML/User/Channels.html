@@ -391,6 +391,68 @@
       font-size: 1rem;
       display: inline-block;
     }
+
+    /* POLL MODAL STYLES */
+    .emoji-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #333;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+    }
+
+    .answer-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .poll-answer {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .delete-answer {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      margin-left: 10px;
+    }
+
+    #addAnswerBtn {
+      background: none;
+      border: none;
+      color: #6c63ff;
+      cursor: pointer;
+      padding: 10px 0;
+      text-align: left;
+      width: 100%;
+    }
+
+    #pollDuration {
+      width: 150px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    #poll-button {
+      font-size: 20px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -545,6 +607,49 @@
   </div>
 </div>
 
+  <!-- POLL MODAL -->
+  <div id="pollModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closePollModal" class="close">&times;</span>
+      <h2>Create a Poll</h2>
+      <form id="pollForm">
+        <div class="form-group">
+          <label for="pollQuestion">QUESTION</label>
+          <input type="text" id="pollQuestion" placeholder="What question do you want to ask?" maxlength="300">
+          <div style="text-align: right; font-size: 0.8rem;"><span id="questionCharCount">0</span> / 300</div>
+        </div>
+        <div class="form-group">
+          <label>ANSWERS</label>
+          <div class="answer-container">
+            <input type="text" class="poll-answer" placeholder="Type your answer">
+            <button type="button" class="delete-answer">🗑️</button>
+          </div>
+          <div class="answer-container">
+            <input type="text" class="poll-answer" placeholder="Type your answer">
+            <button type="button" class="delete-answer">🗑️</button>
+          </div>
+          <button type="button" id="addAnswerBtn">+ Add another answer</button>
+        </div>
+        <div class="form-group">
+          <label>Duration</label>
+          <select id="pollDuration">
+            <option value="24">24 hours</option>
+            <option value="48">48 hours</option>
+            <option value="72">72 hours</option>
+          </select>
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="white-space: nowrap;">Allow Multiple Answers</div>
+          <input type="checkbox" id="allowMultipleAnswers">
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="cancelPollBtn" class="cancel-btn">Cancel</button>
+          <button type="submit" id="postPollBtn" class="save-btn">Post</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MAIN CONTENT -->
   <main id="channelsPage">
     <!-- LEFT SIDEBAR: Team Name & Channels -->
@@ -590,6 +695,7 @@
       <div class="chat-input">
         <input type="text" id="messageInput" placeholder="Type your message..." style="font-size: larger;">
         <button id="emoji-button"> 🙂 </button>
+        <button id="poll-button"> 📊 </button>
         <button id="sendMsgBtn">Send</button>
       </div>
     </div>
@@ -1314,5 +1420,137 @@ function fetchChannelsForTeam(teamName) {
       const urlParams = new URLSearchParams(window.location.search);
       const username = urlParams.get('username') || 'User';
       document.getElementById('navUsername').textContent = username;
+    });
+
+    // POLL FUNCTIONALITY
+    const pollButton = document.getElementById('poll-button');
+    const pollModal = document.getElementById('pollModal');
+    const closePollModal = document.getElementById('closePollModal');
+    const cancelPollBtn = document.getElementById('cancelPollBtn');
+    const pollForm = document.getElementById('pollForm');
+    const addAnswerBtn = document.getElementById('addAnswerBtn');
+    const pollQuestion = document.getElementById('pollQuestion');
+    const questionCharCount = document.getElementById('questionCharCount');
+
+    // Open poll modal
+    pollButton.addEventListener('click', () => {
+      pollModal.classList.remove('hidden');
+    });
+
+    // Close poll modal
+    closePollModal.addEventListener('click', () => {
+      pollModal.classList.add('hidden');
+    });
+
+    // Close poll modal when clicking cancel
+    cancelPollBtn.addEventListener('click', () => {
+      pollModal.classList.add('hidden');
+    });
+
+    // Close poll modal when clicking outside
+    window.addEventListener('click', (event) => {
+      if (event.target === pollModal) {
+        pollModal.classList.add('hidden');
+      }
+    });
+
+    // Character counter for question
+    pollQuestion.addEventListener('input', () => {
+      questionCharCount.textContent = pollQuestion.value.length;
+    });
+
+    // Add new answer field
+    addAnswerBtn.addEventListener('click', () => {
+      const answerContainers = document.querySelectorAll('.answer-container');
+      if (answerContainers.length < 10) { // Limit to 10 answers
+        const newAnswerContainer = document.createElement('div');
+        newAnswerContainer.classList.add('answer-container');
+        newAnswerContainer.innerHTML = `
+      <div class="emoji-circle">😀</div>
+      <input type="text" class="poll-answer" placeholder="Type your answer">
+      <button type="button" class="delete-answer">🗑️</button>
+    `;
+        addAnswerBtn.parentNode.insertBefore(newAnswerContainer, addAnswerBtn);
+
+        // Add event listener to the new delete button
+        const deleteBtn = newAnswerContainer.querySelector('.delete-answer');
+        deleteBtn.addEventListener('click', () => {
+          newAnswerContainer.remove();
+        });
+      } else {
+        alert('Maximum 10 answers allowed');
+      }
+    });
+
+    // Add event listeners to initial delete buttons
+    document.querySelectorAll('.delete-answer').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const answerContainers = document.querySelectorAll('.answer-container');
+        if (answerContainers.length > 2) { // Keep at least 2 answers
+          btn.parentNode.remove();
+        } else {
+          alert('Minimum 2 answers required');
+        }
+      });
+    });
+
+    // Handle poll form submission
+    pollForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Get poll data
+      const question = pollQuestion.value.trim();
+      const answers = Array.from(document.querySelectorAll('.poll-answer'))
+              .map(input => input.value.trim())
+              .filter(answer => answer !== '');
+      const duration = document.getElementById('pollDuration').value;
+      const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
+
+      // Validate
+      if (!question) {
+        alert('Please enter a question');
+        return;
+      }
+
+      if (answers.length < 2) {
+        alert('Please provide at least 2 answers');
+        return;
+      }
+
+      // Create poll message
+      const pollData = {
+        type: 'poll',
+        question,
+        answers,
+        duration,
+        allowMultiple,
+        votes: {},
+        createdBy: currentUsername,
+        createdAt: new Date().toISOString()
+      };
+
+      // Send poll as a message
+      if (window.currentChannel) {
+        socket.emit('newMessage', {
+          channelName: window.currentChannel,
+          teamName: teamNameFromURL,
+          sender: currentUsername,
+          message: JSON.stringify(pollData),
+          isPoll: true
+        });
+
+        // Close modal and reset form
+        pollModal.classList.add('hidden');
+        pollForm.reset();
+        questionCharCount.textContent = '0';
+
+        // Remove extra answer fields
+        const answerContainers = document.querySelectorAll('.answer-container');
+        for (let i = 2; i < answerContainers.length; i++) {
+          answerContainers[i].remove();
+        }
+      } else {
+        alert('Please select a channel first');
+      }
     });
   </script>
