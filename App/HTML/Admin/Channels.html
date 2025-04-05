@@ -452,6 +452,27 @@
       color: white;
       border: none;
     }
+    #poll-button :hover {
+      background-color: #0056b3;
+    }
+    
+    .chat-poll {
+      background-color: #f0f8ff;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+    .chat-poll button.vote-btn {
+      background: #007bff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .chat-poll button.vote-btn:disabled {
+      background: #49535e;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -764,18 +785,46 @@ document.getElementById('teamName').textContent = teamNameFromURL;
           .catch(err => console.error('Error fetching messages:', err));
       };
 
-      // Listen for new incoming messages via Socket.IO
+      // Listen for new incoming messages via Socket.IO and added poll functionality as a msg
       socket.on('message', (data) => {
         if (!window.currentChannel) return;
-        const chatMessages = document.getElementById('chatMessages');
-        // Create a message element and append it
-        const messageElement = renderMessage({
-          idchatMessages: data.id,
-          sender: data.sender,
-          message: data.message
-        });
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (data.isPoll) {
+          const poll = JSON.parse(data.message);
+          const pollId = `poll-${Date.now()}`;
+
+          const pollDiv = document.createElement('div');
+          pollDiv.classList.add('chat-poll');
+          pollDiv.setAttribute('data-id', pollId);
+
+          const questionHTML = `<p><strong>${poll.createdBy} asks:</strong> ${poll.question}</p>`;
+
+          let answersHTML = '';
+          poll.answers.forEach((answer, index) => {
+            answersHTML += `
+              <div style="margin: 5px 0;">
+                <button class="vote-btn" data-index="${index}" data-pollid="${pollId}">
+                  ${answer}
+                </button>
+                <span class="vote-count" id="${pollId}-count-${index}">0 votes</span>
+              </div>
+            `;
+    });
+    const multiSelectNote = poll.allowMultiple ? `<small>You can select multiple answers</small>` : '';
+    pollDiv.innerHTML = `${questionHTML}${answersHTML}${multiSelectNote}<hr>`;
+    chatMessages.appendChild(pollDiv);
+
+        }
+        else {
+          const chatMessages = document.getElementById('chatMessages');
+          // Create a message element and append it
+          const messageElement = renderMessage({
+            idchatMessages: data.id,
+            sender: data.sender,
+            message: data.message
+          });
+          chatMessages.appendChild(messageElement);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
       });
 
       // Listen for delete message event from server to remove message from UI
@@ -1326,6 +1375,27 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         }
       } else {
         alert('Please select a channel first');
+      }
+    });
+
+    // Poll event listener
+    document.getElementById('chatMessages').addEventListener('click', (e) => {
+      if (e.target.classList.contains('vote-btn')) {
+        const pollId = e.target.getAttribute('data-pollid');
+        const index = e.target.getAttribute('data-index');
+
+        const countSpan = document.getElementById(`${pollId}-count-${index}`);
+        const currentVotes = parseInt(countSpan.textContent) || 0;
+        countSpan.textContent = `${currentVotes + 1} votes`;
+
+        const pollDiv = document.querySelector(`[data-id="${pollId}"]`);
+        const allowMultiple = pollDiv.innerHTML.includes("You can select multiple answers");
+
+        if (!allowMultiple) {
+          pollDiv.querySelectorAll('.vote-btn').forEach(btn => btn.disabled = true);
+        } else {
+          e.target.disabled = true;
+        }
       }
     });
   </script>
