@@ -4,7 +4,6 @@
 function showLoginForm(role) {
   const roleSelection = document.querySelector('.role-selection');
   const loginSection = document.getElementById('loginSection');
-  const loginTitle = document.getElementById('loginTitle');
 
   // Hide role selection
   roleSelection.classList.add('hidden');
