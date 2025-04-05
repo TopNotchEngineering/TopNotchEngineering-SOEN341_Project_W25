@@ -668,8 +668,6 @@ if (!params.has('isAdmin')) {
 const urlParams = new URLSearchParams(window.location.search);
 const teamNameFromURL = urlParams.get('team') || 'Team Name';
 const currentUsername = urlParams.get('username') || 'Username';
-// const AdminStatus = urlParams.get('isAdmin') || 'admin';
-
 const isAdmin = urlParams.get('isAdmin') === 'true';
 
 document.getElementById('teamName').textContent = teamNameFromURL;

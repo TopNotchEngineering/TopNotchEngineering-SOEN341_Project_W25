@@ -537,7 +537,6 @@
     <h1>Direct Messaging</h1>
     <div class="chats-header">
       <h3>Chats</h3>
-      <!--<button id="newChatBtn">New</button>-->
     </div>
     <div class="chat-list" id="chatList">
     </div>
@@ -551,7 +550,6 @@
       const membersContainer = document.getElementById('chatList');
       data.users.forEach(user => {
         const memberDiv = document.createElement('div');
-        //memberDiv.textContent = user.username;
         memberDiv.innerHTML = `<li onclick="loadChat('${user.username}')">
         <span class="chat-name">${user.username}</span>
           </li>`;
@@ -609,12 +607,8 @@
 <!-- Socket.IO Library -->
 <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', renderMessage);
     const socket = io('http://localhost:5008');
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const senderUsername = urlParams.get('username') || 'Username';
-    const teamNameFromURL = urlParams.get('team') || 'Team Name';
     socket.emit('joinPrivateRoom', { username: senderUsername });
 
     // Listen for private messages
@@ -951,7 +945,6 @@
       // Clear session or perform logout tasks here
       window.location.href = '../login.html';
     });
-  });
 
   // Fetch navbar Username
   document.addEventListener('DOMContentLoaded', () => {

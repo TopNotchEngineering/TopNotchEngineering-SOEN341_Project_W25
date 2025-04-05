@@ -47,12 +47,12 @@ function generateDiv() {
     newerDiv.innerHTML = document.getElementById("NameInput").value;
     roundDiv.innerHTML = document.getElementById("NameInput").value[0];
     
-    var r = Math.floor(Math.random() * 256);
-        var g = Math.floor(Math.random() * 256);
-        var b = Math.floor(Math.random() * 256);
+    let r = Math.floor(Math.random() * 256);
+    let g = Math.floor(Math.random() * 256);
+    let b = Math.floor(Math.random() * 256);
 
-        // Create the RGB string
-        var rgbColor = "rgb(" + r + "," + g + "," + b + ")";
+    // Create the RGB string
+    let rgbColor = "rgb(" + r + "," + g + "," + b + ")";
     document.getElementById("NameInput").value = "";
     newDiv.setAttribute("style", `position: relative;
         text-align: center;
@@ -118,7 +118,6 @@ function generateDiv() {
     newDiv.className = "generated";
 
     // Append the new div to the container
-    // var container = document.getElementById("container");
     document.querySelector("#teams-container").appendChild(newDiv);
 
     newerDiv.setAttribute("style", 

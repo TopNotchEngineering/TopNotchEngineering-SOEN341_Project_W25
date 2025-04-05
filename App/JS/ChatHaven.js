@@ -47,7 +47,6 @@ function Homecoming() {
         listochannels.style.display = "block";
         listingchannels.style.display = "none";
         add.style.display = "none";
-        channelon = true;
         title.innerHTML = "Dashboard<hr>";
         channel_stick.style.display = "block";
         barocontent.style.display = "none";
@@ -108,11 +107,11 @@ function TeamCreation(event) {
     event.preventDefault(); // Prevent the default form submission behavior
   
     // Get form values
-    var name = document.getElementById('NameInput').value;
-    var description = document.getElementById('team-desc').value;
+    let name = document.getElementById('NameInput').value;
+    let description = document.getElementById('team-desc').value;
   
     // Create an object with the form data
-    var teamData = {
+    let teamData = {
         NameInput: name,
         teamDescription: description,
     };
