@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-// Update welcome message using a URL parameter (e.g., ?username=JohnDoe)
+// Update welcome message using a URL parameter
 const urlParams = new URLSearchParams(window.location.search);
 const username = urlParams.get('username') || 'User';
 document.getElementById('welcomeMessage').innerText = `Welcome to your dashboard, ${username}.

@@ -5,16 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e6940c01-55a1-45e8-ae00-75d4eadc18be" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/Admin/AdminDashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/Admin/AdminDashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/Admin/Channels.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/Admin/Channels.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/Admin/DirectMessaging.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/Admin/DirectMessaging.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/Admin/Teams.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/Admin/Teams.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/User/Channels.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/Channels.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/User/DirectMessaging.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/DirectMessaging.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/User/Teams.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/Teams.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/HTML/User/UserDashboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/App/HTML/User/UserDashboard.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App/JS/AdminPage_Template_script.js" beforeDir="false" afterPath="$PROJECT_DIR$/App/JS/AdminPage_Template_script.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App/JS/script.js" beforeDir="false" afterPath="$PROJECT_DIR$/App/JS/script.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
