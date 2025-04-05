@@ -265,8 +265,8 @@
     // Update welcome message using a URL parameter (e.g., ?username=JohnDoe)
     const urlParams = new URLSearchParams(window.location.search);
     const username = urlParams.get('username') || 'User';
-    document.getElementById('welcomeMessage').innerHTML = `Welcome to your dashboard, ${username}.
-    <br>Please choose a tab above to get started.`;
+    document.getElementById('welcomeMessage').innerText = `Welcome to your dashboard, ${username}.
+    Please choose a tab above to get started.`;
   
     // Also prefill the username in the profile form
     document.getElementById('profileUsernameInput').value = username;
