@@ -8,7 +8,7 @@ const teamForm = document.querySelector("#team-addition-form");
 createTeam.onclick = generateDiv;
 function generateDiv() {
     // Create a new div element
-    var newDiv = document.createElement("div");
+    let newDiv = document.createElement("div");
 
     // Add content to the new div
     newDiv.innerHTML = "This is a dynamically generated div";
@@ -17,7 +17,6 @@ function generateDiv() {
     newDiv.className = "generated-div";
 
     // Append the new div to the container
-    // var container = document.getElementById("container");
     custombody.appendChild(newDiv);
 }
 

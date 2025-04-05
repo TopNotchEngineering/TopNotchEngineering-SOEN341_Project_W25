@@ -11,13 +11,6 @@ function showLoginForm(role) {
 
   // Show login form
   loginSection.classList.remove('hidden');
-
-  // Update title based on role
-  if (role === 1) {
-    loginTitle.textContent = 'Login';
-  } else {
-    loginTitle.textContent = 'Login';
-  }
   document.getElementById("loginSection").classList.remove("hidden");
   document.getElementById("loginTitle").innerText = role === 1 ? "Admin Login" : "User Login";
   document.getElementById("role").value = role; // Set role as 1 (admin) or 0 (user)
@@ -50,7 +43,6 @@ function showSignupForm(role) {
   document.getElementById("role").value = role; // Set role as 1 (admin) or 0 (user)
 }
 
-
 function showTab(tabId) {
   // 1. Hide all tab sections
   const allTabs = document.querySelectorAll('.tab-section');
@@ -72,34 +64,6 @@ function showTab(tabId) {
 
   // 4. Highlight the corresponding nav link
   const linkId = tabId.replace('Tab', 'Link');
-  const activeLink = document.getElementById(linkId);
-  if (activeLink) {
-    activeLink.classList.add('active');
-  }
-}
-
-
-function showTab(tabId) {
-  // 1. Hide all tab sections
-  const allTabs = document.querySelectorAll('.tab-section');
-  allTabs.forEach((tab) => {
-    tab.classList.add('hidden');
-  });
-
-  // 2. Remove 'active' state from all nav links
-  const navLinks = document.querySelectorAll('.nav-links a');
-  navLinks.forEach((link) => {
-    link.classList.remove('active');
-  });
-
-  // 3. Show the selected tab
-  const targetTab = document.getElementById(tabId);
-  if (targetTab) {
-    targetTab.classList.remove('hidden');
-  }
-
-  // 4. Highlight the corresponding nav link
-  const linkId = tabId.replace('Tab', 'Link'); // e.g. "chatsTab" -> "chatsLink"
   const activeLink = document.getElementById(linkId);
   if (activeLink) {
     activeLink.classList.add('active');
