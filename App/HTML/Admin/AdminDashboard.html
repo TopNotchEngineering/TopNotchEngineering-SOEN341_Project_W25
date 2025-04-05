@@ -448,10 +448,8 @@
   
   
         // Optionally update the welcome message, etc.
-        document.getElementById('welcomeMessage').innerHTML = `
-          Welcome to your dashboard, ${result.updatedUser.username}.<br>
-          Please choose a tab above to get started.
-        `;
+        document.getElementById('welcomeMessage').innerText = `Welcome to your dashboard, ${result.updatedUser.username}.
+        <br> Please choose a tab above to get started.`;
         
         alert(result.message);
         // Close the modal if you want

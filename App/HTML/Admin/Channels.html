@@ -342,28 +342,24 @@
       flex: 0.1;
       border-radius: 10px;
       width: fit-content;
-      /* max-width: calc(100vw - 20px); */
       height: fit-content;
+      flex-flow: row;
       flex-wrap:wrap;
       align-items:first baseline;
       float: right;
-      flex-flow: row;
       max-height: 300px;
       transition: all 1s;
     }
 
     .quote-box {
       background-color: #1af;
-      border-left: 4px solid #004084; /* A bolder blue for the border */
-
+      border-left: 4px solid #004084;
       flex: 0.1;
       padding: 20px;
       border-radius: 10px;
       border-top-left-radius: 0px;
       border-bottom-left-radius: 0px;
-      /* width: fit-content; */
       max-width: calc(100vw - 20px);
-      /* height: fit-content; */
       word-wrap:break-word;
       align-content:baseline;
       float: right;
@@ -672,7 +668,7 @@ if (!params.has('isAdmin')) {
 const urlParams = new URLSearchParams(window.location.search);
 const teamNameFromURL = urlParams.get('team') || 'Team Name';
 const currentUsername = urlParams.get('username') || 'Username';
-const AdminStatus = urlParams.get('isAdmin') || 'admin';
+// const AdminStatus = urlParams.get('isAdmin') || 'admin';
 
 const isAdmin = urlParams.get('isAdmin') === 'true';
 
@@ -725,7 +721,6 @@ document.getElementById('teamName').textContent = teamNameFromURL;
           removeQuote.style.float = 'right';
           removeQuote.style.padding = '0.5rem';
           removeQuote.style.cursor = 'pointer';
-          //removeQuote.style.display = 'inline';
           removeQuote.addEventListener('click', () => {
             document.querySelector('.chat-area').removeChild(quoteMsg);
             isQuoting = false;

@@ -21,5 +21,3 @@ function generateDiv() {
     custombody.appendChild(newDiv);
 }
 
-////
-// const message = document.querySelector("#text-bar");

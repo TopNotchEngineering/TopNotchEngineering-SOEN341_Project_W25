@@ -105,6 +105,7 @@
     .close:hover {
       color: #000;
     }
+
     /* Shared form styles inside modals */
     .modal form .form-group {
       margin-bottom: 1rem;
@@ -340,28 +341,25 @@
       flex: 0.1;
       border-radius: 10px;
       width: fit-content;
-      /* max-width: calc(100vw - 20px); */
       height: fit-content;
+      flex-flow: row;
       flex-wrap:wrap;
       align-items:first baseline;
       float: right;
-      flex-flow: row;
       max-height: 300px;
       transition: all 1s;
     }
 
     .quote-box {
       background-color: #1af;
-      border-left: 4px solid #004084; /* A bolder blue for the border */
+      border-left: 4px solid #004084;
 
       flex: 0.1;
       padding: 20px;
       border-radius: 10px;
       border-top-left-radius: 0px;
       border-bottom-left-radius: 0px;
-      /* width: fit-content; */
       max-width: calc(100vw - 20px);
-      /* height: fit-content; */
       word-wrap:break-word;
       align-content:baseline;
       float: right;
@@ -731,7 +729,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const teamNameFromURL = urlParams.get('team') || 'Team Name';
 const currentUsername = urlParams.get('username') || 'Username';
 const AdminStatus = urlParams.get('isAdmin') || 'admin';
-
 const isAdmin = urlParams.get('isAdmin') === 'true';
 
 document.getElementById('teamName').textContent = teamNameFromURL;
@@ -924,7 +921,6 @@ joinChannelForm.addEventListener('submit', (e) => {
           removeQuote.style.float = 'right';
           removeQuote.style.padding = '0.5rem';
           removeQuote.style.cursor = 'pointer';
-          //removeQuote.style.display = 'inline';
           removeQuote.addEventListener('click', () => {
             document.querySelector('.chat-area').removeChild(quoteMsg);
             isQuoting = false;
@@ -1121,7 +1117,7 @@ function fetchChannelsForTeam(teamName) {
       const closeModal = document.getElementById('closeModal');
       const changePasswordBtn = document.getElementById('changePasswordBtn');
       const passwordChangeSection = document.getElementById('passwordChangeSection');
-      const logoutBtn = document.getElementById('modalLogoutBtn');
+      // const logoutBtn = document.getElementById('modalLogoutBtn');
       const changeStatusBtn = document.getElementById('changeStatusBtn');
       const statusChangeSection = document.getElementById('statusChangeSection');
       const statusInput = document.getElementById('statusInput');

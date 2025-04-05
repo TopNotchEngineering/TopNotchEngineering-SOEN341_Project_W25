@@ -25,10 +25,7 @@ add.onclick = addUser;
 friendsicon.onclick = friendOnClick;
 channeling.onclick = channelclick;
 home.onclick = Homecoming;
-// discussions.onclick = discussionsclick;
-//let channelon = false;
 function channelclick(){
-    // if(channelon){
         listochannels.style.display = "none";
         listingchannels.style.display = "none";
         textbody.style.display = "none";
@@ -49,7 +46,6 @@ function Homecoming() {
         textbody.style.display = "none";
         listochannels.style.display = "block";
         listingchannels.style.display = "none";
-        // title.innerText = "Home";
         add.style.display = "none";
         channelon = true;
         title.innerHTML = "Dashboard<hr>";
@@ -72,7 +68,6 @@ function addUser(){
     textbody.style.display = "none";
     listochannels.style.display = "none";
     listingchannels.style.display = "none";
-    // title.innerText = "Home";
     add.style.display = "none";
     title.innerHTML = "Add User<hr>";
     userlist.style.display = "none";
@@ -84,7 +79,6 @@ function addUser(){
 
 function seeChannel(){
     barocontent.style.display = "none";
-    // chatlist.style.display = "none";
     channel_stick.style.display = "block"
     returnicon.style.display = "none";
     channeluserui.style.display = "none";
@@ -94,7 +88,6 @@ function addChannel() {
     textbody.style.display = "none";
     listochannels.style.display = "none";
     listingchannels.style.display = "none";
-    // title.innerText = "Home";
     add.style.display = "none";
     title.innerHTML = "Add Teams<hr>";
     userlist.style.display = "none";
@@ -109,49 +102,6 @@ function enterTeamFunmatsu() {
     userlist.style.display = "none";
     channeluserui.style.display = "flex";
 }
-
-// const avatar = document.getElementById('avatar');
-
-// avatar.addEventListener('dragover', (event) => {
-//     event.preventDefault();
-//     avatar.style.borderColor = 'blue'; // Change border color on drag over
-// });
-
-// avatar.addEventListener('dragleave', () => {
-//     avatar.style.borderColor = '#ccc'; // Revert border color on drag leave
-// });
-
-// avatar.addEventListener('drop', (event) => {
-//     event.preventDefault();
-//     avatar.style.borderColor = '#ccc'; // Revert border color on drop
-
-//     const files = event.dataTransfer.files;
-//     if (files.length > 0) {
-//         const file = files[0];
-//         if (file.type.startsWith('image/')) {
-//             const reader = new FileReader();
-//             reader.onload = (e) => {
-//                 avatar.innerHTML = `<img src="${e.target.result}" alt="Dropped Image">`;
-//             };
-//             reader.readAsDataURL(file);
-//         } else {
-//             avatar.textContent = 'Please drop an image file.';
-//         }
-//     }
-// });
-
-// function discussionsclick(){
-//     listochannels.style.display = "none";
-//     listingchannels.style.display = "none";
-//     newmsg.textContent = "You got it";
-//     newmsg.style.width = '100px';
-//     newmsg.style.height = '20px + i';
-//     newmsg.style["border-radius"] = '20px';
-//     newmsg.style.padding = '10px';
-//     newmsg.style.margin = '10px';
-//     newmsg.style.backgroundColor = 'lightblue';
-//     textbody.appendChild(newmsg);
-// }
 
 // This function handlers saving the team name and description to the database
 function TeamCreation(event) {
