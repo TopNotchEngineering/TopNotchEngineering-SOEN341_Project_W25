@@ -50,12 +50,7 @@ function showSignupForm(role) {
   document.getElementById("role").value = role; // Set role as 1 (admin) or 0 (user)
 }
 
-// script.js
 
-/**
- * Show one of the dashboard tabs (dashboard, chats, channels, teams, friends),
- * and hide the others.
- */
 function showTab(tabId) {
   // 1. Hide all tab sections
   const allTabs = document.querySelectorAll('.tab-section');
@@ -76,18 +71,14 @@ function showTab(tabId) {
   }
 
   // 4. Highlight the corresponding nav link
-  // We'll assume we named the link's id as tabId + "Link" => e.g., "chatsTab" => "chatsLink"
-  const linkId = tabId.replace('Tab', 'Link'); // e.g. "chatsTab" -> "chatsLink"
+  const linkId = tabId.replace('Tab', 'Link');
   const activeLink = document.getElementById(linkId);
   if (activeLink) {
     activeLink.classList.add('active');
   }
 }
 
-/**
- * Show one of the dashboard tabs (dashboard, chats, channels, teams, friends),
- * and hide the others.
- */
+
 function showTab(tabId) {
   // 1. Hide all tab sections
   const allTabs = document.querySelectorAll('.tab-section');
@@ -108,7 +99,6 @@ function showTab(tabId) {
   }
 
   // 4. Highlight the corresponding nav link
-  // We'll assume we named the link's id as tabId + "Link" => e.g., "chatsTab" => "chatsLink"
   const linkId = tabId.replace('Tab', 'Link'); // e.g. "chatsTab" -> "chatsLink"
   const activeLink = document.getElementById(linkId);
   if (activeLink) {
@@ -116,10 +106,6 @@ function showTab(tabId) {
   }
 }
 
-/**
-     * This sections handles the backend for the sign up form, it registers the data into the database.
-     * It also validates that both passwords match.
-     */
     // DOMContentLoaded event listener to prevent the script from running before the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function () {
 document.getElementById("registerForm").addEventListener("submit", async function (event) {
@@ -208,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Get the team name from the URL, e.g., ?team=MyTeam
+  // Get the team name from the URL
   const urlParams = new URLSearchParams(window.location.search);
   const teamName = urlParams.get('team') || 'Team Name';
 
@@ -228,8 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Update welcome message using a URL parameter (e.g., ?username=JohnDoe)
 const urlParams = new URLSearchParams(window.location.search);
 const username = urlParams.get('username') || 'User';
-document.getElementById('welcomeMessage').innerHTML = `Welcome to your dashboard, ${username}.
-<br>Please choose a tab above to get started.`;
+document.getElementById('welcomeMessage').innerText = `Welcome to your dashboard, ${username}.
+Please choose a tab above to get started.`;
 
 // Also prefill the username in the profile form
 document.getElementById('profileUsernameInput').value = username;

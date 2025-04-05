@@ -203,7 +203,7 @@
       margin: 0 !important;
       padding: 0 !important;
       flex: 1;
-      display: flex; /* sidebar on left, chat area on right */
+      display: flex;
       flex-direction: row;
     }
     /* SIDEBAR (LEFT COLUMN) */
@@ -252,7 +252,7 @@
       border-radius: 4px;
       cursor: pointer;
       transition: background-color 0.3s;
-      position: relative; /* to position trash icon */
+      position: relative;
     }
     .chat-list li:hover {
       background-color: #e9ecef;
@@ -353,7 +353,7 @@
       flex: 0.1;
       border-radius: 10px;
       width: fit-content;
-      /* max-width: calc(100vw - 20px); */
+
       height: fit-content;
       flex-wrap:wrap;
       align-items:first baseline;
@@ -365,15 +365,13 @@
 
     .quote-box {
       background-color: #1af;
-      border-left: 4px solid #004084; /* A bolder blue for the border */
+      border-left: 4px solid #004084;
       flex: 0.1;
       padding: 20px;
       border-radius: 10px;
       border-top-left-radius: 0px;
       border-bottom-left-radius: 0px;
-      /* width: fit-content; */
       max-width: calc(100vw - 20px);
-      /* height: fit-content; */
       word-wrap:break-word;
       align-content:baseline;
       float: right;
@@ -734,7 +732,6 @@
           removeQuote.style.float = 'right';
           removeQuote.style.padding = '0.5rem';
           removeQuote.style.cursor = 'pointer';
-          //removeQuote.style.display = 'inline';
           removeQuote.addEventListener('click', () => {
             document.querySelector('.chat-area').removeChild(quoteMsg);
             isQuoting = false;
@@ -862,7 +859,6 @@
       const closeModal = document.getElementById('closeModal');
       const changePasswordBtn = document.getElementById('changePasswordBtn');
       const passwordChangeSection = document.getElementById('passwordChangeSection');
-      // const logoutBtn = document.getElementById('modalLogoutBtn');
       const changeStatusBtn = document.getElementById('changeStatusBtn');
       const statusChangeSection = document.getElementById('statusChangeSection');
       const statusInput = document.getElementById('statusInput');

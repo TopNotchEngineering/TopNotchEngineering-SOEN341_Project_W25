@@ -161,7 +161,6 @@ function generateDiv() {
             position: relative;
             margin: 10px;
             `);
-        var n = 0;
     newerDiv.id = "generatedNew";
     document.getElementById("custom-team-container").appendChild(newerDiv);
     newerDiv.appendChild(roundDiv);
