@@ -740,7 +740,6 @@ if (!params.has('isAdmin')) {
 const urlParams = new URLSearchParams(window.location.search);
 const teamNameFromURL = urlParams.get('team') || 'Team Name';
 const currentUsername = urlParams.get('username') || 'Username';
-const AdminStatus = urlParams.get('isAdmin') || 'admin';
 const isAdmin = urlParams.get('isAdmin') === 'true';
 
 document.getElementById('teamName').textContent = teamNameFromURL;
@@ -880,11 +879,8 @@ joinChannelForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const selectedOption = joinChannelSelect.options[joinChannelSelect.selectedIndex];
   const selectedChannel = selectedOption.value;
-  const channelOwner = selectedOption.dataset.owner;
-  
   if (!selectedChannel) {
     alert('Please select a channel.');
-    return;
   }
 });
       // Global variable to track current channel
@@ -909,8 +905,6 @@ joinChannelForm.addEventListener('submit', (e) => {
           deleteBtn.addEventListener('click', () => {
             deleteMessage(msg.idchatMessages);
           });
-          //messageElement.addEventListener('mouseover', () => {deleteBtn.style.display = 'inline-block'});
-          //messageElement.addEventListener('mouseout', () => {deleteBtn.style.display = 'none'});
 
           messageElement.appendChild(deleteBtn);
         }
@@ -1129,7 +1123,6 @@ function fetchChannelsForTeam(teamName) {
       const closeModal = document.getElementById('closeModal');
       const changePasswordBtn = document.getElementById('changePasswordBtn');
       const passwordChangeSection = document.getElementById('passwordChangeSection');
-      // const logoutBtn = document.getElementById('modalLogoutBtn');
       const changeStatusBtn = document.getElementById('changeStatusBtn');
       const statusChangeSection = document.getElementById('statusChangeSection');
       const statusInput = document.getElementById('statusInput');
