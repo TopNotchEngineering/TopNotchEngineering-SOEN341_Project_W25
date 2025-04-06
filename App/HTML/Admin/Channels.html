@@ -1268,6 +1268,11 @@ document.getElementById('teamName').textContent = teamNameFromURL;
     const addAnswerBtn = document.getElementById('addAnswerBtn');
     const pollQuestion = document.getElementById('pollQuestion');
     const questionCharCount = document.getElementById('questionCharCount');
+    const socket = io("http://localhost:5008");
+
+    socket.on("connect", () => {
+        console.log("Connected to WebSocket server!");
+    });
 
     pollPostButton.addEventListener('click', () => {
       const question = pollQuestion.value;
@@ -1281,7 +1286,6 @@ document.getElementById('teamName').textContent = teamNameFromURL;
       answersContainer.innerHTML = `\n <p style="color:white"><b>QUESTION: ${question}</b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
       for(let i = 0; i < answers.length && answers[i] !== undefined; i++){
         const option = document.createElement('div');
-        // answersContainer.innerHTML += '<li class="poll-choice">';
         option.classList.add('poll-option');
         option.innerText = answers[i];
         if(allowMultiple)
@@ -1289,7 +1293,6 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         else
         option.innerHTML += `<input type="radio" class="poll-checkbox" name="select">`;
         answersContainer.appendChild(option);
-        // answersContainer.innerHTML += '</li>';
       }
       answersContainer.innerHTML += `\n </ul><em> This poll ends in ${duration}h</em>\n`
       const urlParams = new URLSearchParams(window.location.search);
@@ -1301,6 +1304,9 @@ document.getElementById('teamName').textContent = teamNameFromURL;
           sender: currentUserName,
           message: answersContainer.innerHTML
         });
+        pollModal.classList.add('hidden');
+        window.location.reload();
+
     });
 
     // Open poll modal
@@ -1309,11 +1315,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
       pollModal.classList.remove('hidden');
 
     });
-    const socket = io("http://localhost:5008");
-
-    socket.on("connect", () => {
-        console.log("Connected to WebSocket server!");
-    });
+    
 
     console.log("Socket initialized:", socket);
       pollForm.addEventListener('submit', (e) => { 
