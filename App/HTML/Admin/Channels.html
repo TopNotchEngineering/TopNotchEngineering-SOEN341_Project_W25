@@ -452,6 +452,41 @@
       color: white;
       border: none;
     }
+    #poll-button :hover {
+      background-color: #0056b3;
+    }
+    
+    .chat-poll {
+      background-color: #f0f8ff;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+    .chat-poll button.vote-btn {
+      background: #007bff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .chat-poll button.vote-btn:disabled {
+      background: #49535e;
+      cursor: not-allowed;
+    }
+
+    .poll-option {
+      background-color: rgb(0, 103, 147);
+      color: white;
+      border-radius: 10px;
+      transition: border 0.1s ease;
+      padding: 10px;
+      margin: 2px;
+    }
+    
+    .poll-checkbox{
+      float: right;
+    }
+    
   </style>
 </head>
 <body>
@@ -656,6 +691,10 @@
       // Initialize Socket.IO connection
       const socket = io('http://localhost:5008');
 
+  socket.on("connect", () => {
+      console.log("Connected to WebSocket server!");
+  });
+
 // Ensure the 'isAdmin' query parameter is set if not already present
 const params = new URLSearchParams(window.location.search);
 if (!params.has('isAdmin')) {
@@ -663,6 +702,7 @@ if (!params.has('isAdmin')) {
   const newUrl = window.location.pathname + '?' + params.toString();
   window.history.replaceState(null, '', newUrl);
 }
+console.log("window search: " , window.location.search);
 
 // Parse URL parameters for team, username, and admin status
 const urlParams = new URLSearchParams(window.location.search);
@@ -762,18 +802,38 @@ document.getElementById('teamName').textContent = teamNameFromURL;
           .catch(err => console.error('Error fetching messages:', err));
       };
 
-      // Listen for new incoming messages via Socket.IO
+      // Listen for new incoming messages via Socket.IO and added poll functionality as a msg
       socket.on('message', (data) => {
         if (!window.currentChannel) return;
-        const chatMessages = document.getElementById('chatMessages');
-        // Create a message element and append it
-        const messageElement = renderMessage({
-          idchatMessages: data.id,
-          sender: data.sender,
-          message: data.message
-        });
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (!urlParams.get('username')) return;
+        if (!urlParams.get('team')) return;
+        if (data.isPoll) {
+          const poll = JSON.parse(data.message);
+          const pollId = `poll-${Date.now()}`;
+
+          const pollDiv = document.createElement('div');
+          pollDiv.classList.add('chat-poll');
+          pollDiv.setAttribute('data-id', pollId);
+
+          const questionHTML = `<p><strong>${poll.createdBy} asks:</strong> ${poll.question}</p>`;
+
+          let answersHTML = '';
+          poll.answers.forEach((answer, index) => {
+            answersHTML += `
+              <div style="margin: 5px 0;">
+                <button class="vote-btn" data-index="${index}" data-pollid="${pollId}">
+                  ${answer}
+                </button>
+                <span class="vote-count" id="${pollId}-count-${index}">0 votes</span>
+              </div>
+            `;
+    });
+    const multiSelectNote = poll.allowMultiple ? `<small>You can select multiple answers</small>` : '';
+    pollDiv.innerHTML = `${questionHTML}${answersHTML}${multiSelectNote}<hr>`;
+    chatMessages.appendChild(pollDiv);
+
+        }
+        
       });
 
       // Listen for delete message event from server to remove message from UI
@@ -1155,7 +1215,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
     function setTeamsLink() {
         // 1. Get the username
         const urlParams = new URLSearchParams(window.location.search);
-        const username = urlParams.get('username');
+        const username = urlParams.get('username')||'user';
         
         // 2. If we have it, update the link
         if (username) {
@@ -1169,7 +1229,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
       function setDirectMessagingLink() {
         // 1. Get the username
         const urlParams = new URLSearchParams(window.location.search);
-        const username = urlParams.get('username');
+        const username = urlParams.get('username')||'user';
         
         // 2. If we have it, update the link
         if (username) {
@@ -1182,7 +1242,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
 
       function setUsersLink() {
             const urlParams = new URLSearchParams(window.location.search);
-            const username = urlParams.get('username');
+            const username = urlParams.get('username')||'user';
             if (username) {
                 document.getElementById('UsersLink').href = `Users.html?username=${username}`;
             }
@@ -1192,11 +1252,12 @@ document.getElementById('teamName').textContent = teamNameFromURL;
     // Fetch navbar Username
     document.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const username = urlParams.get('username') || 'User';
+      const username = urlParams.get('username') || 'Funmatsu9';
       document.getElementById('navUsername').textContent = username;
     });
 
     // POLL FUNCTIONALITY
+    const pollPostButton = document.getElementById('postPollBtn');
     const pollButton = document.getElementById('poll-button');
     const pollModal = document.getElementById('pollModal');
     const closePollModal = document.getElementById('closePollModal');
@@ -1205,12 +1266,115 @@ document.getElementById('teamName').textContent = teamNameFromURL;
     const addAnswerBtn = document.getElementById('addAnswerBtn');
     const pollQuestion = document.getElementById('pollQuestion');
     const questionCharCount = document.getElementById('questionCharCount');
+    const socket = io("http://localhost:5008");
+
+    socket.on("connect", () => {
+        console.log("Connected to WebSocket server!");
+    });
+
+    pollPostButton.addEventListener('click', () => {
+      const question = pollQuestion.value;
+      const answers = Array.from(document.querySelectorAll('.poll-answer'))
+                          .map(input => input.value)
+                          .filter(answer => answer !== '');
+      const duration = document.getElementById('pollDuration').value;
+      const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
+      const answersContainer = document.createElement('div');
+
+      answersContainer.innerHTML = `\n <p style="color:white"><b>QUESTION: ${question}</b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
+      for(let i = 0; i < answers.length && answers[i] !== undefined; i++){
+        const option = document.createElement('div');
+        option.classList.add('poll-option');
+        option.innerText = answers[i];
+        if(allowMultiple)
+        option.innerHTML += `<input type="checkbox" class="poll-checkbox" >`;
+        else
+        option.innerHTML += `<input type="radio" class="poll-checkbox" name="select">`;
+        answersContainer.appendChild(option);
+      }
+      answersContainer.innerHTML += `\n </ul><em> This poll ends in ${duration}h</em>\n`
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentUserName = urlParams.get('username') || 'Funmatsu9';
+      const TeamName = urlParams.get('team') || 'TopNotchTeam';
+      socket.emit('newMessage', {
+          channelName: window.currentChannel,
+          teamName: TeamName,
+          sender: currentUserName,
+          message: answersContainer.innerHTML
+        });
+        pollModal.classList.add('hidden');
+        window.location.reload();
+
+    });
 
     // Open poll modal
     pollButton.addEventListener('click', () => {
+      
       pollModal.classList.remove('hidden');
-    });
 
+    });
+    
+
+    console.log("Socket initialized:", socket);
+      pollForm.addEventListener('submit', (e) => { 
+      e.preventDefault(); // Stop default form submission
+
+      // Get poll data
+      const question = pollQuestion.value.trim();
+      const answers = Array.from(document.querySelectorAll('.poll-answer'))
+                          .map(input => input.value.trim())
+                          .filter(answer => answer !== '');
+      const duration = document.getElementById('pollDuration').value;
+      const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
+
+      // Validate inputs
+      if (!question) { 
+          alert('Please enter a question'); 
+          return; 
+      }
+      if (answers.length < 2) { 
+          alert('Please provide at least 2 answers'); 
+          return; 
+      }
+
+      // Create poll message object
+      const pollData = {
+          type: 'poll',
+          question,
+          answers,
+          duration,
+          allowMultiple,
+          votes: {},
+          createdBy: urlParams.get('username'), 
+          createdAt: new Date().toISOString()
+      };
+      
+
+      // Send poll as a message
+      if (window.currentChannel) {
+          // socket.emit('newMessage', {
+          //     channelName: window.currentChannel,
+          //     teamName: urlParams.get('team'),
+          //     sender: urlParams.get('username'),
+          //     message: JSON.stringify(pollData),
+          //     isPoll: true
+          // });
+          console.log("Message sent:", JSON.stringify(pollData));
+          // Close modal and reset form
+          pollModal.classList.add('hidden');
+          pollForm.reset();
+          questionCharCount.textContent = '0';
+
+          // Remove extra answer fields beyond the first two
+          const answerContainers = document.querySelectorAll('.answer-container');
+          for (let i = 2; i < answerContainers.length; i++) {
+              answerContainers[i].remove();
+          }
+      } else { 
+          alert('Please select a channel first'); 
+      }
+      
+  });
     // Close poll modal
     closePollModal.addEventListener('click', () => {
       pollModal.classList.add('hidden');
@@ -1227,7 +1391,10 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         pollModal.classList.add('hidden');
       }
     });
-
+    const urlParam = new URLSearchParams(window.location.search);
+    console.log(urlParam.get('username'));
+    console.log(urlParam.get('team'));
+    console.log("current channel", window.currentChannel);
     // Character counter for question
     pollQuestion.addEventListener('input', () => {
       questionCharCount.textContent = pollQuestion.value.length;
@@ -1268,62 +1435,27 @@ document.getElementById('teamName').textContent = teamNameFromURL;
     });
 
     // Handle poll form submission
-    pollForm.addEventListener('submit', (e) => {
-      e.preventDefault();
+    
+    
 
-      // Get poll data
-      const question = pollQuestion.value.trim();
-      const answers = Array.from(document.querySelectorAll('.poll-answer'))
-              .map(input => input.value.trim())
-              .filter(answer => answer !== '');
-      const duration = document.getElementById('pollDuration').value;
-      const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
+    // Poll event listener
+    document.getElementById('chatMessages').addEventListener('click', (e) => {
+      if (e.target.classList.contains('vote-btn')) {
+        const pollId = e.target.getAttribute('data-pollid');
+        const index = e.target.getAttribute('data-index');
 
-      // Validate
-      if (!question) {
-        alert('Please enter a question');
-        return;
-      }
+        const countSpan = document.getElementById(`${pollId}-count-${index}`);
+        const currentVotes = parseInt(countSpan.textContent) || 0;
+        countSpan.textContent = `${currentVotes + 1} votes`;
 
-      if (answers.length < 2) {
-        alert('Please provide at least 2 answers');
-        return;
-      }
+        const pollDiv = document.querySelector(`[data-id="${pollId}"]`);
+        const allowMultiple = pollDiv.innerHTML.includes("You can select multiple answers");
 
-      // Create poll message
-      const pollData = {
-        type: 'poll',
-        question,
-        answers,
-        duration,
-        allowMultiple,
-        votes: {},
-        createdBy: currentUsername,
-        createdAt: new Date().toISOString()
-      };
-
-      // Send poll as a message
-      if (window.currentChannel) {
-        socket.emit('newMessage', {
-          channelName: window.currentChannel,
-          teamName: teamNameFromURL,
-          sender: currentUsername,
-          message: JSON.stringify(pollData),
-          isPoll: true
-        });
-
-        // Close modal and reset form
-        pollModal.classList.add('hidden');
-        pollForm.reset();
-        questionCharCount.textContent = '0';
-
-        // Remove extra answer fields
-        const answerContainers = document.querySelectorAll('.answer-container');
-        for (let i = 2; i < answerContainers.length; i++) {
-          answerContainers[i].remove();
+        if (!allowMultiple) {
+          pollDiv.querySelectorAll('.vote-btn').forEach(btn => btn.disabled = true);
+        } else {
+          e.target.disabled = true;
         }
-      } else {
-        alert('Please select a channel first');
       }
     });
   </script>

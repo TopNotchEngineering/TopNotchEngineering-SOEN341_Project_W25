@@ -451,6 +451,18 @@
       color: white;
       border: none;
     }
+    .poll-option {
+      background-color: rgb(0, 103, 147);
+      color: white;
+      border-radius: 10px;
+      transition: border 0.1s ease;
+      padding: 10px;
+      margin: 2px;
+    }
+    
+    .poll-checkbox{
+      float: right;
+    }
   </style>
 </head>
 <body>
@@ -1410,8 +1422,8 @@ function fetchChannelsForTeam(teamName) {
       const username = urlParams.get('username') || 'User';
       document.getElementById('navUsername').textContent = username;
     });
-
     // POLL FUNCTIONALITY
+    const pollPostButton = document.getElementById('postPollBtn');
     const pollButton = document.getElementById('poll-button');
     const pollModal = document.getElementById('pollModal');
     const closePollModal = document.getElementById('closePollModal');
@@ -1420,7 +1432,47 @@ function fetchChannelsForTeam(teamName) {
     const addAnswerBtn = document.getElementById('addAnswerBtn');
     const pollQuestion = document.getElementById('pollQuestion');
     const questionCharCount = document.getElementById('questionCharCount');
+    const socket = io("http://localhost:5008");
 
+    socket.on("connect", () => {
+        console.log("Connected to WebSocket server!");
+    });
+
+    console.log("Socket initialized:", socket);
+
+    pollPostButton.addEventListener('click', () => {
+      const question = pollQuestion.value;
+      const answers = Array.from(document.querySelectorAll('.poll-answer'))
+                          .map(input => input.value)
+                          .filter(answer => answer !== '');
+      const duration = document.getElementById('pollDuration').value;
+      const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
+      const answersContainer = document.createElement('div');
+
+      answersContainer.innerHTML = `\n <p style="color:white"><b>QUESTION: ${question}</b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
+      for(let i = 0; i < answers.length && answers[i] !== undefined; i++){
+        const option = document.createElement('div');
+        // answersContainer.innerHTML += '<li class="poll-choice">';
+        option.classList.add('poll-option');
+        option.innerText = answers[i];
+        if(allowMultiple)
+        option.innerHTML += `<input type="checkbox" class="poll-checkbox" >`;
+        else
+        option.innerHTML += `<input type="radio" class="poll-checkbox" name="select">`;
+        answersContainer.appendChild(option);
+        // answersContainer.innerHTML += '</li>';
+      }
+      answersContainer.innerHTML += `\n </ul><em> This poll ends in ${duration}h</em>\n`
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentUserName = urlParams.get('username') || 'Funmatsu9';
+      const TeamName = urlParams.get('team') || 'TopNotchTeam';
+      socket.emit('newMessage', {
+          channelName: window.currentChannel,
+          teamName: TeamName,
+          sender: currentUserName,
+          message: answersContainer.innerHTML
+        });
+    });
     // Open poll modal
     pollButton.addEventListener('click', () => {
       pollModal.classList.remove('hidden');
