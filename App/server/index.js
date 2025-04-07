@@ -613,6 +613,67 @@ app.post('/updateStatus', (req, res) => {
   });
 });
 
+// Handle new poll options
+app.post('/createPoll', (req, res) => {
+  const { question, answer } = req.body;
+  if (!question || !answer) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  const sql = 'INSERT INTO pollOptions (optionQuestion, optionName) VALUES (?, ?)';
+  connection.query(sql, [question, answer], (err, result) => {
+    if (err) {
+      console.error('Error inserting poll option:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(201).json({ message: 'Poll created successfully' });
+  });
+});
+
+// Handle new poll votes where attribute optionVotes is incremented by 1
+app.post('/votePoll', (req, res) => {
+  const { answer } = req.body;
+  if (!answer) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  const sql = 'UPDATE pollOptions SET optionVotes = optionVotes + 1 WHERE optionName = ?';
+  connection.query(sql, [answer], (err, result) => {
+    if (err) {
+      console.error('Error voting on poll:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(200).json({ message: 'Vote recorded successfully' });
+  });
+});
+
+// Handle removing poll votes where attribute optionVotes is decremented by 1
+app.post('/removeVotePoll', (req, res) => {
+  const { answer } = req.body;
+  if (!answer) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+  const sql = 'UPDATE pollOptions SET optionVotes = optionVotes - 1 WHERE optionName = ?';
+  connection.query(sql, [answer], (err, result) => {
+    if (err) {
+      console.error('Error removing vote from poll:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(200).json({ message: 'Vote removed successfully' });
+  });
+});
+
+// Handle fetching poll votes from optionVotes attribute
+app.get('/getPollVotes', (req, res) => {
+  const sql = 'SELECT * FROM pollOptions';
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching poll votes:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(200).json({ pollVotes: results });
+  });
+});
+
+
 // ----- Socket.IO Setup -----
 const server = http.createServer(app);
 const { Server } = require("socket.io");

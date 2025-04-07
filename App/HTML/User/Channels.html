@@ -1438,8 +1438,6 @@ function fetchChannelsForTeam(teamName) {
         console.log("Connected to WebSocket server!");
     });
 
-    console.log("Socket initialized:", socket);
-
     pollPostButton.addEventListener('click', () => {
       const question = pollQuestion.value;
       const answers = Array.from(document.querySelectorAll('.poll-answer'))
@@ -1452,7 +1450,6 @@ function fetchChannelsForTeam(teamName) {
       answersContainer.innerHTML = `\n <p style="color:white"><b>QUESTION: ${question}</b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
       for(let i = 0; i < answers.length && answers[i] !== undefined; i++){
         const option = document.createElement('div');
-        // answersContainer.innerHTML += '<li class="poll-choice">';
         option.classList.add('poll-option');
         option.innerText = answers[i];
         if(allowMultiple)
@@ -1460,7 +1457,6 @@ function fetchChannelsForTeam(teamName) {
         else
         option.innerHTML += `<input type="radio" class="poll-checkbox" name="select">`;
         answersContainer.appendChild(option);
-        // answersContainer.innerHTML += '</li>';
       }
       answersContainer.innerHTML += `\n </ul><em> This poll ends in ${duration}h</em>\n`
       const urlParams = new URLSearchParams(window.location.search);
@@ -1472,7 +1468,134 @@ function fetchChannelsForTeam(teamName) {
           sender: currentUserName,
           message: answersContainer.innerHTML
         });
+
+        // Send poll data to the server
+      answers.forEach(answer => {
+        const pollData = { question, answer };
+        fetch('http://localhost:5008/createPoll', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(pollData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (!data.success) {
+        console.error('Error creating poll for answer:', answer, data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error sending poll data for answer:', answer, error);
+        });
+      });
     });
+
+    // Fetch poll votes and update the poll options with vote counts
+    function getPollVotes() {
+      const pollOptions = document.querySelectorAll('.poll-option');
+      pollOptions.forEach(option => {
+        const answerText = option.textContent.trim();
+        fetch(`http://localhost:5008/getPollVotes?answer=${encodeURIComponent(answerText)}`)
+          .then(response => response.json())
+          .then(data => {
+            console.log('Fetched data for answer:', answerText, data);
+            console.log('Fetched data:', data.pollVotes[3].optionVotes);
+            if (data && data.optionVotes !== undefined) {
+              // Update the vote count display
+              let voteCount = option.querySelector('.vote-count');
+              if (!voteCount) {
+                voteCount = document.createElement('span');
+                voteCount.classList.add('vote-count');
+                voteCount.style.marginLeft = '10px';
+                voteCount.style.color = '#fff';
+                option.appendChild(voteCount);
+              }
+              voteCount.textContent = `(${data.optionVotes} votes)`;
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching poll votes:', error);
+          });
+      });
+    }
+
+let previousSelection = null;
+document.addEventListener('change', (event) => {
+  if (event.target.classList.contains('poll-checkbox')) {
+    // Handle the newly selected option
+    if (event.target.checked) {
+      // If there was a previously selected button (and it's not the same as this one)
+      if (previousSelection && previousSelection !== event.target) {
+        // Simulate "unchecked" behavior for the previously selected radio button
+        const prevOption = previousSelection.closest('.poll-option');
+        if (prevOption) {
+          const prevAnswer = prevOption.textContent.trim();
+          // Trigger the fetch for vote removal
+          fetch('http://localhost:5008/removeVotePoll', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ answer: prevAnswer })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              console.log('Vote removed successfully for:', prevAnswer);
+            } else {
+              console.error('Error removing vote:', data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error sending vote removal:', error);
+          });
+        }
+      }
+      // Now handle the new selection
+      const selectedOption = event.target.closest('.poll-option');
+      if (selectedOption) {
+        const answer = selectedOption.textContent.trim();
+        fetch('http://localhost:5008/votePoll', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answer: answer })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            console.log('Vote registered successfully for:', answer);
+          } else {
+            console.error('Error registering vote:', data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error sending vote:', error);
+        });
+      }
+      // Update the previous selection with the current one
+      previousSelection = event.target;
+      getPollVotes(); // Call the function to update the poll votes
+    }
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Get all checkboxes with the class "poll-checkbox"
+  const checkboxes = document.querySelectorAll('.poll-checkbox');
+
+  // Loop through each checkbox
+  checkboxes.forEach(checkbox => {
+    // Restore state on page load using the name
+    loadCheckboxState(checkbox);
+
+    // Attach listener to save state whenever it changes
+    checkbox.addEventListener('change', (event) => {
+      const answers = Array.from(document.querySelectorAll('.poll-answer'))
+                          .map(input => input.value)
+                          .filter(answer => answer !== '');
+      saveCheckboxState(event.target);
+      console.log(`Checkbox with name "${answers}" is now ${event.target.checked ? 'checked' : 'unchecked'}.`);
+    });
+  });
+});
+
     // Open poll modal
     pollButton.addEventListener('click', () => {
       pollModal.classList.remove('hidden');
