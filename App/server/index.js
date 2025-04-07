@@ -617,7 +617,7 @@ app.post('/updateStatus', (req, res) => {
 app.post('/createPoll', (req, res) => {
   const { question, answer } = req.body;
   if (!question || !answer) {
-    return res.status(400).json({ error: 'Missing required fields' });
+    return res.status(400).json({ error: 'Missing required data' });
   }
   const sql = 'INSERT INTO pollOptions (optionQuestion, optionName) VALUES (?, ?)';
   connection.query(sql, [question, answer], (err, result) => {
@@ -639,7 +639,7 @@ app.post('/votePoll', (req, res) => {
   connection.query(sql, [answer], (err, result) => {
     if (err) {
       console.error('Error voting on poll:', err);
-      return res.status(500).json({ error: 'Database error' });
+      return res.status(500).json({ error: 'Error' });
     }
     res.status(200).json({ message: 'Vote recorded successfully' });
   });
@@ -649,13 +649,13 @@ app.post('/votePoll', (req, res) => {
 app.post('/removeVotePoll', (req, res) => {
   const { answer } = req.body;
   if (!answer) {
-    return res.status(400).json({ error: 'Missing required fields' });
+    return res.status(400).json({ error: 'Missing required info' });
   }
   const sql = 'UPDATE pollOptions SET optionVotes = optionVotes - 1 WHERE optionName = ?';
   connection.query(sql, [answer], (err, result) => {
     if (err) {
       console.error('Error removing vote from poll:', err);
-      return res.status(500).json({ error: 'Database error' });
+      return res.status(500).json({ error: 'Error in database' });
     }
     res.status(200).json({ message: 'Vote removed successfully' });
   });

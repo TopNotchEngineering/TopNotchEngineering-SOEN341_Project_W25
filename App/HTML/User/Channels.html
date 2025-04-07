@@ -1469,7 +1469,7 @@ function fetchChannelsForTeam(teamName) {
           message: answersContainer.innerHTML
         });
 
-        // Send poll data to the server
+        // Send poll data to the server.
       answers.forEach(answer => {
         const pollData = { question, answer };
         fetch('http://localhost:5008/createPoll', {
@@ -1480,16 +1480,16 @@ function fetchChannelsForTeam(teamName) {
         .then(response => response.json())
         .then(data => {
           if (!data.success) {
-        console.error('Error creating poll for answer:', answer, data.error);
+        console.error('Error creating poll for:', answer, data.error);
           }
         })
         .catch(error => {
-          console.error('Error sending poll data for answer:', answer, error);
+          console.error('Error sending poll data for:', answer, error);
         });
       });
     });
 
-    // Fetch poll votes and update the poll options with vote counts
+    // Fetch poll votes and update the poll options with vote counts.
     function getPollVotes() {
       const pollOptions = document.querySelectorAll('.poll-option');
       pollOptions.forEach(option => {
@@ -1497,10 +1497,10 @@ function fetchChannelsForTeam(teamName) {
         fetch(`http://localhost:5008/getPollVotes?answer=${encodeURIComponent(answerText)}`)
           .then(response => response.json())
           .then(data => {
-            console.log('Fetched data for answer:', answerText, data);
-            console.log('Fetched data:', data.pollVotes[3].optionVotes);
+            console.log('Fetched data for:', answerText, data);
+            console.log('Specific votes number:', data.pollVotes[3].optionVotes);
             if (data && data.optionVotes !== undefined) {
-              // Update the vote count display
+              // Update the vote count display.
               let voteCount = option.querySelector('.vote-count');
               if (!voteCount) {
                 voteCount = document.createElement('span');
@@ -1513,7 +1513,7 @@ function fetchChannelsForTeam(teamName) {
             }
           })
           .catch(error => {
-            console.error('Error fetching poll votes:', error);
+            console.error('Error fetching votes:', error);
           });
       });
     }
@@ -1521,15 +1521,15 @@ function fetchChannelsForTeam(teamName) {
 let previousSelection = null;
 document.addEventListener('change', (event) => {
   if (event.target.classList.contains('poll-checkbox')) {
-    // Handle the newly selected option
+    // Handle the newly selected option.
     if (event.target.checked) {
-      // If there was a previously selected button (and it's not the same as this one)
+      // If there was a previously selected button (and it's not the same as this one.)
       if (previousSelection && previousSelection !== event.target) {
-        // Simulate "unchecked" behavior for the previously selected radio button
+        // Simulate "unchecked" behavior for the previously selected radio button.
         const prevOption = previousSelection.closest('.poll-option');
         if (prevOption) {
           const prevAnswer = prevOption.textContent.trim();
-          // Trigger the fetch for vote removal
+          // Trigger the fetch for vote removal.
           fetch('http://localhost:5008/removeVotePoll', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1538,17 +1538,17 @@ document.addEventListener('change', (event) => {
           .then(response => response.json())
           .then(data => {
             if (data.success) {
-              console.log('Vote removed successfully for:', prevAnswer);
+              console.log('Vote removed for:', prevAnswer);
             } else {
-              console.error('Error removing vote:', data.error);
+              console.error('Error:', data.error);
             }
           })
           .catch(error => {
-            console.error('Error sending vote removal:', error);
+            console.error('Error:', error);
           });
         }
       }
-      // Now handle the new selection
+      // Now handle the new selection.
       const selectedOption = event.target.closest('.poll-option');
       if (selectedOption) {
         const answer = selectedOption.textContent.trim();
@@ -1560,18 +1560,18 @@ document.addEventListener('change', (event) => {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            console.log('Vote registered successfully for:', answer);
+            console.log('Vote registered for:', answer);
           } else {
-            console.error('Error registering vote:', data.error);
+            console.error('Error:', data.error);
           }
         })
         .catch(error => {
-          console.error('Error sending vote:', error);
+          console.error('Error:', error);
         });
       }
-      // Update the previous selection with the current one
+      // Update the previous selection with the current one.
       previousSelection = event.target;
-      getPollVotes(); // Call the function to update the poll votes
+      getPollVotes(); // Call the function to update the poll votes.
     }
   }
 });
