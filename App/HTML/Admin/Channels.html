@@ -1281,7 +1281,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
       const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
       const answersContainer = document.createElement('div');
 
-      answersContainer.innerHTML = `\n <p style="color:white"><b>QUESTION: ${question}</b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
+      answersContainer.innerHTML = `\n <p style="color:white"><b><h1 style="color: white">QUESTION: ${question}</h1></b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
       for(let i = 0; i < answers.length && answers[i] !== undefined; i++){
         const option = document.createElement('div');
         option.classList.add('poll-option');
@@ -1292,7 +1292,7 @@ document.getElementById('teamName').textContent = teamNameFromURL;
         option.innerHTML += `<input type="radio" class="poll-checkbox" name="select">`;
         answersContainer.appendChild(option);
       }
-      answersContainer.innerHTML += `\n </ul><em> This poll ends in ${duration}h</em>\n`
+      answersContainer.innerHTML += `\n </ul> votes: <em> This poll ends in ${duration}h</em>\n`
       const urlParams = new URLSearchParams(window.location.search);
       const currentUserName = urlParams.get('username') || 'Funmatsu9';
       const TeamName = urlParams.get('team') || 'TopNotchTeam';
