@@ -216,6 +216,21 @@
       flex-direction: column;
       overflow-y: auto;
     }
+
+    .schedule-btn {
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .schedule-btn :hover {
+      background-color: #218838;
+    }
+
     .sidebar h1 {
       margin-bottom: 1rem;
       font-size: 1.5rem;
@@ -486,7 +501,29 @@
     .poll-checkbox{
       float: right;
     }
-    
+
+    #scheduleModal {
+      justify-content: center;
+    }
+
+    #scheduleModal li {
+      background-color: #007bff;
+      justify-content: space-between;
+      padding: 5px;
+      margin: 10px;
+      border-radius: 5px;
+      border-color: #000;
+      color: #ffffff;
+      list-style-type: none;
+    }
+
+    #scheduleModal li :hover {
+      background-color: #1762b2;
+      cursor: pointer;
+    }
+
+
+
   </style>
 </head>
 <body>
@@ -581,6 +618,37 @@
       </form>
     </div>
   </div>
+  <!-- SCHEDULE MODAL-->
+   <div id="scheduleModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeScheduleModal" class="close">&times;</span>
+      <h1>Schedule</h1>
+      <button id="addEventBtn" class="new-channel-btn">Add Event</button>
+      <div>
+         <ul id="eventsList">
+          </ul>       
+      </div>
+    </div>
+   </div>
+
+   <!--ADD EVENT MODAL-->
+   <div id="eventModal" class="modal hidden">
+    <div class="modal-content">
+      <span id="closeEventModal" class="close">&times;</span>
+      <h1>Add Event</h1>
+      <div>
+        <form id="eventModal">
+          <label for="eventName">Event:</label>
+          <input type="text" id="eventDes" placeholder="Name">
+          <label for="eventDescription">Describe:</label>
+          <input type="text" id="eventDescription" placeholder="Description" maxLength="300">
+          <label for="eventTime">When:</label>
+          <input type="datetime-local" id="eventTime">
+        </form>
+        <button class="new-channel-btn">Submit</button>
+      </div>
+    </div>
+   </div>
 
   <!-- POLL MODAL -->
   <div id="pollModal" class="modal hidden">
@@ -630,7 +698,8 @@
     <!-- LEFT SIDEBAR: Team Name & Channels -->
     <div class="sidebar">
       <h1 id="teamName">Team Name</h1>
-      <div class="channels-header">
+      <button id="team-schedule-btn" class="schedule-btn">Schedule</button>
+            <div class="channels-header">
         <h3 style="margin: 0;">Channels</h3>
         <button id="newChannelBtn" class="new-channel-btn">New</button>
       </div>
@@ -1561,6 +1630,96 @@ document.addEventListener('change', (event) => {
         }
       }
     });
+
+
+    // Schedule functions:
+    const modal = document.getElementById('scheduleModal');
+    const closeBtn = document.getElementById('closeScheduleModal');
+    const scheduleBtn = document.getElementById('team-schedule-btn');
+
+    function openScheduleModal() {
+      modal.classList.remove('hidden');
+    }
+
+    function closeScheduleModal() {
+      modal.classList.add('hidden');
+    }
+
+    scheduleBtn.addEventListener('click', openScheduleModal);
+
+    closeBtn.addEventListener('click', () => {
+      modal.classList.add('hidden');
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+
+    // create event modal
+    const addEventBtn = document.getElementById('addEventBtn');
+    const eventModal = document.getElementById('eventModal');
+    const closeEventModalBtn = document.getElementById('closeEventModal');
+    const submitBtn = eventModal.querySelector('.new-channel-btn');
+    const eventsList = document.getElementById('eventsList');
+
+    function openEventModal() {
+      eventModal.classList.remove('hidden');
+    }
+
+    function closeEventModal() {
+      eventModal.classList.add('hidden');
+    }
+
+    addEventBtn.addEventListener('click', openEventModal);
+    closeEventModalBtn.addEventListener('click', closeEventModal);
+
+    window.addEventListener('click', (e) => {
+      if (e.target === eventModal) {
+        closeEventModal();
+      }
+    });
+
+    submitBtn.addEventListener('click', () => {
+      const name = document.querySelector('#eventDes').value;
+      const description = document.querySelector('#eventDescription').value;
+      const time = document.querySelector('#eventTime').value;
+
+      if (!name || !description || !time) {
+        alert('Please fill out all fields.');
+        return;
+      }
+
+      // Create a new list item
+      const li = document.createElement('li');
+      li.classList.add('event-item');
+      li.innerHTML = `
+        <div class="event-header">
+          <strong>${name}</strong> at ${new Date(time).toLocaleString()}
+        </div>
+        <div class="event-description hidden">
+          ${description}
+        </div>
+      `;
+      li.addEventListener('click', () => {
+        const desc = li.querySelector('.event-description');
+        desc.classList.toggle('hidden');
+      });
+      eventsList.appendChild(li);
+      
+      eventsList.appendChild(li);
+
+      // Clear form
+      document.querySelector('#eventDes').value = '';
+      document.querySelector('#eventDescription').value = '';
+      document.querySelector('#eventTime').value = '';
+
+      // Close the Add Event Modal
+      eventModal.classList.add('hidden');
+    });
+
+</script>
   </script>
   <script src="/App/JS/script.js"></script>
 </body>
