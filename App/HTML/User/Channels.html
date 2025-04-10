@@ -964,7 +964,6 @@ joinChannelForm.addEventListener('submit', (e) => {
         if (isAdmin) {
           const deleteBtn = document.createElement('button');
           deleteBtn.classList.add('delete-msg');
-          //deleteBtn.textContent = 'x';
           
           deleteBtn.addEventListener('click', () => {
             deleteMessage(msg.idchatMessages);
