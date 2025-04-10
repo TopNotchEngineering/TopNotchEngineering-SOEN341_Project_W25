@@ -640,6 +640,8 @@
         <form id="eventModal">
           <label for="eventName">Event:</label>
           <input type="text" id="eventDes" placeholder="Name">
+          <label for="eventLocation">Location</label>
+          <input type="text" id="eventLoc" placeholder="Location">
           <label for="eventDescription">Describe:</label>
           <input type="text" id="eventDescription" placeholder="Description" maxLength="300">
           <label for="eventTime">When:</label>
@@ -1682,42 +1684,45 @@ document.addEventListener('change', (event) => {
     });
 
     submitBtn.addEventListener('click', () => {
-      const name = document.querySelector('#eventDes').value;
-      const description = document.querySelector('#eventDescription').value;
-      const time = document.querySelector('#eventTime').value;
+    const name = document.querySelector('#eventDes').value;
+    const location = document.querySelector('#eventLoc').value;
+    const description = document.querySelector('#eventDescription').value;
+    const time = document.querySelector('#eventTime').value;
 
-      if (!name || !description || !time) {
-        alert('Please fill out all fields.');
-        return;
-      }
+    if (!name || !location || !description || !time) {
+      alert('Please fill out all fields.');
+      return;
+    }
 
-      // Create a new list item
-      const li = document.createElement('li');
-      li.classList.add('event-item');
-      li.innerHTML = `
-        <div class="event-header">
-          <strong>${name}</strong> at ${new Date(time).toLocaleString()}
-        </div>
-        <div class="event-description hidden">
-          ${description}
-        </div>
-      `;
-      li.addEventListener('click', () => {
-        const desc = li.querySelector('.event-description');
-        desc.classList.toggle('hidden');
-      });
-      eventsList.appendChild(li);
-      
-      eventsList.appendChild(li);
+    // Create a new list item
+    const li = document.createElement('li');
+    li.classList.add('event-item');
+    li.innerHTML = `
+      <div class="event-header">
+        <strong>${name}</strong> at ${new Date(time).toLocaleString()} — <em>${location}</em>
+      </div>
+      <div class="event-description hidden">
+        ${description}
+      </div>
+    `;
 
-      // Clear form
-      document.querySelector('#eventDes').value = '';
-      document.querySelector('#eventDescription').value = '';
-      document.querySelector('#eventTime').value = '';
-
-      // Close the Add Event Modal
-      eventModal.classList.add('hidden');
+    // Toggle description on click
+    li.addEventListener('click', () => {
+      const desc = li.querySelector('.event-description');
+      desc.classList.toggle('hidden');
     });
+
+    eventsList.appendChild(li);
+
+    // Clear form inputs
+    document.querySelector('#eventDes').value = '';
+    document.querySelector('#eventLoc').value = '';
+    document.querySelector('#eventDescription').value = '';
+    document.querySelector('#eventTime').value = '';
+
+    // Close modal
+    closeEventModal();
+  });
 
 </script>
   </script>
