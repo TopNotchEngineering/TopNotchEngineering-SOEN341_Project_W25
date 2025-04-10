@@ -1521,13 +1521,6 @@ document.addEventListener('change', (event) => {
 
       // Send poll as a message
       if (window.currentChannel) {
-          // socket.emit('newMessage', {
-          //     channelName: window.currentChannel,
-          //     teamName: urlParams.get('team'),
-          //     sender: urlParams.get('username'),
-          //     message: JSON.stringify(pollData),
-          //     isPoll: true
-          // });
           console.log("Message sent:", JSON.stringify(pollData));
           // Close modal and reset form
           pollModal.classList.add('hidden');
