@@ -1298,9 +1298,83 @@ document.getElementById('teamName').textContent = teamNameFromURL;
     // Fetch navbar Username
     document.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const username = urlParams.get('username') || 'Funmatsu9';
+      const username = urlParams.get('username') || 'Username';
       document.getElementById('navUsername').textContent = username;
     });
+
+const pollPreviousSelections = {};
+
+document.addEventListener('change', (event) => {
+  if (event.target.classList.contains('poll-checkbox')) {
+    // Locate the poll container and get its unique poll ID
+    const pollContainer = event.target.closest('.poll-container');
+    if (!pollContainer) return;
+    const pollId = pollContainer.getAttribute('data-poll-id');
+    
+    if (event.target.type === 'radio') {
+      // For radio buttons, check if this poll already had a selection
+      if (pollPreviousSelections[pollId] && pollPreviousSelections[pollId] !== event.target) {
+        // Remove vote for the previously selected option in this poll only
+        const previousAnswer = pollPreviousSelections[pollId].dataset.answer;
+        removeVote(pollId, previousAnswer);
+      }
+      // Store the new selection for this poll
+      pollPreviousSelections[pollId] = event.target;
+      registerVote(pollId, event.target.dataset.answer);
+    } else if (event.target.type === 'checkbox') {
+      // For checkboxes, register or remove vote based on the checked state
+      if (event.target.checked) {
+        registerVote(pollId, event.target.dataset.answer);
+      } else {
+        removeVote(pollId, event.target.dataset.answer);
+      }
+    }
+  }
+});
+
+// Function to simulate vote removal
+function removeVote(pollId, answer) {
+  console.log(`Removing vote for poll ${pollId}: ${answer}`);
+  const pollContainer = document.querySelector(`.poll-container[data-poll-id="${pollId}"]`);
+  if (pollContainer) {
+    const option = pollContainer.querySelector(`.poll-checkbox[data-answer="${answer}"]`);
+    if (option) {
+      const voteCountSpan = option.parentNode.querySelector('.vote-count');
+      let countMatch = voteCountSpan.textContent.match(/\d+/);
+      let currentVotes = countMatch ? parseInt(countMatch[0]) : 0;
+      voteCountSpan.textContent = `(${Math.max(currentVotes - 1, 0)} votes)`;
+    }
+  }
+}
+
+// Listen for changes on any poll input (radio or checkbox).
+// This replaces your previous global "previousSelection" variable with per-poll handling.
+document.addEventListener('change', function(event) {
+  if (event.target.classList.contains('poll-checkbox')) {
+    // Find the poll container and its unique poll id.
+    const pollContainer = event.target.closest('.poll-container');
+    if (!pollContainer) return;
+    const pollId = pollContainer.getAttribute('data-poll-id');
+    const selectedAnswer = event.target.dataset.answer;
+
+    if (event.target.type === 'radio') {
+      // For single-selection polls, check if there was a previous vote
+      if (pollPreviousSelections[pollId] && pollPreviousSelections[pollId] !== event.target) {
+        const previousAnswer = pollPreviousSelections[pollId].dataset.answer;
+        removeVote(pollId, previousAnswer);
+      }
+      pollPreviousSelections[pollId] = event.target;
+      registerVote(pollId, selectedAnswer);
+    } else if (event.target.type === 'checkbox') {
+      // For multiple-selection polls, process each checkbox separately
+      if (event.target.checked) {
+        registerVote(pollId, selectedAnswer);
+      } else {
+        removeVote(pollId, selectedAnswer);
+      }
+    }
+  }
+});
 
     // POLL FUNCTIONALITY
     const pollPostButton = document.getElementById('postPollBtn');
@@ -1328,26 +1402,49 @@ document.getElementById('teamName').textContent = teamNameFromURL;
       const answersContainer = document.createElement('div');
 
       answersContainer.innerHTML = `\n <p style="color:white"><b><h1 style="color: white">QUESTION: ${question}</h1></b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
-      for(let i = 0; i < answers.length && answers[i] !== undefined; i++){
-        const option = document.createElement('div');
-        option.classList.add('poll-option');
-        option.innerText = answers[i];
-        if(allowMultiple)
-        option.innerHTML += `<input type="checkbox" class="poll-checkbox" >`;
-        else
-        option.innerHTML += `<input type="radio" class="poll-checkbox" name="select">`;
-        answersContainer.appendChild(option);
-      }
+
+// Generate a unique poll id
+const pollId = 'poll_' + Date.now();
+
+// Create a container and assign the poll id
+const pollContainer = document.createElement('div');
+pollContainer.classList.add('poll-container');
+pollContainer.setAttribute('data-poll-id', pollId);
+
+pollContainer.innerHTML = `
+  <p style="color:white;"><b><h1 style="color: white">QUESTION: ${question}</h1></b></p>
+  <ul style="list-style: none; padding: 0; margin: 0;"></ul>
+  <em> This poll ends in ${duration}h</em>
+`;
+
+const answersList = pollContainer.querySelector('ul');
+
+// Loop through the answers and create each poll option
+for (let i = 0; i < answers.length && answers[i] !== undefined; i++) {
+  const option = document.createElement('div');
+  option.classList.add('poll-option');
+  option.innerText = answers[i];
+  
+  if (allowMultiple) {
+    option.innerHTML += `<input type="checkbox" class="poll-checkbox">`;
+  } else {
+    option.innerHTML += `<input type="radio" class="poll-checkbox" name="${pollId}">`;
+  }
+  
+  answersList.appendChild(option);
+}
+
       answersContainer.innerHTML += `\n </ul> votes: <em> This poll ends in ${duration}h</em>\n`
       const urlParams = new URLSearchParams(window.location.search);
       const currentUserName = urlParams.get('username') || 'Funmatsu9';
       const TeamName = urlParams.get('team') || 'TopNotchTeam';
       socket.emit('newMessage', {
-          channelName: window.currentChannel,
-          teamName: TeamName,
-          sender: currentUserName,
-          message: answersContainer.innerHTML
-        });
+      channelName: window.currentChannel,
+      teamName: TeamName,
+      sender: currentUserName,
+      message: pollContainer.outerHTML
+    });
+
         pollModal.classList.add('hidden');
    
 

@@ -1510,27 +1510,50 @@ function fetchChannelsForTeam(teamName) {
       const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
       const answersContainer = document.createElement('div');
 
-      answersContainer.innerHTML = `\n <p style="color:white"><b>QUESTION: ${question}</b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
-      for(let i = 0; i < answers.length && answers[i] !== undefined; i++){
-        const option = document.createElement('div');
-        option.classList.add('poll-option');
-        option.innerText = answers[i];
-        if(allowMultiple)
-        option.innerHTML += `<input type="checkbox" class="poll-checkbox" >`;
-        else
-        option.innerHTML += `<input type="radio" class="poll-checkbox" name="select">`;
-        answersContainer.appendChild(option);
-      }
-      answersContainer.innerHTML += `\n </ul><em> This poll ends in ${duration}h</em>\n`
+      answersContainer.innerHTML = `\n <p style="color:white"><b><h1 style="color: white">QUESTION: ${question}</h1></b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
+
+// Generate a unique poll id
+const pollId = 'poll_' + Date.now();
+
+// Create a container and assign the poll id
+const pollContainer = document.createElement('div');
+pollContainer.classList.add('poll-container');
+pollContainer.setAttribute('data-poll-id', pollId);
+
+pollContainer.innerHTML = `
+  <p style="color:white;"><b><h1 style="color: white">QUESTION: ${question}</h1></b></p>
+  <ul style="list-style: none; padding: 0; margin: 0;"></ul>
+  <em> This poll ends in ${duration}h</em>
+`;
+
+const answersList = pollContainer.querySelector('ul');
+
+// Loop through the answers and create each poll option
+for (let i = 0; i < answers.length && answers[i] !== undefined; i++) {
+  const option = document.createElement('div');
+  option.classList.add('poll-option');
+  option.innerText = answers[i];
+  
+  if (allowMultiple) {
+    option.innerHTML += `<input type="checkbox" class="poll-checkbox">`;
+  } else {
+    option.innerHTML += `<input type="radio" class="poll-checkbox" name="${pollId}">`;
+  }
+  
+  answersList.appendChild(option);
+}
+
+      answersContainer.innerHTML += `\n </ul> votes: <em> This poll ends in ${duration}h</em>\n`
       const urlParams = new URLSearchParams(window.location.search);
       const currentUserName = urlParams.get('username') || 'Funmatsu9';
       const TeamName = urlParams.get('team') || 'TopNotchTeam';
       socket.emit('newMessage', {
-          channelName: window.currentChannel,
-          teamName: TeamName,
-          sender: currentUserName,
-          message: answersContainer.innerHTML
-        });
+      channelName: window.currentChannel,
+      teamName: TeamName,
+      sender: currentUserName,
+      message: pollContainer.outerHTML
+    });
+
         pollModal.classList.add('hidden');
 
         // Send poll data to the server.
@@ -1662,6 +1685,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Open poll modal
     pollButton.addEventListener('click', () => {
+      pollForm.reset();
       pollModal.classList.remove('hidden');
     });
 
