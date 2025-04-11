@@ -613,65 +613,6 @@ app.post('/updateStatus', (req, res) => {
   });
 });
 
-// Handle new poll options
-app.post('/createPoll', (req, res) => {
-  const { question, answer } = req.body;
-  if (!question || !answer) {
-    return res.status(400).json({ error: 'Missing required data' });
-  }
-  const sql = 'INSERT INTO pollOptions (optionQuestion, optionName) VALUES (?, ?)';
-  connection.query(sql, [question, answer], (err, result) => {
-    if (err) {
-      console.error('Error inserting poll option:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    res.status(201).json({ message: 'Poll created successfully' });
-  });
-});
-
-// Handle new poll votes where attribute optionVotes is incremented by 1
-app.post('/votePoll', (req, res) => {
-  const { answer } = req.body;
-  if (!answer) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-  const sql = 'UPDATE pollOptions SET optionVotes = optionVotes + 1 WHERE optionName = ?';
-  connection.query(sql, [answer], (err, result) => {
-    if (err) {
-      console.error('Error voting on poll:', err);
-      return res.status(500).json({ error: 'Error' });
-    }
-    res.status(200).json({ message: 'Vote recorded successfully' });
-  });
-});
-
-// Handle removing poll votes where attribute optionVotes is decremented by 1
-app.post('/removeVotePoll', (req, res) => {
-  const { answer } = req.body;
-  if (!answer) {
-    return res.status(400).json({ error: 'Missing required info' });
-  }
-  const sql = 'UPDATE pollOptions SET optionVotes = optionVotes - 1 WHERE optionName = ?';
-  connection.query(sql, [answer], (err, result) => {
-    if (err) {
-      console.error('Error removing vote from poll:', err);
-      return res.status(500).json({ error: 'Error in database' });
-    }
-    res.status(200).json({ message: 'Vote removed successfully' });
-  });
-});
-
-// Handle fetching poll votes from optionVotes attribute
-app.get('/getPollVotes', (req, res) => {
-  const sql = 'SELECT * FROM pollOptions';
-  connection.query(sql, (err, results) => {
-    if (err) {
-      console.error('Error fetching poll votes:', err);
-      return res.status(500).json({ error: 'Database error' });
-    }
-    res.status(200).json({ pollVotes: results });
-  });
-});
 app.get('/getAllChannels', (req, res) => {
   const teamName = req.query.teamName;
   if (!teamName) {
@@ -929,6 +870,175 @@ app.post('/cancelEvent', (req, res) => {
     });
   });
 });
+
+app.post('/createPoll', (req, res) => {
+  const { teamName, channelName, question, allowMultiple, duration, answers } = req.body;
+
+  if (!teamName || !channelName || !question || !duration || !Array.isArray(answers) || answers.length < 2) {
+    return res.status(400).json({ error: 'Invalid or incomplete poll data' });
+  }
+
+  const pollSql = `
+    INSERT INTO polls (teamName, channelName, question, allowMultiple, duration) 
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  const pollValues = [teamName, channelName, question, allowMultiple ? 1 : 0, duration];
+
+  connection.query(pollSql, pollValues, (err, pollResult) => {
+    if (err) {
+      console.error('Error creating poll:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    const pollId = pollResult.insertId;
+    const optionValues = answers.map(answer => [pollId, answer]);
+
+    connection.query(`INSERT INTO pollOptions (pollId, optionText) VALUES ?`, [optionValues], (err2) => {
+      if (err2) {
+        console.error('Error inserting poll options:', err2);
+        return res.status(500).json({ error: 'Failed to insert poll options' });
+      }
+
+      // Construct HTML version of the poll to store as a message
+      const pollMessage = `
+        <div class="chat-poll" data-poll-id="${pollId}">
+          <strong>${question}</strong>
+          <div style="margin-top: 10px;">
+            ${answers.map((answer, index) => `
+              <label class="poll-option">
+                ${answer}
+                <input type="${allowMultiple ? 'checkbox' : 'radio'}" 
+                       name="poll-${pollId}" 
+                       value="${answer}" 
+                       data-option-index="${index}" 
+                       class="poll-checkbox">
+              </label>
+            `).join('')}
+          </div>
+          <br>
+          <button class="vote-btn" data-poll-id="${pollId}">Vote</button>
+        </div>
+      `;
+
+      const chatSql = `
+        INSERT INTO chatMessages (channelName, teamName, sender, message) 
+        VALUES (?, ?, ?, ?)
+      `;
+
+      const chatValues = [channelName, teamName, 'System', pollMessage];
+
+      connection.query(chatSql, chatValues, (err3, chatResult) => {
+        if (err3) {
+          console.error('Error inserting poll as chat message:', err3);
+          return res.status(500).json({ error: 'Failed to insert poll message' });
+        }
+
+        const roomName = `${teamName}-${channelName}`;
+        io.to(roomName).emit('message', {
+          sender: 'System',
+          message: pollMessage,
+          id: chatResult.insertId
+        });
+
+        res.status(201).json({
+          message: 'Poll created and sent to chat!',
+          pollId: pollId,
+          chatMessageId: chatResult.insertId
+        });
+      });
+    });
+  });
+});
+
+app.post('/votePoll', (req, res) => {
+  const { pollId, optionText, username } = req.body;
+
+  if (!pollId || !optionText || !username) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  // Check for existing vote
+  const checkSql = 'SELECT * FROM pollVotesNew WHERE pollId = ? AND username = ?';
+  connection.query(checkSql, [pollId, username], (err, results) => {
+    if (err) {
+      console.error('Error checking existing vote:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({ error: 'User already voted in this poll' });
+    }
+
+    // Insert the vote
+    const insertSql = `
+      INSERT INTO pollVotesNew (pollId, optionText, username) VALUES (?, ?, ?)
+    `;
+    connection.query(insertSql, [pollId, optionText, username], (err2) => {
+      if (err2) {
+        console.error('Error inserting vote:', err2);
+        return res.status(500).json({ error: 'Failed to save vote' });
+      }
+
+      // Get poll + channel info
+      const pollMetaSql = 'SELECT teamName, channelName, question FROM polls WHERE id = ?';
+      connection.query(pollMetaSql, [pollId], (err3, pollRows) => {
+        if (err3 || pollRows.length === 0) {
+          console.error('Error fetching poll info:', err3);
+          return res.status(500).json({ error: 'Poll not found' });
+        }
+
+        const { teamName, channelName, question } = pollRows[0];
+        const roomName = `${teamName}-${channelName}`;
+
+        // Count updated votes
+        const countSql = `
+          SELECT optionText, COUNT(*) as count
+          FROM pollVotesNew
+          WHERE pollId = ?
+          GROUP BY optionText
+        `;
+        connection.query(countSql, [pollId], (err4, voteRows) => {
+          if (err4) {
+            console.error('Error counting votes:', err4);
+            return res.status(500).json({ error: 'Database error' });
+          }
+
+          const voteSummary = voteRows.map(r => `${r.optionText}: ${r.count} vote${r.count === 1 ? '' : 's'}`).join('<br>');
+
+          const systemMessage = `
+            <div class="event-response">
+              <strong>📊 Poll Results:
+              ${question}<br><br>
+              ${voteSummary}
+            </div>
+          `;
+
+          // Save message to chat
+          const insertChatSql = `
+            INSERT INTO chatMessages (channelName, teamName, sender, message)
+            VALUES (?, ?, ?, ?)
+          `;
+          connection.query(insertChatSql, [channelName, teamName, 'System', systemMessage], (err5, result5) => {
+            if (err5) {
+              console.error('Error inserting poll summary message:', err5);
+              return res.status(500).json({ error: 'Failed to save system message' });
+            }
+
+            // Emit to chat
+            io.to(roomName).emit('message', {
+              sender: 'System',
+              message: systemMessage,
+              id: result5.insertId
+            });
+
+            res.status(200).json({ message: 'Vote recorded and summary sent!' });
+          });
+        });
+      });
+    });
+  });
+});
+
 
 
 

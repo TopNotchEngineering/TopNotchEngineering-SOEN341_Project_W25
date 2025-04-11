@@ -966,19 +966,23 @@ document.getElementById('createEventForm').addEventListener('submit', (e) => {
 });
 </script>
 
-  <!-- POLL MODAL -->
-  <div id="pollModal" class="modal hidden">
-    <div class="modal-content">
-      <span id="closePollModal" class="close">&times;</span>
-      <h2>Create a Poll</h2>
-      <form id="pollForm">
-        <div class="form-group">
-          <label for="pollQuestion">QUESTION</label>
-          <input type="text" id="pollQuestion" placeholder="What question do you want to ask?" maxlength="300">
-          <div style="text-align: right; font-size: 0.8rem;"><span id="questionCharCount">0</span> / 300</div>
+    <!-- POLL MODAL -->
+<div id="pollModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closePollModal" class="close">&times;</span>
+    <h2>Create a Poll</h2>
+    <form id="pollForm">
+      <div class="form-group">
+        <label for="pollQuestion">QUESTION</label>
+        <input type="text" id="pollQuestion" placeholder="What question do you want to ask?" maxlength="300">
+        <div style="text-align: right; font-size: 0.8rem;">
+          <span id="questionCharCount">0</span> / 300
         </div>
-        <div class="form-group">
-          <label>ANSWERS</label>
+      </div>
+
+      <div class="form-group">
+        <label>ANSWERS</label>
+        <div id="answersContainer">
           <div class="answer-container">
             <input type="text" class="poll-answer" placeholder="Type your answer">
             <button type="button" class="delete-answer">🗑️</button>
@@ -987,27 +991,173 @@ document.getElementById('createEventForm').addEventListener('submit', (e) => {
             <input type="text" class="poll-answer" placeholder="Type your answer">
             <button type="button" class="delete-answer">🗑️</button>
           </div>
-          <button type="button" id="addAnswerBtn">+ Add another answer</button>
         </div>
-        <div class="form-group">
-          <label>Duration</label>
-          <select id="pollDuration">
-            <option value="24">24 hours</option>
-            <option value="48">48 hours</option>
-            <option value="72">72 hours</option>
-          </select>
-        </div>
-        <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
-          <div style="white-space: nowrap;">Allow Multiple Answers</div>
-          <input type="checkbox" id="allowMultipleAnswers">
-        </div>
-        <div class="modal-actions">
-          <button type="button" id="cancelPollBtn" class="cancel-btn">Cancel</button>
-          <button type="submit" id="postPollBtn" class="save-btn">Post</button>
-        </div>
-      </form>
-    </div>
+        <button type="button" id="addAnswerBtn">+ Add another answer</button>
+      </div>
+
+      <div class="form-group">
+        <label>Duration</label>
+        <select id="pollDuration">
+          <option value="24">24 hours</option>
+          <option value="48">48 hours</option>
+          <option value="72">72 hours</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="white-space: nowrap;">Allow Multiple Answers</div>
+        <input type="checkbox" id="allowMultipleAnswers">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" id="cancelPollBtn" class="cancel-btn">Cancel</button>
+        <button type="submit" id="postPollBtn" class="save-btn">Post</button>
+      </div>
+    </form>
   </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const pollModal = document.getElementById('pollModal');
+  const pollButton = document.getElementById('poll-button');
+  const closePollModal = document.getElementById('closePollModal');
+  const cancelPollBtn = document.getElementById('cancelPollBtn');
+  const pollQuestionInput = document.getElementById('pollQuestion');
+  const questionCharCount = document.getElementById('questionCharCount');
+  const addAnswerBtn = document.getElementById('addAnswerBtn');
+  const answersContainer = document.getElementById('answersContainer');
+
+  // Open modal
+  pollButton.addEventListener('click', () => {
+    pollModal.classList.remove('hidden');
+  });
+
+  // Close modal
+  closePollModal.addEventListener('click', () => {
+    pollModal.classList.add('hidden');
+  });
+  cancelPollBtn.addEventListener('click', () => {
+    pollModal.classList.add('hidden');
+  });
+
+  // Character count for question input
+  pollQuestionInput.addEventListener('input', () => {
+    questionCharCount.textContent = pollQuestionInput.value.length;
+  });
+
+  // Add new answer
+  addAnswerBtn.addEventListener('click', () => {
+    const answerDiv = document.createElement('div');
+    answerDiv.classList.add('answer-container');
+    answerDiv.innerHTML = `
+      <input type="text" class="poll-answer" placeholder="Type your answer">
+      <button type="button" class="delete-answer">🗑️</button>
+    `;
+    answersContainer.appendChild(answerDiv);
+  });
+
+  // Delegate delete answer
+  answersContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-answer')) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Optional: Handle form submission
+  document.getElementById('pollForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const question = document.getElementById('pollQuestion').value.trim();
+  const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
+  const duration = parseInt(document.getElementById('pollDuration').value, 10);
+  const answers = Array.from(document.querySelectorAll('.poll-answer'))
+    .map(input => input.value.trim())
+    .filter(val => val !== '');
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const teamName = urlParams.get('team');
+  const channelName = window.currentChannel;
+
+  if (!question || answers.length < 2) {
+    alert("Please enter a question and at least 2 answers.");
+    return;
+  }
+
+  const data = {
+    teamName,
+    channelName,
+    question,
+    allowMultiple,
+    duration,
+    answers
+  };
+
+  fetch('http://localhost:5008/createPoll', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(response => {
+    if (response.error) {
+      alert('Error: ' + response.error);
+    } else {
+      alert('Poll posted successfully!');
+      document.getElementById('pollForm').reset();
+      document.getElementById('pollModal').classList.add('hidden');
+    }
+  })
+  .catch(error => {
+    console.error('Error creating poll:', error);
+    alert('Something went wrong!');
+  });
+});
+});
+document.addEventListener('click', function (e) {
+  if (e.target.classList.contains('vote-btn')) {
+    const pollId = e.target.dataset.pollId;
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username') || 'Anonymous';
+
+    // Get selected option(s)
+    const inputs = document.querySelectorAll(`input[name="poll-${pollId}"]`);
+    const selectedOptions = Array.from(inputs).filter(i => i.checked).map(i => i.value);
+
+    if (selectedOptions.length === 0) {
+      alert("Please select an answer before voting.");
+      return;
+    }
+
+    // For now, support only single selection
+    const optionText = selectedOptions[0];
+
+    fetch('http://localhost:5008/votePoll', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pollId,
+        optionText,
+        username
+      })
+    })
+    .then(res => res.json())
+    .then(response => {
+      if (response.error) {
+        alert('Error: ' + response.error);
+      } else {
+        alert('Your Vote has been saved!');
+        e.target.disabled = true; // Lock button
+      }
+    })
+    .catch(error => {
+      console.error('Voting error:', error);
+      alert('An error occurred');
+    });
+  }
+});
+
+</script>
 
   <!-- MAIN CONTENT -->
   <main id="channelsPage">
@@ -1320,18 +1470,37 @@ joinChannelForm.addEventListener('submit', (e) => {
       };
 
       // Listen for new incoming messages via Socket.IO
-      socket.on('message', (data) => {
-        if (!window.currentChannel) return;
-        const chatMessages = document.getElementById('chatMessages');
-        // Create a message element and append it
-        const messageElement = renderMessage({
-          idchatMessages: data.id,
-          sender: data.sender,
-          message: data.message
-        });
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      });
+      socket.on('pollMessage', (poll) => {
+  const chatMessages = document.getElementById('chatMessages');
+
+  const pollDiv = document.createElement('div');
+  pollDiv.classList.add('chat-poll');
+
+  pollDiv.innerHTML = `
+  <strong>${poll.question}</strong>
+  <div style="margin-top: 10px;">
+    ${poll.answers.map((answer, index) => `
+      <label class="poll-option" style="display: block; margin-bottom: 6px;">
+        ${answer}
+        <input 
+          type="${poll.allowMultiple ? 'checkbox' : 'radio'}" 
+          name="poll-${poll.pollId}" 
+          value="${answer}" 
+          data-poll-id="${poll.pollId}" 
+          class="poll-checkbox"
+        >
+      </label>
+    `).join('')}
+  </div>
+  <div style="margin-top: 16px;">
+    <button class="vote-btn" data-poll-id="${poll.pollId}">Vote</button>
+  </div>
+`;
+
+
+  chatMessages.appendChild(pollDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
 
       // Listen for delete message event from server to remove message from UI
       socket.on('deleteMessage', (data) => {
@@ -1766,330 +1935,4 @@ function fetchChannelsForTeam(teamName) {
         }
         document.addEventListener('DOMContentLoaded', setUsersLink);
 
-    // Fetch navbar username
-    document.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const username = urlParams.get('username') || 'User';
-      document.getElementById('navUsername').textContent = username;
-    });
-    // POLL FUNCTIONALITY
-    const pollPostButton = document.getElementById('postPollBtn');
-    const pollButton = document.getElementById('poll-button');
-    const pollModal = document.getElementById('pollModal');
-    const closePollModal = document.getElementById('closePollModal');
-    const cancelPollBtn = document.getElementById('cancelPollBtn');
-    const pollForm = document.getElementById('pollForm');
-    const addAnswerBtn = document.getElementById('addAnswerBtn');
-    const pollQuestion = document.getElementById('pollQuestion');
-    const questionCharCount = document.getElementById('questionCharCount');
-    const socket = io("http://localhost:5008");
-
-    socket.on("connect", () => {
-        console.log("Connected to WebSocket server!");
-    });
-
-    pollPostButton.addEventListener('click', () => {
-      const question = pollQuestion.value;
-      const answers = Array.from(document.querySelectorAll('.poll-answer'))
-                          .map(input => input.value)
-                          .filter(answer => answer !== '');
-      const duration = document.getElementById('pollDuration').value;
-      const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
-      const answersContainer = document.createElement('div');
-
-      answersContainer.innerHTML = `\n <p style="color:white"><b><h1 style="color: white">QUESTION: ${question}</h1></b></p><ul style="list-style: none;padding: 0;margin: 0;">\n`
-
-// Generate a unique poll id
-const pollId = 'poll_' + Date.now();
-
-// Create a container and assign the poll id
-const pollContainer = document.createElement('div');
-pollContainer.classList.add('poll-container');
-pollContainer.setAttribute('data-poll-id', pollId);
-
-pollContainer.innerHTML = `
-  <p style="color:white;"><b><h1 style="color: white">QUESTION: ${question}</h1></b></p>
-  <ul style="list-style: none; padding: 0; margin: 0;"></ul>
-  <em> This poll ends in ${duration}h</em>
-`;
-
-const answersList = pollContainer.querySelector('ul');
-
-// Loop through the answers and create each poll option
-for (let i = 0; i < answers.length && answers[i] !== undefined; i++) {
-  const option = document.createElement('div');
-  option.classList.add('poll-option');
-  option.innerText = answers[i];
-  
-  if (allowMultiple) {
-    option.innerHTML += `<input type="checkbox" class="poll-checkbox">`;
-  } else {
-    option.innerHTML += `<input type="radio" class="poll-checkbox" name="${pollId}">`;
-  }
-  
-  answersList.appendChild(option);
-}
-
-      answersContainer.innerHTML += `\n </ul> votes: <em> This poll ends in ${duration}h</em>\n`
-      const urlParams = new URLSearchParams(window.location.search);
-      const currentUserName = urlParams.get('username') || 'Funmatsu9';
-      const TeamName = urlParams.get('team') || 'TopNotchTeam';
-      socket.emit('newMessage', {
-      channelName: window.currentChannel,
-      teamName: TeamName,
-      sender: currentUserName,
-      message: pollContainer.outerHTML
-    });
-
-        pollModal.classList.add('hidden');
-
-        // Send poll data to the server.
-      answers.forEach(answer => {
-        const pollData = { question, answer };
-        fetch('http://localhost:5008/createPoll', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(pollData)
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (!data.success) {
-        console.error('Error creating poll for:', answer, data.error);
-          }
-        })
-        .catch(error => {
-          console.error('Error sending poll data for:', answer, error);
-        });
-      });
-    });
-
-    // Fetch poll votes and update the poll options with vote counts.
-    function getPollVotes() {
-      const pollOptions = document.querySelectorAll('.poll-option');
-      pollOptions.forEach(option => {
-        const answerText = option.textContent.trim();
-        fetch(`http://localhost:5008/getPollVotes?answer=${encodeURIComponent(answerText)}`)
-          .then(response => response.json())
-          .then(data => {
-            console.log('Fetched data for:', answerText, data);
-            console.log('Specific votes number:', data.pollVotes[3].optionVotes);
-            if (data && data.optionVotes !== undefined) {
-              // Update the vote count display.
-              let voteCount = option.querySelector('.vote-count');
-              if (!voteCount) {
-                voteCount = document.createElement('span');
-                voteCount.classList.add('vote-count');
-                voteCount.style.marginLeft = '10px';
-                voteCount.style.color = '#fff';
-                option.appendChild(voteCount);
-              }
-              voteCount.textContent = `(${data.optionVotes} votes)`;
-            }
-          })
-          .catch(error => {
-            console.error('Error fetching votes:', error);
-          });
-      });
-    }
-
-let previousSelection = null;
-document.addEventListener('change', (event) => {
-  if (event.target.classList.contains('poll-checkbox')) {
-    // Handle the newly selected option.
-    if (event.target.checked) {
-      // If there was a previously selected button (and it's not the same as this one.)
-      if (previousSelection && previousSelection !== event.target) {
-        // Simulate "unchecked" behavior for the previously selected radio button.
-        const prevOption = previousSelection.closest('.poll-option');
-        if (prevOption) {
-          const prevAnswer = prevOption.textContent.trim();
-          // Trigger the fetch for vote removal.
-          fetch('http://localhost:5008/removeVotePoll', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ answer: prevAnswer })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              console.log('Vote removed for:', prevAnswer);
-            } else {
-              console.error('Error:', data.error);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-        }
-      }
-      // Now handle the new selection.
-      const selectedOption = event.target.closest('.poll-option');
-      if (selectedOption) {
-        const answer = selectedOption.textContent.trim();
-        fetch('http://localhost:5008/votePoll', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ answer: answer })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            console.log('Vote registered for:', answer);
-          } else {
-            console.error('Error:', data.error);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
-      }
-      // Update the previous selection with the current one.
-      previousSelection = event.target;
-      getPollVotes(); // Call the function to update the poll votes.
-    }
-  }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  // Get all checkboxes with the class "poll-checkbox"
-  const checkboxes = document.querySelectorAll('.poll-checkbox');
-
-  // Loop through each checkbox
-  checkboxes.forEach(checkbox => {
-    // Restore state on page load using the name
-    loadCheckboxState(checkbox);
-
-    // Attach listener to save state whenever it changes
-    checkbox.addEventListener('change', (event) => {
-      const answers = Array.from(document.querySelectorAll('.poll-answer'))
-                          .map(input => input.value)
-                          .filter(answer => answer !== '');
-      saveCheckboxState(event.target);
-      console.log(`Checkbox with name "${answers}" is now ${event.target.checked ? 'checked' : 'unchecked'}.`);
-    });
-  });
-});
-
-    // Open poll modal
-    pollButton.addEventListener('click', () => {
-      pollForm.reset();
-      pollModal.classList.remove('hidden');
-    });
-
-    // Close poll modal
-    closePollModal.addEventListener('click', () => {
-      pollModal.classList.add('hidden');
-    });
-
-    // Close poll modal when clicking cancel
-    cancelPollBtn.addEventListener('click', () => {
-      pollModal.classList.add('hidden');
-    });
-
-    // Close poll modal when clicking outside
-    window.addEventListener('click', (event) => {
-      if (event.target === pollModal) {
-        pollModal.classList.add('hidden');
-      }
-    });
-
-    // Character counter for question
-    pollQuestion.addEventListener('input', () => {
-      questionCharCount.textContent = pollQuestion.value.length;
-    });
-
-    // Add new answer field
-    addAnswerBtn.addEventListener('click', () => {
-      const answerContainers = document.querySelectorAll('.answer-container');
-      if (answerContainers.length < 10) { // Limit to 10 answers
-        const newAnswerContainer = document.createElement('div');
-        newAnswerContainer.classList.add('answer-container');
-        newAnswerContainer.innerHTML = `
-      <div class="emoji-circle">😀</div>
-      <input type="text" class="poll-answer" placeholder="Type your answer">
-      <button type="button" class="delete-answer">🗑️</button>
-    `;
-        addAnswerBtn.parentNode.insertBefore(newAnswerContainer, addAnswerBtn);
-
-        // Add event listener to the new delete button
-        const deleteBtn = newAnswerContainer.querySelector('.delete-answer');
-        deleteBtn.addEventListener('click', () => {
-          newAnswerContainer.remove();
-        });
-      } else {
-        alert('Maximum 10 answers allowed');
-      }
-    });
-
-    // Add event listeners to initial delete buttons
-    document.querySelectorAll('.delete-answer').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const answerContainers = document.querySelectorAll('.answer-container');
-        if (answerContainers.length > 2) { // Keep at least 2 answers
-          btn.parentNode.remove();
-        } else {
-          alert('Minimum 2 answers required');
-        }
-      });
-    });
-
-    // Handle poll form submission
-    pollForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      // Get poll data
-      const question = pollQuestion.value.trim();
-      const answers = Array.from(document.querySelectorAll('.poll-answer'))
-              .map(input => input.value.trim())
-              .filter(answer => answer !== '');
-      const duration = document.getElementById('pollDuration').value;
-      const allowMultiple = document.getElementById('allowMultipleAnswers').checked;
-
-      // Validate
-      if (!question) {
-        alert('Please enter a question');
-        return;
-      }
-
-      if (answers.length < 2) {
-        alert('Please provide at least 2 answers');
-        return;
-      }
-
-      // Create poll message
-      const pollData = {
-        type: 'poll',
-        question,
-        answers,
-        duration,
-        allowMultiple,
-        votes: {},
-        createdBy: currentUsername,
-        createdAt: new Date().toISOString()
-      };
-
-      // Send poll as a message
-      if (window.currentChannel) {
-        socket.emit('newMessage', {
-          channelName: window.currentChannel,
-          teamName: teamNameFromURL,
-          sender: currentUsername,
-          message: JSON.stringify(pollData),
-          isPoll: true
-        });
-
-        // Close modal and reset form
-        pollModal.classList.add('hidden');
-        pollForm.reset();
-        questionCharCount.textContent = '0';
-
-        // Remove extra answer fields
-        const answerContainers = document.querySelectorAll('.answer-container');
-        for (let i = 2; i < answerContainers.length; i++) {
-          answerContainers[i].remove();
-        }
-      } else {
-        alert('Please select a channel first');
-      }
-    });
   </script>
