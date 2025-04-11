@@ -613,39 +613,324 @@
     </div>
   </div>
   
-  <!-- SCHEDULE MODAL-->
-   <div id="scheduleModal" class="modal hidden">
-    <div class="modal-content">
-      <span id="closeScheduleModal" class="close">&times;</span>
-      <h1>Schedule</h1>
-      <button id="addEventBtn" class="new-channel-btn">Add Event</button>
-      <div>
-         <ul id="eventsList">
-          </ul>       
-      </div>
+<!-- CALENDAR MODAL -->
+<div id="calendarModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closeCalendarModal" class="close">&times;</span>
+    <h2>Your Channel Events</h2>
+    <div class="form-group">
+      <label for="availableEvents">Select an Event</label>
+      <select id="availableEvents" name="availableEvents" required>
+        <option value="">Loading events...</option>
+      </select>
     </div>
-   </div>
+    <div class="modal-actions">
+      <button id="rsvpBtn" type="button" class="save-btn">RSVP</button>
+      <button id="cannotAttendBtn" type="button" class="cancel-btn">Cannot Attend</button>
+      <button id="cancelEventBtn" type="button" class="cancel-btn" style="background-color: blue; color: white;">Cancel Event</button>
+    </div>
+  </div>
+</div>
 
-   <!--ADD EVENT MODAL-->
-   <div id="eventModal" class="modal hidden">
-    <div class="modal-content">
-      <span id="closeEventModal" class="close">&times;</span>
-      <h1>Add Event</h1>
-      <div>
-        <form id="eventModal">
-          <label for="eventName">Event:</label>
-          <input type="text" id="eventDes" placeholder="Name">
-          <label for="eventLocation">Location</label>
-          <input type="text" id="eventLoc" placeholder="Location">
-          <label for="eventDescription">Describe:</label>
-          <input type="text" id="eventDescription" placeholder="Description" maxLength="300">
-          <label for="eventTime">When:</label>
-          <input type="datetime-local" id="eventTime">
-        </form>
-        <button class="new-channel-btn">Submit</button>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('calendar-button').addEventListener('click', () => {
+    document.getElementById('calendarModal').classList.remove('hidden');
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamName = urlParams.get('team') || 'Team Name';
+    const channel = window.currentChannel || '';
+
+    if (!channel) {
+      alert('Please select a channel first.');
+      return;
+    }
+    
+    fetch(`http://localhost:5008/getEvents?teamName=${encodeURIComponent(teamName)}&channel=${encodeURIComponent(channel)}`)
+      .then(response => response.json())
+      .then(data => {
+        const eventSelect = document.getElementById('availableEvents');
+        eventSelect.innerHTML = '';
+        if (data.events && data.events.length > 0) {
+          data.events.forEach(eventObj => {
+            const option = document.createElement('option');
+            option.value = eventObj.id; // using the event id
+            option.textContent = eventObj.eventName;
+            eventSelect.appendChild(option);
+          });
+        } else {
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = 'No events available';
+          eventSelect.appendChild(option);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching events:', error);
+        const eventSelect = document.getElementById('availableEvents');
+        eventSelect.innerHTML = '<option value="">Error loading events</option>';
+      });
+  });
+  
+  document.getElementById('closeCalendarModal').addEventListener('click', () => {
+    document.getElementById('calendarModal').classList.add('hidden');
+  });
+  
+  window.addEventListener('click', (event) => {
+    const calendarModal = document.getElementById('calendarModal');
+    if (event.target === calendarModal) {
+      calendarModal.classList.add('hidden');
+    }
+  });
+});
+document.getElementById('rsvpBtn').addEventListener('click', () => {
+  const eventSelect = document.getElementById('availableEvents');
+  const selectedOption = eventSelect.options[eventSelect.selectedIndex];
+  const eventName = selectedOption.textContent;
+  const selectedEventId = eventSelect.value; 
+  
+  if (!selectedEventId) {
+    alert('Please select an event to RSVP.');
+    return;
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const teamName = urlParams.get('team') || 'Team Name';
+  const username = urlParams.get('username') || 'DefaultUser';
+  const channel = window.currentChannel || 'DefaultChannel';
+
+  const data = { teamName, channel, eventName, username };
+
+  fetch('http://localhost:5008/rsvpEvent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      alert('Error: ' + data.error);
+    } else {
+
+      document.getElementById('calendarModal').classList.add('hidden');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while sending your RSVP.');
+  });
+});
+document.getElementById('cannotAttendBtn').addEventListener('click', () => {
+  const eventSelect = document.getElementById('availableEvents');
+  const selectedOption = eventSelect.options[eventSelect.selectedIndex];
+  const eventName = selectedOption.textContent;
+  const selectedEventId = eventSelect.value;  
+  
+  if (!selectedEventId) {
+    alert('Please select an event.');
+    return;
+  }
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const teamName = urlParams.get('team') || 'Team Name';
+  const username = urlParams.get('username') || 'DefaultUser';
+  const channel = window.currentChannel || 'DefaultChannel';
+  
+  const data = { teamName, channel, eventName, username };
+
+  fetch('http://localhost:5008/cannotAttendEvent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      alert('Error: ' + data.error);
+    } else {
+      document.getElementById('calendarModal').classList.add('hidden');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while sending your response.');
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('cancelEventBtn').addEventListener('click', () => {
+    const eventSelect = document.getElementById('availableEvents');
+    const selectedOption = eventSelect.options[eventSelect.selectedIndex];
+    const eventName = selectedOption.textContent;
+    const selectedEventId = eventSelect.value;
+    
+    if (!selectedEventId) {
+      alert('Please select an event.');
+      return;
+    }
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamName = urlParams.get('team') || 'Team Name';
+    const username = urlParams.get('username') || 'DefaultUser';
+    const channel = window.currentChannel || 'DefaultChannel';
+    
+    const data = { teamName, channel, eventName, username };
+    
+    fetch('http://localhost:5008/cancelEvent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert('Error: ' + data.error);
+      } else {
+        document.getElementById('calendarModal').classList.add('hidden');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred while cancelling the event.');
+    });
+  });
+});
+
+</script>
+
+<!-- CREATE EVENT MODAL -->
+<div id="createEventModal" class="modal hidden">
+  <div class="modal-content">
+    <span id="closeEventModal" class="close">&times;</span>
+    <form id="createEventForm">
+      <div class="form-group">
+        <label for="eventTeamName"><h2>New Event</h2></label>
+        <input type="text" id="eventTeamName" name="teamName" readonly required />
       </div>
-    </div>
-   </div>
+      
+      <div class="form-group">
+        <label for="eventChannel">Channel</label>
+        <select id="eventChannel" name="channel" required>
+          <option value="">Loading channels...</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="eventName">Event Name</label>
+        <input type="text" id="eventName" name="eventName" placeholder="Enter event name" required />
+      </div>
+      
+      <div class="form-group">
+        <label for="eventLocation">Location</label>
+        <input type="text" id="eventLocation" name="location" placeholder="Enter location" required />
+      </div>
+      
+      <div class="form-group">
+        <label for="eventDescription">Event Description</label>
+        <input type="text" id="eventDescription" name="description" placeholder="Enter Description" required />
+      </div>
+
+      <div class="form-group">
+        <label for="eventDateTime">Date &amp; Time</label>
+        <input type="datetime-local" id="eventDateTime" name="dateTime" required />
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" id="cancelEventBtn" class="cancel-btn">Cancel</button>
+        <button type="submit" class="save-btn">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('newEventBtn').addEventListener('click', () => {
+    const eventModal = document.getElementById('createEventModal');
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamNameFromURL = urlParams.get('team') || 'Team Name';
+    document.getElementById('eventTeamName').value = teamNameFromURL;
+
+    eventModal.classList.remove('hidden');
+
+    fetch(`http://localhost:5008/getAllChannels?teamName=${encodeURIComponent(teamNameFromURL)}`)
+      .then(response => response.json())
+      .then(data => {
+        const eventChannelSelect = document.getElementById('eventChannel');
+        eventChannelSelect.innerHTML = '';
+        if (data.channels && data.channels.length > 0) {
+          data.channels.forEach(channelObj => {
+            const option = document.createElement('option');
+            option.value = channelObj.channelName;
+            option.textContent = channelObj.channelName;
+            eventChannelSelect.appendChild(option);
+          });
+        } else {
+          const option = document.createElement('option');
+          option.value = '';
+          option.textContent = 'No channels available';
+          eventChannelSelect.appendChild(option);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching channels:', error);
+        const eventChannelSelect = document.getElementById('eventChannel');
+        eventChannelSelect.innerHTML = '<option value="">Error loading channels</option>';
+      });
+  });
+
+  document.getElementById('closeEventModal').addEventListener('click', () => {
+    document.getElementById('createEventModal').classList.add('hidden');
+  });
+
+  document.getElementById('cancelEventBtn').addEventListener('click', () => {
+    document.getElementById('createEventModal').classList.add('hidden');
+  });
+
+  document.getElementById('createEventForm').addEventListener('submit', (e) => {
+    e.preventDefault();    
+    document.getElementById('createEventModal').classList.add('hidden');
+  });
+});
+document.getElementById('createEventForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const teamName = document.getElementById('eventTeamName').value;
+  const channel = document.getElementById('eventChannel').value;
+  const eventName = document.getElementById('eventName').value;
+  const location = document.getElementById('eventLocation').value;
+  const description = document.getElementById('eventDescription').value;
+  const dateTime = document.getElementById('eventDateTime').value;
+
+  const eventData = {
+    teamName,
+    channel,
+    eventName,
+    location,
+    description,
+    dateTime
+  };
+
+  fetch('http://localhost:5008/createEvent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(eventData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      alert('Error: ' + data.error);
+    } else {
+      alert('Your Event has been Created!');
+      document.getElementById('createEventModal').classList.add('hidden');
+      document.getElementById('createEventForm').reset();
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while creating the event');
+  });
+});
+</script>
 
   <!-- POLL MODAL -->
   <div id="pollModal" class="modal hidden">
@@ -695,7 +980,7 @@
     <!-- LEFT SIDEBAR: Team Name & Channels -->
     <div class="sidebar">
       <h1 id="teamName">Team Name</h1>
-      <button id="team-schedule-btn" class="schedule-btn">Schedule</button>
+      <button id="newEventBtn" class="schedule-btn">New Event</button>
             <div class="channels-header">
         <h3 style="margin: 0;">Channels</h3>
         <button id="newChannelBtn" class="new-channel-btn">New</button>
@@ -735,6 +1020,7 @@
         <input type="text" id="messageInput" placeholder="Type your message..." style="font-size: larger;">
         <button id="emoji-button"> 🙂 </button>
         <button id="poll-button"> 📊 </button>
+        <button id="calendar-button"> 📅 </button>
         <button id="sendMsgBtn">Send</button>
       </div>
     </div>
@@ -1696,101 +1982,6 @@ document.addEventListener('change', (event) => {
         }
       }
     });
-
-
-    // Schedule functions:
-    const modal = document.getElementById('scheduleModal');
-    const closeBtn = document.getElementById('closeScheduleModal');
-    const scheduleBtn = document.getElementById('team-schedule-btn');
-
-    function openScheduleModal() {
-      modal.classList.remove('hidden');
-    }
-
-    function closeScheduleModal() {
-      modal.classList.add('hidden');
-    }
-
-    scheduleBtn.addEventListener('click', openScheduleModal);
-
-    closeBtn.addEventListener('click', () => {
-      modal.classList.add('hidden');
-    });
-
-    window.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.add('hidden');
-      }
-    });
-
- 
-    const addEventBtn = document.getElementById('addEventBtn');
-    const eventModal = document.getElementById('eventModal');
-    const closeEventModalBtn = document.getElementById('closeEventModal');
-    const submitBtn = eventModal.querySelector('.new-channel-btn');
-    const eventsList = document.getElementById('eventsList');
-
-    function openEventModal() {
-      eventModal.classList.remove('hidden');
-    }
-
-    function closeEventModal() {
-      eventModal.classList.add('hidden');
-    }
-
-    addEventBtn.addEventListener('click', openEventModal);
-    closeEventModalBtn.addEventListener('click', closeEventModal);
-
-    window.addEventListener('click', (e) => {
-      if (e.target === eventModal) {
-        closeEventModal();
-      }
-    });
-
-    submitBtn.addEventListener('click', () => {
-    const name = document.querySelector('#eventDes').value;
-    const location = document.querySelector('#eventLoc').value;
-    const description = document.querySelector('#eventDescription').value;
-    const time = document.querySelector('#eventTime').value;
-
-    if (!name || !location || !description || !time) {
-      alert('Please fill out all fields.');
-      return;
-    }
-
-    const li = document.createElement('li');
-    li.classList.add('event-item');
-    li.innerHTML = `
-      <div class="event-header">
-        <strong>${name}</strong> @ ${new Date(time).toLocaleString()} — <em>${location}</em>
-        <button class="delete-btn" style="float: right;, color="red";>❌</button>
-      </div>
-      <div class="event-description hidden">
-        ${description}
-      </div>
-    `;
-
-
-    const deleteBtn = li.querySelector('.delete-btn');
-    deleteBtn.addEventListener('click', (e) => {
-      e.stopPropagation(); 
-      li.remove();
-    });
-
-    li.addEventListener('click', () => {
-      const desc = li.querySelector('.event-description');
-      desc.classList.toggle('hidden');
-    });
-
-    eventsList.appendChild(li);
-
-    document.querySelector('#eventDes').value = '';
-    document.querySelector('#eventLoc').value = '';
-    document.querySelector('#eventDescription').value = '';
-    document.querySelector('#eventTime').value = '';
-
-    closeEventModal();
-  });
 
 </script>
   <script src="/App/JS/script.js"></script>

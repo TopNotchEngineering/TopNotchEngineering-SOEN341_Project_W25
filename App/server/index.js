@@ -672,6 +672,265 @@ app.get('/getPollVotes', (req, res) => {
     res.status(200).json({ pollVotes: results });
   });
 });
+app.get('/getAllChannels', (req, res) => {
+  const teamName = req.query.teamName;
+  if (!teamName) {
+    return res.status(400).json({ error: 'Team name is required' });
+  }
+  const sql = 'SELECT DISTINCT channelName FROM channels WHERE teamName = ?';
+  connection.query(sql, [teamName], (err, results) => {
+    if (err) {
+      console.error('Error fetching channels:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.status(200).json({ channels: results });
+  });
+});
+
+// Create an event endpoint
+app.post('/createEvent', (req, res) => {
+  const { teamName, channel, eventName, location, description, dateTime } = req.body;
+
+  if (!teamName || !channel || !eventName || !location || !dateTime) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const eventSql = `
+    INSERT INTO events (teamName, channel, eventName, location, description, dateTime) 
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  const eventValues = [teamName, channel, eventName, location, description, dateTime];
+
+  connection.query(eventSql, eventValues, (err, eventResult) => {
+    if (err) {
+      console.error('Error inserting event:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    const eventMessage = `
+      <div class="event-message">
+        <strong>New Event: ${eventName}</strong><br>
+        <em>Location:</em> ${location}<br>
+        <em>Description:</em> ${description}<br>
+        <em>Date &amp; Time:</em> ${dateTime}
+      </div>
+    `;
+
+    const roomName = `${teamName}-${channel}`;
+
+    const chatSql = `
+      INSERT INTO chatMessages (channelName, teamName, sender, message)
+      VALUES (?, ?, ?, ?)
+    `;
+
+    const chatValues = [channel, teamName, 'System', eventMessage];
+
+    connection.query(chatSql, chatValues, (err2, chatResult) => {
+      if (err2) {
+        console.error('Error inserting event message into chatMessages:', err2);
+        return res.status(500).json({ error: 'Database error on chat message insert' });
+      }
+
+      // Emit the event message to the selected channel
+      io.to(roomName).emit('message', {
+        sender: 'System',
+        message: eventMessage,
+        id: chatResult.insertId 
+      });
+
+      res.status(201).json({
+        message: 'Event created successfully',
+        eventId: eventResult.insertId,
+        chatMessageId: chatResult.insertId
+      });
+    });
+  });
+});
+
+app.get('/getEvents', (req, res) => {
+  const teamName = req.query.teamName;
+  const channel = req.query.channel;
+  if (!teamName || !channel) {
+    return res.status(400).json({ error: 'Team name and channel are required' });
+  }
+  
+  const sql = 'SELECT * FROM events WHERE teamName = ? AND channel = ? ORDER BY dateTime ASC';
+  connection.query(sql, [teamName, channel], (err, results) => {
+    if (err) {
+      console.error('Error fetching events:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    return res.status(200).json({ events: results });
+  });
+});
+
+app.post('/rsvpEvent', (req, res) => {
+  const { teamName, channel, eventName, username } = req.body;
+
+  if (!teamName || !channel || !eventName || !username) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const sql = `
+    INSERT INTO event_responses (teamName, channel, eventName, username, response)
+    VALUES (?, ?, ?, ?, 'RSVP')
+  `;
+  const values = [teamName, channel, eventName, username];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting RSVP:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    const chatMessage = `
+      <div class="event-response">
+        has RSVPed to event: ${eventName}.
+      </div>
+    `;
+
+    const roomName = `${teamName}-${channel}`;
+
+    const chatSql = `
+      INSERT INTO chatMessages (channelName, teamName, sender, message)
+      VALUES (?, ?, ?, ?)
+    `;
+    const chatValues = [channel, teamName, username, chatMessage];
+
+    connection.query(chatSql, chatValues, (err2, chatResult) => {
+      if (err2) {
+        console.error('Error inserting RSVP message into chatMessages:', err2);
+        return res.status(500).json({ error: 'Database error on chat message insert' });
+      }
+
+      io.to(roomName).emit('message', {
+        sender: username,
+        message: chatMessage,
+        id: chatResult.insertId
+      });
+
+      res.status(200).json({
+        message: 'Your Response has been saved!',
+        responseId: result.insertId,
+        chatMessageId: chatResult.insertId
+      });
+    });
+  });
+});
+
+
+// Cannot Attend Events endpoint
+app.post('/cannotAttendEvent', (req, res) => {
+  const { teamName, channel, eventName, username } = req.body;
+
+  // Validate required fields
+  if (!teamName || !channel || !eventName || !username) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  // Insert the "Cannot Attend" response into the event_responses table
+  const sql = `
+    INSERT INTO event_responses (teamName, channel, eventName, username, response)
+    VALUES (?, ?, ?, ?, 'Cannot Attend')
+  `;
+  const values = [teamName, channel, eventName, username];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('Error inserting response for "Cannot Attend":', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    // Construct the chat message content.
+    // You can modify the formatting as needed.
+    const chatMessage = `
+      <div class="event-response">
+        Unfortunatly I cannot attend event: ${eventName}.
+      </div>
+    `;
+
+    // Compute the room name using your convention (teamName-channel)
+    const roomName = `${teamName}-${channel}`;
+
+    // Insert the chat message into the chatMessages table
+    const chatSql = `
+      INSERT INTO chatMessages (channelName, teamName, sender, message)
+      VALUES (?, ?, ?, ?)
+    `;
+    const chatValues = [channel, teamName, username, chatMessage];
+
+    connection.query(chatSql, chatValues, (err2, chatResult) => {
+      if (err2) {
+        console.error('Error inserting response into chatMessages:', err2);
+        return res.status(500).json({ error: 'Database error on chat message insert' });
+      }
+
+      // Emit the new chat message to the channel via Socket.IO
+      io.to(roomName).emit('message', {
+        sender: username,
+        message: chatMessage,
+        id: chatResult.insertId
+      });
+
+      // Respond with success to the client
+      res.status(200).json({
+        message: 'Your Response has been saved!',
+        responseId: result.insertId,
+        chatMessageId: chatResult.insertId
+      });
+    });
+  });
+});
+
+app.post('/cancelEvent', (req, res) => {
+  const { teamName, channel, eventName, username } = req.body;
+
+  if (!teamName || !channel || !eventName || !username) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  const sql = 'DELETE FROM events WHERE teamName = ? AND channel = ? AND eventName = ?';
+  const values = [teamName, channel, eventName];
+
+  connection.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('Error cancelling event:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Event not found or already cancelled' });
+    }
+
+    const chatMessage = `
+      <div class="event-response">
+        This following event has been cancelled: ${eventName}.
+      </div>
+    `;
+
+    const roomName = `${teamName}-${channel}`;
+
+    const chatSql = `
+      INSERT INTO chatMessages (channelName, teamName, sender, message)
+      VALUES (?, ?, ?, ?)
+    `;
+    const chatValues = [channel, teamName, username, chatMessage];
+
+    connection.query(chatSql, chatValues, (err2, chatResult) => {
+      if (err2) {
+        console.error('Error inserting cancel event message into chatMessages:', err2);
+        return res.status(500).json({ error: 'Database error on chat message insert' });
+      }
+      io.to(roomName).emit('message', {
+        sender: username,
+        message: chatMessage,
+        id: chatResult.insertId
+      });
+      res.status(200).json({ message: 'Event cancelled successfully', chatMessageId: chatResult.insertId });
+    });
+  });
+});
+
+
 
 
 // ----- Socket.IO Setup -----
