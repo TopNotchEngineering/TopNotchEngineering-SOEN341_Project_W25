@@ -1531,6 +1531,7 @@ function fetchChannelsForTeam(teamName) {
           sender: currentUserName,
           message: answersContainer.innerHTML
         });
+        pollModal.classList.add('hidden');
 
         // Send poll data to the server.
       answers.forEach(answer => {
